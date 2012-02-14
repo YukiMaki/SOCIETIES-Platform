@@ -53,7 +53,7 @@ public class TestDeviceRegistry {
 
 	@Test
 	public void test() {
-		fail("Not yet implemented");
+		fail("Tests Not yet implemented");
 	}
 
 }
