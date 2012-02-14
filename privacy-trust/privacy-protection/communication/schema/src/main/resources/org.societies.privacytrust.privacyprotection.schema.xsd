@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" elementFormDefault="qualified" version="1.0" 
+	targetNamespace="http://societies.org/example/calculatorservice/schema"
+	xmlns:tns="http://societies.org/example/calculatorservice/schema"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="iPrivacyPolicyManagerBean">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="id" type="xs:string" minOccurs="0"/>
+      <xs:element name="method" type="methodType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="iPrivacyPolicyManagerBeanResult">
+  <xs:complexType name="iPrivacyPolicyManagerBeanResult">
+    <xs:sequence>
+      <xs:element name="result" type="xs:boolean"/>
+      <xs:element name="text" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+  <xs:simpleType name="methodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="deletePrivacyPolicy"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
