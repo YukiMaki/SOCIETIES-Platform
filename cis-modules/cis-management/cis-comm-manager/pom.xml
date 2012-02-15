@@ -11,11 +11,29 @@
 	 </parent>
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.societies.cis.mgmt</groupId>
-    <artifactId>CommunityServiceBundle</artifactId>
+    <groupId>org.societies.cis</groupId>
+    <artifactId>cis-comm-manager</artifactId>
     <packaging>bundle</packaging>
-    <name>Community Service Bundle</name>
-    <version>0.0.1</version>
+    <name>CIS Communication Manager</name>
+    <version>${version.cis}</version>
+    
+   	<developers>
+	    <developer>
+	      <id>tcarlyle</id>
+	      <name>Thomas Vilarinho</name>
+	      <email>thomas.vilarinho@sintef.no</email>
+	      <organization>Sintef</organization>
+	    </developer>
+
+
+	    <developer>
+	      
+	      <name>Joao</name>
+	    </developer>
+
+	</developers>
+    
+    
 
     <properties>
         <slf4j.version>1.5.0</slf4j.version>
@@ -34,9 +52,16 @@
 		<dependency>
 			<groupId>org.societies.comm.xmpp</groupId>
 	  		<artifactId>CommunicationFrameworkCommons</artifactId>
-	  		<version>0.0.1-SNAPSHOT</version>
+			<version>${version.comm}</version>
 			<scope>provided</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.societies.api.external</groupId>
+			<artifactId>societies-api</artifactId>
+			<version>${release.version}</version>
+		</dependency>
+
 		
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -85,7 +110,7 @@
 							*
     					</Import-Package>
     					<Export-Package>
-		           			org.societies.cis.mgmt,
+		           			org.societies.cis.manager,
 		           			org.societies.community
 		           		</Export-Package>
 		           		<Embed-Dependency>*;scope=compile</Embed-Dependency>
@@ -93,6 +118,28 @@
 		         	</instructions>
 	       		</configuration>
 			</plugin>		
-		</plugins>
+
+		<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<configuration>
+					<artifactItems>
+						<artifactItem>
+							<groupId>${project.groupId}</groupId>
+							<artifactId>${project.artifactId}</artifactId>
+							<version>${version.cis}</version>
+							<type>bundle</type>
+							<overWrite>true</overWrite>
+							<outputDirectory>${spring.osgi.deploy.dir}</outputDirectory>
+						</artifactItem>
+					</artifactItems>
+				</configuration>
+			</plugin>
+	
+	
+	</plugins>
+		
+		
+		
 	</build>
 </project>

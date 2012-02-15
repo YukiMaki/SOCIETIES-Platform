@@ -8,10 +8,22 @@
                       http://www.springframework.org/schema/osgi-compendium 
                       http://www.springframework.org/schema/osgi-compendium/spring-osgi-compendium-1.2.xsd">
 
-  <!-- definitions using elements of the osgi namespace can be included
+
+
+  <!-- 
+  LIST OF REferences I need and list of services IM offering
+  
+  
+  
+  definitions using elements of the osgi namespace can be included
        in this file. There is no requirement to keep these definitions
        in a separate file if you do not want to. The rationale for 
        keeping these definitions separate is to facilitate integration
        testing of the bundle outside of an OSGi container -->
-	<osgi:reference id="xcCommunication" interface="org.societies.comm.xmpp.interfaces.CommManager"/>
+	<!--<osgi:reference id="xcCommunication" interface="org.societies.comm.xmpp.interfaces.CommManager"/>-->
+	
+	<!--<osgi:reference id="CisCommunicationManager" interface="org.societies.cis.manager.CisCommunicationManagerInterface"/>-->
+
+	<osgi:reference id="CommManagerBundle" interface="org.societies.api.comm.xmpp.interfaces.ICommManager"/>
+	
 </beans>

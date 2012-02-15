@@ -13,5 +13,11 @@
        bundle. The configuration of OSGi definitions is kept in a separate 
        configuration file so that this file can easily be used
        for integration testing outside of an OSGi environment -->
-	<context:component-scan base-package="org.societies.cis.mgmt.impl"></context:component-scan>
+	  <bean id="CisCommunicationManager" 
+  		class="org.societies.cis.manager.CisCommunicationManager"
+  		depends-on="CommManagerBundle" 
+  		 init-method="InitService">
+  		<property name="commManager" ref="CommManagerBundle"/>
+  		
+ 	 </bean>
 </beans>

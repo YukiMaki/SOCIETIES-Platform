@@ -8,6 +8,5 @@
        configuration file so that this file can easily be used
        for integration testing outside of an OSGi environment -->
 
-  <bean name="myBean" class="org.societies.cis.management.cis_editor.impl.BeanImpl" />
 
 </beans>
