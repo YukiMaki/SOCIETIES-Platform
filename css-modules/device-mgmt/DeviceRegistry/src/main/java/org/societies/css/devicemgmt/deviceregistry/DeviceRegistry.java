@@ -107,7 +107,8 @@ public class DeviceRegistry implements IDeviceRegistry {
         
     	CSSDevice device = null;
 
-        String key = RegistryUtility.createKeyString(deviceID);
+        //String key = RegistryUtility.createKeyString(deviceID);
+        String key = deviceID;
 
         if (registry.containsKey(key)) {
             device = registry.get(key);
