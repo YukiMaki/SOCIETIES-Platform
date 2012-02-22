@@ -27,11 +27,14 @@ package org.societies.css.devicemgmt.deviceregistry;
 
 import static org.junit.Assert.*;
 
+import java.util.Collection;
+
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.societies.css.devicemgmt.deviceregistry.CSSDevice;
 
 public class TestDeviceRegistry {
 	
@@ -105,6 +108,113 @@ public class TestDeviceRegistry {
 		assertEquals(1, registry.registrySize());
 		registry.clearRegistry();
         assertEquals(0, registry.registrySize());
+	}
+	
+	@Test
+	public void addmoreDevices() throws Exception{
+		//fail("Tests Not yet implemented just putting in place holder");
+		String result1 =  registry.addDevice(device_1, CSSID);
+		assertTrue(null != result1);
+		String result2 =  registry.addDevice(device_2, CSSID);
+		assertTrue(null != result2);
+		String result3 =  registry.addDevice(device_3, CSSID);
+		assertTrue(null != result3);
+		assertEquals(3, registry.registrySize());
+		//registry.clearRegistry();
+        //assertEquals(0, registry.registrySize());
+		System.out.println("Device ID is  = " + device_1.getdeviceId());
+		System.out.println("Device Name is  = " + device_1.getdeviceName());
+		System.out.println("Device Type is  = " + device_1.getdeviceType());
+		System.out.println("Device Description is  = " + device_1.getdeviceDescription());
+		System.out.println("CSSID is  = " + CSSID);
+        Collection<CSSDevice> alldevices =  registry.findAllDevices();
+        assertTrue(null != alldevices);
+        assertEquals(3, alldevices.size());
+            
+	}
+	
+	@Test
+	public void allDevices() throws Exception{
+		String result1 =  registry.addDevice(device_1, CSSID);
+		assertTrue(null != result1);
+		String result2 =  registry.addDevice(device_2, CSSID);
+		assertTrue(null != result2);
+		String result3 =  registry.addDevice(device_3, CSSID);
+		assertTrue(null != result3);
+		assertEquals(3, registry.registrySize());
+		
+        Collection<CSSDevice> alldevices =  registry.findAllDevices();
+        assertTrue(null != alldevices);
+        assertEquals(3, alldevices.size());
+            
+	}
+	
+	
+	@Test
+	public void removeDevice() throws Exception{
+		String result1 =  registry.addDevice(device_1, CSSID);
+		assertTrue(null != result1);
+		String result2 =  registry.addDevice(device_2, CSSID);
+		assertTrue(null != result2);
+		String result3 =  registry.addDevice(device_3, CSSID);
+		assertTrue(null != result3);
+		assertEquals(3, registry.registrySize());
+		
+		assertTrue(registry.deleteDevice(device_1, CSSID));
+		//assertTrue(registry.unregisterDevice(deviceId2));
+		
+        Collection<CSSDevice> alldevices =  registry.findAllDevices();
+        assertTrue(null != alldevices);
+        assertEquals(2, alldevices.size());
+            
+	}
+	
+	@Test
+	public void findDevice() throws Exception{
+		String result1 =  registry.addDevice(device_1, CSSID);
+		assertTrue(null != result1);
+		String result2 =  registry.addDevice(device_2, CSSID);
+		assertTrue(null != result2);
+		String result3 =  registry.addDevice(device_3, CSSID);
+		assertTrue(null != result3);
+		assertEquals(3, registry.registrySize());
+
+        CSSDevice retrievedevice = registry.findDevice(deviceId2);
+        
+        System.out.println("retrievedevice ID is  = " + retrievedevice.getdeviceId());
+		System.out.println("retrievedevice Name is  = " + retrievedevice.getdeviceName());
+		System.out.println("retrievedevice Type is  = " + retrievedevice.getdeviceType());
+		System.out.println("retrievedevice Description is  = " + retrievedevice.getdeviceDescription());
+
+        assertTrue(null != retrievedevice);
+        assertTrue(retrievedevice instanceof CSSDevice);
+            
+	}
+	
+	@Test
+	public void findDeviceType() throws Exception{
+		Collection<CSSDevice> Result = null;
+		
+		String result1 =  registry.addDevice(device_1, CSSID);
+		assertTrue(null != result1);
+		String result2 =  registry.addDevice(device_2, CSSID);
+		assertTrue(null != result2);
+		String result3 =  registry.addDevice(device_3, CSSID);
+		assertTrue(null != result3);
+		assertEquals(3, registry.registrySize());
+		System.out.println("reg size = " + registry.registrySize());
+		
+		Result = registry.findByDeviceType(device_1.getdeviceType());
+        assertEquals(1, Result.size());
+		System.out.println("query Result size = " + Result.size());
+
+        Result = registry.findByDeviceType(deviceType2);
+        assertEquals(1, Result.size());
+
+        Result = registry.findByDeviceType(deviceType3);
+        assertEquals(1, Result.size());
+
+            
 	}
 
 }

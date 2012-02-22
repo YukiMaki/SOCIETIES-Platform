@@ -163,9 +163,9 @@ public class DeviceRegistry implements IDeviceRegistry {
      * @return	deviceID
      */
 	public String addDevice(CSSDevice device, String CSSID) {
-    	registry.put(RegistryUtility.createKeyString(device
-                .getDeviceId()), device);
-        return device.getDeviceId();
+    	//registry.put(RegistryUtility.createKeyString(device.getdeviceId()), device);
+		registry.put(device.getdeviceId(), device);
+        return device.getdeviceId();
 		
 	}
 

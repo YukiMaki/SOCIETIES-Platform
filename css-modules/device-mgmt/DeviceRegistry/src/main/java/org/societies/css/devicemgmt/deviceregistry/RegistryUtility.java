@@ -45,7 +45,7 @@ public class RegistryUtility {
      */
     public static String createKeyString(String deviceId) {
 
-        return deviceId.toString();
+        return deviceId;
     }
 
 }
