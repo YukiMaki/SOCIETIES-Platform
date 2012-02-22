@@ -38,7 +38,7 @@ public interface IDeviceRegistry {
 	 * 				
 	 * @return 			IDeviceidentifier
 	 */
-	public String addDevice (CSSDevice device, Object CSSID);
+	public String addDevice (CSSDevice device, String CSSID);
 
 	/* 
 	 * Description: 	Remove device from the device registry
@@ -59,7 +59,7 @@ public interface IDeviceRegistry {
 	 * Description: 	Given a particular deviceID get all the services associated with that device 
 	 * @return 			collection
 	 */
-	public Collection<Object> getDeviceServiceList (Object deviceID);
+	public Collection<Object> getDeviceList (Object deviceID);
 	
 	/* 
 	 * Description: 	Search the device registry for all devices registered 

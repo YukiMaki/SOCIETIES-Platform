@@ -160,9 +160,9 @@ public class DeviceRegistry implements IDeviceRegistry {
     /**
      * Description:	Add a new device to the device registry
      * 
-     * @return	IDeviceIdentifier
+     * @return	deviceID
      */
-	public String addDevice(CSSDevice device, Object CSSID) {
+	public String addDevice(CSSDevice device, String CSSID) {
     	registry.put(RegistryUtility.createKeyString(device
                 .getDeviceId()), device);
         return device.getDeviceId();
@@ -193,7 +193,7 @@ public class DeviceRegistry implements IDeviceRegistry {
      */
 
 
-	public Collection<Object> getDeviceServiceList(Object deviceID) {
+	public Collection<Object> getDeviceList(Object deviceID) {
 		// TODO Auto-generated method stub
 		return null;
 	}

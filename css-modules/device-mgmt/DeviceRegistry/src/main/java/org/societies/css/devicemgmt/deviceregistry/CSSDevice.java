@@ -63,7 +63,7 @@ public class CSSDevice implements Serializable{
      * @param deviceType
      * 
      */
-    public CSSDevice(String deviceId, String deviceType) {
+    public CSSDevice(String deviceId, String deviceType, String devicedescription, String name) {
        
         this.deviceType = deviceType;
         this.deviceId = deviceId;
