@@ -161,11 +161,11 @@ public class TestDeviceRegistry {
 		assertEquals(3, registry.registrySize());
 		
 		assertTrue(registry.deleteDevice(device_1, CSSID));
-		//assertTrue(registry.unregisterDevice(deviceId2));
+		assertTrue(registry.unregisterDevice(deviceId2));
 		
         Collection<CSSDevice> alldevices =  registry.findAllDevices();
         assertTrue(null != alldevices);
-        assertEquals(2, alldevices.size());
+        assertEquals(1, alldevices.size());
             
 	}
 	
