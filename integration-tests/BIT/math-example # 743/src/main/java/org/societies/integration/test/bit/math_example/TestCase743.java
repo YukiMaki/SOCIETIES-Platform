@@ -4,8 +4,11 @@
 package org.societies.integration.test.bit.math_example;
 
 /**
- * @author Bruno
+ * @author Rafik SAID MANSOUR
+ * @email : rafik.saidmansour@trialog.com
  *
+ *This test case is testing the integration of the bundles example.service.api, example.service.consumer and example.service.provider
+ *So as we have dependency on the example.service.api bundle so we have to compile it before all other bundles
  */
 import java.util.List;
 
@@ -35,6 +38,8 @@ public class TestCase743 {
 	private void startTest() {
 		LOG.info("###743... startTest");
 		jUnitCore = new JUnitCore();
+		
+		//ex: Result res = jUnitCore.run(Class1.class, Class2.class...);
 		Result res = jUnitCore.run(NominalTestCase.class);
 		
 		
