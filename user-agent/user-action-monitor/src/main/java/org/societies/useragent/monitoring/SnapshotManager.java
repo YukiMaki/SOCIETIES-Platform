@@ -63,7 +63,7 @@ public class SnapshotManager {
 
 	public List<CtxAttributeIdentifier> getSnapshot(String snapshotName){
 		ArrayList<CtxAttributeIdentifier> snapshot = new ArrayList<CtxAttributeIdentifier>();
-		
+		String[] definition = snapshots.get(snapshotName);
 		return snapshot;
 	}
 }
