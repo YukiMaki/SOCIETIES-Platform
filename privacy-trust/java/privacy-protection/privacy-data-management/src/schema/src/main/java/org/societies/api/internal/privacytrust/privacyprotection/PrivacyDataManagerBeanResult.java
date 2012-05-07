@@ -22,14 +22,54 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.constants;
+package org.societies.api.internal.privacytrust.privacyprotection;
+
+import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.ResponseItem;
 
 /**
- * @author Elizabeth
+ * @author Olivier Maridat (Trialog)
  *
  */
-public enum ActionConstants {
-
-	READ, WRITE, CREATE, DELETE;
+public class PrivacyDataManagerBeanResult {
+	private boolean ack;
+	private String ackMessage;
+	private ResponseItem permission;
 	
+	
+	/**
+	 * @return the ack
+	 */
+	public boolean isAck() {
+		return ack;
+	}
+	/**
+	 * @param ack the ack to set
+	 */
+	public void setAck(boolean ack) {
+		this.ack = ack;
+	}
+	/**
+	 * @return the ackMessage
+	 */
+	public String getAckMessage() {
+		return ackMessage;
+	}
+	/**
+	 * @param ackMessage the ackMessage to set
+	 */
+	public void setAckMessage(String ackMessage) {
+		this.ackMessage = ackMessage;
+	}
+	/**
+	 * @return the permission
+	 */
+	public ResponseItem getPermission() {
+		return permission;
+	}
+	/**
+	 * @param permission the permission to set
+	 */
+	public void setPermission(ResponseItem permission) {
+		this.permission = permission;
+	}
 }

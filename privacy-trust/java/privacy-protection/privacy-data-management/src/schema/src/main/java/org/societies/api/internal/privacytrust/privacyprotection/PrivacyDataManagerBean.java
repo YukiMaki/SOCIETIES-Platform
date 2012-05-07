@@ -22,14 +22,85 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.constants;
+package org.societies.api.internal.privacytrust.privacyprotection;
+
+import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Action;
+import org.societies.api.schema.identity.RequestorBean;
 
 /**
- * @author Elizabeth
+ * @author Olivier Maridat (Trialog)
  *
  */
-public enum ActionConstants {
-
-	READ, WRITE, CREATE, DELETE;
+public class PrivacyDataManagerBean {
+	public enum methodType  {checkPermission, obfuscateData};
+	private methodType  method;
 	
+	private RequestorBean requestor;
+	/**
+	 * JID of the owner of the requested data
+	 */
+	private String ownerId;
+	/**
+	 * String formatted ID of the requested Data
+	 */
+	private String dataId;
+	private Action action;
+
+	
+	/**
+	 * @return the requestor
+	 */
+	public RequestorBean getRequestor() {
+		return requestor;
+	}
+	/**
+	 * @param requestor the requestor to set
+	 */
+	public void setRequestor(RequestorBean requestor) {
+		this.requestor = requestor;
+	}
+	/**
+	 * @return the ownerId
+	 */
+	public String getOwnerId() {
+		return ownerId;
+	}
+	/**
+	 * @param ownerId the ownerId to set
+	 */
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
+	}
+	/**
+	 * @return the dataId
+	 */
+	public String getDataId() {
+		return dataId;
+	}
+	/**
+	 * @param dataId the dataId to set
+	 */
+	public void setDataId(String dataId) {
+		this.dataId = dataId;
+	}
+	/**
+	 * @return the action
+	 */
+	public Action getAction() {
+		return action;
+	}
+	/**
+	 * @param action the action to set
+	 */
+	public void setAction(Action action) {
+		this.action = action;
+	}
+	
+	
+	public methodType  getMethod() {
+		return method;
+	}
+	public void setMethod(methodType  method) {
+		this.method = method;
+	}
 }

@@ -54,9 +54,15 @@ public class ResponseItem implements Serializable{
 	public Decision getDecision(){
 		return this.decision;
 	}
+	public void setDecision(Decision decision){
+		this.decision = decision;
+	}
 
 	public RequestItem getRequestItem(){
 		return this.item;
+	}
+	public void setRequestItem(RequestItem item){
+		this.item = item;
 	}
 
 	public String toXMLString(){

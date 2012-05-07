@@ -70,6 +70,19 @@ public class Condition implements Serializable{
 		return this.theCondition;
 	}
 	
+	
+	/**
+	 * @return the theCondition
+	 */
+	public ConditionConstants getTheCondition() {
+		return theCondition;
+	}
+	/**
+	 * @param theCondition the theCondition to set
+	 */
+	public void setTheCondition(ConditionConstants theCondition) {
+		this.theCondition = theCondition;
+	}
 	public String getValueAsString(){
 		return this.value;
 	}

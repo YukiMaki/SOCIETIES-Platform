@@ -57,10 +57,16 @@ public class Resource implements Serializable{
 	public String getContextType(){
 		return this.contextType;
 	}
+	public void setContextType(String contextType){
+		this.contextType = contextType;
+	}
 	
 	public CtxAttributeIdentifier getCtxIdentifier(){
 		return this.ctxIdentifier;
 	}
+//	public void setCtxIdentifier(CtxAttributeIdentifier ctxId){
+//		this.ctxIdentifier = ctxId;
+//	}
 	
 	public void stripIdentifier(){
 		this.ctxIdentifier = null;

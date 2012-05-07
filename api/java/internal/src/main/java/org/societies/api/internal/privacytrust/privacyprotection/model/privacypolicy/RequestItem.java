@@ -67,22 +67,25 @@ public class RequestItem implements Serializable{
 	public Resource getResource(){
 		return this.resource;
 	}
+	public void setResource(Resource resource){
+		this.resource = resource;
+	}
 
 	public List<Action> getActions(){
 		return this.actions;
+	}
+	public void setActions(List<Action> actions){
+		this.actions = actions;
 	}
 
 	public List<Condition> getConditions(){
 		return this.conditions;
 	}
-
 	public void setConditions(List<Condition> conditions){
 		this.conditions = conditions;
 	}
 
-	public void setActions(List<Action> actions){
-		this.actions = actions;
-	}
+	
 	public String toXMLString(){
 		String str = "\n<Target>";
 		str = str.concat(this.resource.toXMLString());

@@ -63,6 +63,12 @@ public class Action implements Serializable{
 	public boolean isOptional(){
 		return this.optional;
 	}
+	public ActionConstants getAction(){
+		return this.action;
+	}
+	public void setAction(ActionConstants action){
+		this.action = action;
+	}
 	public ActionConstants getActionType(){
 		return this.action;
 	}
