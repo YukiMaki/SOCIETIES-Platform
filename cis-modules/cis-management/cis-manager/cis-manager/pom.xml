@@ -1,58 +1,152 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.societies.cis</groupId>
-  <artifactId>cis-manager</artifactId>
-  <packaging>bundle</packaging>
-  <name>CIS Manager</name>
-  <version>${version.cis}</version>
-  
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.societies.cis</groupId>
+	<artifactId>cis-manager</artifactId>
+	<packaging>bundle</packaging>
+	<name>CIS Manager</name>
+	<version>${version.cis}</version>
+
 	<developers>
-	    <developer>
-	      <id>tcarlyle</id>
-	      <name>Thomas Vilarinho</name>
-	      <email>thomas.vilarinho@sintef.no</email>
-	      <organization>Sintef</organization>
-	      <roles>
-	        <role>owner</role>
-	      </roles>
-	    </developer>
+		<developer>
+			<id>tcarlyle</id>
+			<name>Thomas Vilarinho</name>
+			<email>thomas.vilarinho@sintef.no</email>
+			<organization>Sintef</organization>
+			<roles>
+				<role>owner</role>
+			</roles>
+		</developer>
 	</developers>
-	
+
 	<parent>
 		<groupId>org.societies</groupId>
 		<artifactId>spring-osgi-parent</artifactId>
 		<version>0.1</version>
 	</parent>
+	
+	<properties>
+  	  <powermock.version>1.4.12</powermock.version>
+	</properties>
 
 	<dependencies>
+
 	<!-- add your dependencies here -->	
+		 <dependency>
+           <groupId>junit</groupId>
+           <artifactId>junit</artifactId>
+           <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.test</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+		  	<groupId>org.mockito</groupId>
+  			<artifactId>mockito-all</artifactId>
+  			<version>1.9.0</version>
+  			<scope>test</scope>
+		</dependency>
+	   <dependency>
+	      <groupId>org.powermock</groupId>
+	      <artifactId>powermock-module-junit4</artifactId>
+	      <version>${powermock.version}</version>
+	      <scope>test</scope>
+	   </dependency>
+	   <dependency>
+	      <groupId>org.powermock</groupId>
+	      <artifactId>powermock-api-mockito</artifactId>
+	      <version>${powermock.version}</version>
+	      <scope>test</scope>
+	   </dependency>
+				<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.spring-library</artifactId>
+			<type>libd</type>
+			<version>${spring.version}</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>com.springsource.org.apache.derby</artifactId>
+			<version>10.5.1000001.764942</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.10</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>org.springframework.test</artifactId>
+			<version>3.0.5.RELEASE</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>com.springsource.javax.persistence</artifactId>
+			<version>2.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>com.springsource.javax.transaction</artifactId>
+			<version>1.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>com.springsource.org.hibernate</artifactId>
+			<version>3.3.2.GA</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>com.springsource.org.hibernate.annotations</artifactId>
+			<version>3.4.0.GA-A</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>com.springsource.org.hibernate.annotations.common</artifactId>
+			<version>3.3.0.ga</version>
+			<scope>provided</scope>
+		</dependency>
+	
     	<dependency>
 			<groupId>org.societies.api.external</groupId>
 			<artifactId>societies-api</artifactId>
 			<version>${release.version}</version>
 			<scope>provided</scope>
 		</dependency>
-		
- 
+
+
 		<dependency>
 			<groupId>org.societies.api.internal</groupId>
 			<artifactId>societies-api-internal</artifactId>
 			<version>${release.version}</version>
 			<scope>provided</scope>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>org.societies.comm.xmpp</groupId>
-	  		<artifactId>CommunicationFrameworkCommons</artifactId>
-	  		<version>${version.comm}</version>
-			<scope>compile</scope>
+			<artifactId>CommunicationFrameworkCommons</artifactId>
+			<version>${version.comm}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.societies.comm.xmpp.pubsub</groupId>
-    		<artifactId>PubsubClientBundle</artifactId>
-	  		<version>${version.comm}</version>
+			<artifactId>PubsubClientBundle</artifactId>
+			<version>${version.comm}</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.societies.cis</groupId>
+			<artifactId>cis-persistance</artifactId>
+			<version>${version.cis}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -76,6 +170,12 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>com.springsource.slf4j.org.apache.commons.logging</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>org.societies</groupId>
+			<artifactId>activityfeed</artifactId>
+			<version>${version.cis}</version>
+			<scope>provided</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -89,22 +189,23 @@
 						<Bundle-Activator></Bundle-Activator>
 						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<Embed-Transitive>true</Embed-Transitive>
-						<Import-Package>    						org.springframework.beans.factory.annotation*;version="0",
-    						org.springframework.stereotype*;version="0",
-    						org.xmpp.packet*,
-    						!org.gjt.*,
-    						!org.jaxen.*,
-    						!org.mortbay.*,
-    						!org.relaxng.*,
-    						!org.jvnet.staxex,
-    						!org.jvnet.fastinfoset,
-    						!com.sun.xml.fastinfoset.*,
-    						!com.sun.msv.*,
+						<Import-Package>
+							org.springframework.beans.factory.annotation*;version="0",
+							org.springframework.stereotype*;version="0",
+							org.xmpp.packet*,
+							!org.gjt.*,
+							!org.jaxen.*,
+							!org.mortbay.*,
+							!org.relaxng.*,
+							!org.jvnet.staxex,
+							!org.jvnet.fastinfoset,
+							!com.sun.xml.fastinfoset.*,
+							!com.sun.msv.*,
 							*;resolution:=optional</Import-Package>
 						<Export-Package>
-						org.societies.api.schema.cis.community,
-						org.societies.api.schema.cis.manager
-						</Export-Package>
+							org.societies.api.schema.cis.community,
+							org.societies.api.schema.cis.manager
+						</Export-Package> 
 					</instructions>
 				</configuration>
 			</plugin>

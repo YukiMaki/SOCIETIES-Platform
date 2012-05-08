@@ -13,6 +13,11 @@ public class NetworkNodeImpl extends IdentityImpl implements INetworkNode {
 		this.nodeIdentifier = nodeIdentifier;
 	}
 
+	public NetworkNodeImpl(String fulljid) {
+		super(fulljid);
+	}
+
+	
 	public String getNodeIdentifier() {
 		return nodeIdentifier;
 	}

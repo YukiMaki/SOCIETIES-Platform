@@ -13,7 +13,12 @@
 	<osgi:service ref="uam">
 		<osgi:interfaces>
 			<value>org.societies.api.useragent.monitoring.IUserActionMonitor</value>
-			<value>org.societies.api.internal.useragent.monitoring.IInternalUserActionMonitor</value>
+		</osgi:interfaces>
+	</osgi:service>
+	
+	<osgi:service ref="dm">
+		<osgi:interfaces>
+			<value>org.societies.api.internal.useragent.decisionmaking.IDecisionMaker</value>
 		</osgi:interfaces>
 	</osgi:service>
 	
@@ -25,6 +30,14 @@
 
 	<!-- context Broker is needed by uam (at least) -->
 	<osgi:reference id="ctxBroker" interface="org.societies.api.internal.context.broker.ICtxBroker">
+	</osgi:reference>
+	
+	<!-- event manager (local eventing) is needed by the uam -->
+	<osgi:reference id="eventMgr" interface="org.societies.api.osgi.event.IEventMgr">
+	</osgi:reference>
+	
+	<!-- IServiceDiscovery is needed by dm (at least) -->
+	<osgi:reference id="servicedis" interface="org.societies.api.internal.servicelifecycle.IServiceDiscovery">
 	</osgi:reference>
 
 </beans>

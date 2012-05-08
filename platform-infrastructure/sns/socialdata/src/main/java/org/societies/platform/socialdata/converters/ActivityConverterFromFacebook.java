@@ -23,6 +23,9 @@ public class ActivityConverterFromFacebook implements ActivityConverter {
 	
 	public static final String DATA					=	"data";
 	public static final String ID					=	"id";
+	public static final String POST					=	"post";
+	private static final String STORY 				=   "story";
+	private static final String CAPTION 			=   "caption";
 	
 	
 	private static final String AUTHOR_NAME 		= "name";
@@ -37,41 +40,74 @@ public class ActivityConverterFromFacebook implements ActivityConverter {
 	private static final String ACTIONLINKS 		= "actionLinks";
 	
 	
+	
 	String		imageUrl   	 = "https://graph.facebook.com/FBID/picture?type=normal&access_token=";      
 	String		previewUrl	 = "https://graph.facebook.com/OBJECTID/picture?type=normal&access_token=";
 	
 	@Override
 	public List<ActivityEntry> load(String data) {
-			
+		
+		System.out.println("Parsing DATA:\n"+data);
+		
 		ArrayList<ActivityEntry> activities = new ArrayList<ActivityEntry>();
 		JSONArray elements;
 		
+		ActivityObject providerObj = new ActivityObjectImpl();
+		providerObj.setContent("facebook");
+		providerObj.setUrl("www.facebook.com");
+		providerObj.setId("facebook");
+		providerObj.setDisplayName("Facebook");
+		
 		try {
+			
+			
 			JSONObject jsonData = new JSONObject(data);
 			elements = new JSONArray(jsonData.getString(DATA));
 			
 			for (int i=0; i<elements.length(); i++){
 				JSONObject elm = elements.getJSONObject(i);
+				
+				//System.out.println("ANALIZZO:"+elm.toString());
 				ActivityEntry entry = new ActivityEntryImpl();
-				entry.setId(elm.getString(ID));
+				entry.setId("facebook:"+elm.getString(ID));
 				entry.setActor(setActor(elm.getString(FROM)));
-				if (elm.has(MESSAGE)) entry.setContent(elm.getString(MESSAGE));
+				
 				if (elm.has(ICON)) 	  entry.setIcon(getIcon(elm));
-				entry.setVerb(elm.getString(TYPE));
+				
+				if (elm.has(MESSAGE)) 
+					entry.setContent(elm.getString(MESSAGE));
+				else if (elm.has(STORY))
+					entry.setContent(elm.getString(STORY));
+				else if (elm.has(CAPTION)){
+					entry.setContent(elm.getString(CAPTION));
+				}
+				//else entry.setContent("???");
+				
+				
+				entry.setVerb(POST);
 				entry.setUpdated(elm.getString(UPDATED_TIME));
 				entry.setPublished(elm.getString(CREATED_TIME));
-				
+			
+				ActivityObject aObj = new ActivityObjectImpl();
+				aObj.setObjectType(genType(elm.getString(TYPE)));
+				if (elm.has(LINK)) aObj.setUrl(elm.getString(LINK));
+				entry.setObject(aObj);
 			
 				ArrayList<ActionLink> actionLinks = new ArrayList<ActionLink>();
 				ExtendableBean actionlinksEB= new ExtendableBeanImpl();
 				actionlinksEB.put(ACTIONLINKS, actionLinks);
 				entry.setOpenSocial(actionlinksEB);
 				
-			
-				
-				
-				if (elm.has(LINK)) 	entry.setUrl(elm.getString(LINK));
 				if (elm.has(APPLICATION)) entry.setProvider(setProvider(elm.getString(APPLICATION)));
+				
+				
+				
+				entry.setProvider(providerObj);
+				
+				//System.out.println("ADD id:"+entry.getId() + " from:"+entry.getActor().getDisplayName() + " verb:"+entry.getVerb() + " content:"+entry.getContent());
+				activities.add(entry);
+				
+				
 			}
 			
 			
@@ -82,6 +118,17 @@ public class ActivityConverterFromFacebook implements ActivityConverter {
 		
 		return activities;
 		
+	}
+
+
+
+
+	private String genType(String string) {
+		if ("photo".equals(string)) return "image";
+		else if ("link".equals(string)) return "bookmark";
+		else if ("status".equals(string)) return "note";
+		else return string.toLowerCase();
+ 		
 	}
 
 

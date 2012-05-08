@@ -24,12 +24,20 @@
  */
 package org.societies.api.cis.management;
 
+import org.societies.utilities.annotations.SocietiesExternalInterface;
+import org.societies.utilities.annotations.SocietiesExternalInterface.SocietiesInterfaceType;
+
 /**
  * This interface represents the CISs that are owned by this CSS.
  * 
  * @author Babak.Farshchian@sintef.no
  *
  */
+/**
+ * Empty interface?
+ * MISSING_JAVADOCS
+ */
+@SocietiesExternalInterface(type = SocietiesInterfaceType.PROVIDED)
 public interface ICisOwned extends ICisRecord {
 
 }

@@ -14,14 +14,18 @@
        configuration file so that this file can easily be used
        for integration testing outside of an OSGi environment -->
        <bean id="xcCommunication" 
-       		 class="org.societies.comm.xmpp.xc.impl.XCCommunicationMgr" 
+       		 class="org.societies.comm.xmpp.xc.impl.XCCommunicationMgr"
+       		 init-method="loginFromConfig"
        		 destroy-method="UnRegisterCommManager">
                 <constructor-arg value="${host}"/>
                 <constructor-arg value="${subDomain}"/>
                 <constructor-arg value="${secretKey}"/>
+                <constructor-arg value="${daNode}"/>
         </bean>
         
-        <bean id="cisCommMgrFactory" class="org.societies.comm.xmpp.xc.impl.CISCommunicationMgrFactoryImpl">
+        <bean id="cisCommMgrFactory" 
+        	class="org.societies.comm.xmpp.xc.impl.CISCommunicationMgrFactoryImpl"
+        	destroy-method="destroyAllConnections">
         	<constructor-arg ref="xcCommunication"/>
             <constructor-arg value="${secretKey}"/>
         </bean>

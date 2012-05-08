@@ -33,10 +33,23 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.societies.activity.ActivityFeed;
 import org.societies.api.cis.management.ICisEditor;
 import org.societies.api.cis.management.ICisManager;
 import org.societies.api.cis.management.ICisOwned;
@@ -52,7 +65,9 @@ import org.societies.api.identity.IIdentityManager;
 
 import org.societies.api.internal.comm.ICISCommunicationMgrFactory;
 import org.societies.cis.manager.CisEditor;
+import org.societies.cis.persistance.IPersistanceManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 
 
@@ -60,6 +75,8 @@ import org.societies.api.schema.cis.manager.Community;
 import org.societies.api.schema.cis.manager.Communities;
 import org.societies.api.schema.cis.manager.CommunityManager;
 import org.societies.api.schema.cis.manager.Create;
+import org.societies.api.schema.cis.manager.Delete;
+import org.societies.api.schema.cis.manager.DeleteNotification;
 import org.societies.api.schema.cis.manager.SubscribedTo;
 
 
@@ -70,15 +87,30 @@ import org.societies.api.schema.cis.manager.SubscribedTo;
 /**
  * @author Thomas Vilarinho (Sintef)
 */
+
 @Component
 public class CisManager implements ICisManager, IFeatureServer{
+
+	
 
 	Set<CisEditor> ownedCISs; 
 	ICISCommunicationMgrFactory ccmFactory;
 	IIdentity cisManagerId;
 	ICommManager CSSendpoint;
 	Set<CisRecord> subscribedCISs;
+	@Autowired private static SessionFactory sessionFactory;
 	
+	public void startup(){
+		ActivityFeed ret = null;
+	
+		Session session = sessionFactory.openSession();
+		//getting owned CISes
+		Query q = session.createQuery("select o from org_societies_cis_manager_CisEditor o");
+		this.ownedCISs = (Set<CisEditor>) q.list();
+		q = session.createQuery("select s from org_societies_cis_manager_CisRecord s");
+		this.subscribedCISs = (Set<CisRecord>) q.list();
+	}
+
 	private final static List<String> NAMESPACES = Collections
 			//.unmodifiableList( Arrays.asList("http://societies.org/api/schema/cis/manager",
 				//		  		"http://societies.org/api/schema/cis/community"));
@@ -108,7 +140,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 			
 			LOG.info("listener registered");
 
-			ownedCISs = new HashSet<CisEditor>();	
+			setOwnedCISs(new HashSet<CisEditor>());	
 			subscribedCISs = new HashSet<CisRecord>();
 
 	}
@@ -133,7 +165,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 		String host = this.CSSendpoint.getIdManager().getThisNetworkNode().getDomain();
 		String password = "password.thomas.local";
 
-		return this.createCis(creatorCssId, cisId, host, password);
+		return null;//this.createCis(creatorCssId, cisId, host, password);
 	}
 	
 	
@@ -159,7 +191,47 @@ public class CisManager implements ICisManager, IFeatureServer{
 	
 	
 	@Override
-	public ICisOwned createCis(String cssId, String cssPassword, String cisName, String cisType, int mode) {
+	public Future<ICisOwned> createCis(String cssId, String cssPassword, String cisName, String cisType, int mode) {
+			ICisOwned i = this.localCreateCis(cssId, cssPassword, cisName, cisType, mode);
+			return new AsyncResult<ICisOwned>(i);
+		
+	}
+	
+	
+	
+	private CisEditor getOwnedCisByJid(String jid){
+		Iterator<CisEditor> it = getOwnedCISs().iterator();
+		 
+		while(it.hasNext()){
+			 CisEditor element = it.next();
+			 if (element.getCisRecord().getCisId().equals(jid))
+				 return element;
+	     }
+		return null;
+		
+	}
+	
+	
+	// local version of the deleteCIS
+	private boolean deleteOwnedCis(String cssId, String cssPassword, String cisJid){
+		// TODO: how do we check fo the cssID/pwd?
+		
+		boolean ret = true;
+		if(getOwnedCISs().contains(new CisEditor(new CisRecord(cisJid)))){
+			CisEditor cis = this.getOwnedCisByJid(cisJid);
+			ret = cis.deleteCIS();
+			ret = ret && getOwnedCISs().remove(cis);
+		}
+		
+		return ret;
+	}
+	
+
+	
+	
+	
+	// local version of the createCis
+	private ICisOwned localCreateCis(String cssId, String cssPassword, String cisName, String cisType, int mode) {
 		// TODO: how do we check fo the cssID/pwd?
 		//if(cssId.equals(this.CSSendpoint.getIdManager().getThisNetworkNode().getJid()) == false){ // if the cssID does not match with the host owner
 		//	LOG.info("cssID does not match with the host owner");
@@ -167,8 +239,9 @@ public class CisManager implements ICisManager, IFeatureServer{
 		//}
 		// TODO: review this logic as maybe I should probably check if it exists before creating
 		
-		CisEditor cis = new  CisEditor(cssId, cisName, cisType, mode,this.ccmFactory);		
-		if (ownedCISs.add(cis)){
+		CisEditor cis = new  CisEditor(cssId, cisName, cisType, mode,this.ccmFactory);
+		this.persist(cis);
+		if (getOwnedCISs().add(cis)){
 			ICisOwned i = cis.getCisRecord();
 			return i;
 		}else{
@@ -177,15 +250,21 @@ public class CisManager implements ICisManager, IFeatureServer{
 		
 	}
 
-	
-	public boolean subscribeToCis(ICisRecord i) {
+	// internal method used to register that the user has subscribed into a CIS
+	// it is triggered by the subscription notification on XMPP
+	private boolean subscribeToCis(ICisRecord i) {
 
 		this.subscribedCISs.add(new CisRecord(i.getCisId()));
 		return true;
 		
 	}
 
-	
+	private void persist(Object o){
+		Session s = sessionFactory.openSession();
+		Transaction t = s.beginTransaction();
+		s.save(o);
+		t.commit();
+	}
 	/**
 	 * Create a CIS Editor with default settings and returns a CIS Record 
 	 * Function to be called from the XMPP or to be used by the 
@@ -199,7 +278,9 @@ public class CisManager implements ICisManager, IFeatureServer{
 	 * 
 	 */
 	
-	private CisRecord createCis(String creatorCssId, String cisId, String host, String password) {
+	/*not being used anylonger
+	 * 
+	 * private CisRecord createCis(String creatorCssId, String cisId, String host, String password) {
 		//TODO: check if 
 		// cIs already exist in the database or if this is a new CIS
 		CisEditor cis = new  CisEditor(creatorCssId,
@@ -208,7 +289,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 			return cis.getCisRecord();
 		else
 			return null;
-	}
+	}*/
 
 
 
@@ -216,7 +297,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 		
 		List<CisRecord> l = new ArrayList<CisRecord>();
 
-		Iterator<CisEditor> it = ownedCISs.iterator();
+		Iterator<CisEditor> it = getOwnedCISs().iterator();
 		 
 		while(it.hasNext()){
 			 CisEditor element = it.next();
@@ -232,6 +313,8 @@ public class CisManager implements ICisManager, IFeatureServer{
 		List<CisRecord> l = new ArrayList<CisRecord>(this.subscribedCISs);
 		return l;
 	}
+
+
 
 	
 	
@@ -270,7 +353,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 				if(ownerJid != null && ownerPassword != null && cisType != null && cisName != null &&  create.getMembershipMode()!= null){
 					int cisMode = create.getMembershipMode().intValue();
 
-					ICisOwned icis = createCis(ownerJid, ownerPassword, cisName, cisType, cisMode);
+					ICisOwned icis = localCreateCis(ownerJid, ownerPassword, cisName, cisType, cisMode);
 
 					
 					create.setCommunityJid(icis.getCisId());
@@ -322,22 +405,39 @@ public class CisManager implements ICisManager, IFeatureServer{
 						 //LOG.info("CIS with id " + element.getCisRecord().getCisId());
 				     }
 				}
-			
-				
 				
 				return com;
 
 			}
+				// END OF LIST
+				
+			// DELETE CIS
+			if (c.getDelete() != null) {
+
+				LOG.info("delete CIS received");
+				String senderjid = stanza.getFrom().getBareJid();
+				LOG.info("sender JID = " + senderjid);
+				
+				//TODO: check if the sender is allowed to delete a CIS
+				
+				Delete delete = c.getDelete();
+				Delete d2 = new Delete();
+				
+				if(!this.deleteOwnedCis(senderjid, "", delete.getCommunityJid()))
+					d2.setValue("error"); // TODO: replace for a proper XMPP error message
+
+				c.setDelete(d2);
+				return c;
+			}
+			// END OF DELETE
+				
+
 			if (c.getConfigure() != null) {
 				LOG.info("configure received");
 				return c;
 			}
 
 			
-			if (c.getDelete() != null) {
-				LOG.info("delete received");
-				return c;
-			}
 		}
 		return null;
 
@@ -359,11 +459,21 @@ public class CisManager implements ICisManager, IFeatureServer{
 
 			CommunityManager c = (CommunityManager) payload;
 
-			if (c.getSubscribedTo()!= null) {
+			// treating getSubscribedTo notifications
+			if (c.getNotification().getSubscribedTo()!= null) {
 				LOG.info("subscribedTo received");
-				SubscribedTo s = (SubscribedTo) c.getSubscribedTo();
+				SubscribedTo s = (SubscribedTo) c.getNotification().getSubscribedTo();
 				CisRecord r = new CisRecord(s.getCisJid());
 				this.subscribeToCis(r);
+				return;
+			}
+			
+			// treating delete notifications
+			if (c.getNotification().getDeleteNotification() != null) {
+				LOG.info("delete notification received");
+				DeleteNotification d = (DeleteNotification) c.getNotification().getDeleteNotification();
+				if (!this.subscribedCISs.remove(new CisRecord(d.getCommunityJid())))
+					LOG.info("CIS is not part of the list of subscribed CISs");
 				return;
 			}
 		}
@@ -381,9 +491,32 @@ public class CisManager implements ICisManager, IFeatureServer{
 
 
 	@Override
-	public Boolean deleteCis(String arg0, String arg1, String arg2) {
+	public boolean deleteCis(String cssId, String cssPassword, String cisId) {
 		// TODO Auto-generated method stub
-		return null;
+		return 	this.deleteOwnedCis(cssId, cssPassword, cisId);
+	}
+
+	@Override
+	public List<ICisRecord> getCisList(){
+		
+		// add subscribed CIS to the list to be returned
+		List<ICisRecord> l = new ArrayList<ICisRecord>();
+		l.addAll(subscribedCISs);
+
+		
+		// add owned CIS to the list to be returned
+		List<ICisRecord> l2 = new ArrayList<ICisRecord>();
+
+		Iterator<CisEditor> it = getOwnedCISs().iterator();
+		 
+		while(it.hasNext()){
+			 CisEditor element = it.next();
+			 l2.add(element.getCisRecord());
+			 //LOG.info("CIS with id " + element.getCisRecord().getCisId());
+	     }
+		l.addAll(l2);
+		
+		return l;
 	}
 
 
@@ -421,7 +554,7 @@ public class CisManager implements ICisManager, IFeatureServer{
 	public ICisRecord getCis(String cssId, String cisId) {
 		
 		// first we check it on the owned CISs		
-		Iterator<CisEditor> it = ownedCISs.iterator();
+		Iterator<CisEditor> it = getOwnedCISs().iterator();
 		while(it.hasNext()){
 			 CisEditor element = it.next();
 			 if (element.getCisId().equals(cisId))
@@ -439,8 +572,22 @@ public class CisManager implements ICisManager, IFeatureServer{
 		
 		return null;
 	}
-	
-	
 
+	public Set<CisEditor> getOwnedCISs() {
+		return ownedCISs;
+	}
+
+	public void setOwnedCISs(Set<CisEditor> ownedCISs) {
+		this.ownedCISs = ownedCISs;
+	}
+	
+	
+	public Set<CisRecord> getSubscribedCISs() {
+		return subscribedCISs;
+	}
+
+	public void setSubscribedCISs(Set<CisRecord> subscribedCISs) {
+		this.subscribedCISs = subscribedCISs;
+	}
 
 }

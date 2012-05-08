@@ -36,10 +36,15 @@ import org.slf4j.LoggerFactory;
 import org.societies.api.css.directory.ICssDirectoryRemote;
 import org.societies.api.internal.css.management.CSSManagerEnums;
 import org.societies.api.internal.css.management.ICSSLocalManager;
+import org.societies.api.internal.css.management.ICSSRemoteManager;
 import org.societies.api.schema.css.directory.CssAdvertisementRecord;
 import org.societies.api.schema.cssmanagement.CssInterfaceResult;
 import org.societies.api.schema.cssmanagement.CssNode;
 import org.societies.api.schema.cssmanagement.CssRecord;
+import org.societies.api.schema.cssmanagement.CssRequest;
+import org.societies.api.schema.cssmanagement.CssRequestOrigin;
+import org.societies.api.schema.cssmanagement.CssRequestStatusType;
+import org.societies.api.schema.cssmanagement.CssAdvertisementRecordDetailed;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.AsyncResult;
 import org.societies.api.internal.css.cssRegistry.ICssRegistry;
@@ -73,6 +78,7 @@ public class CSSManager implements ICSSLocalManager {
 	private ICssRegistry cssRegistry;
 	private ICssDirectoryRemote cssDirectoryRemote;
 	private IServiceDiscovery serviceDiscovery;
+	private ICSSRemoteManager cssManagerRemote;
 	
 	private CssRecord cssRecord;
 	
@@ -227,7 +233,6 @@ public class CSSManager implements ICSSLocalManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	/**
 	 * Requires that CssRecord parameter has one node in its collection and that 
@@ -245,13 +250,10 @@ public class CSSManager implements ICSSLocalManager {
 		result.setProfile(profile);
 		result.setResultStatus(false);
 
-		CssRecord record;
-		try {
-			record = this.cssRegistry.getCssRecord();
 
-			if (profile.getCssIdentity().equals(record.getCssIdentity())) {
+		if (profile.getCssIdentity().equals(this.cssRecord.getCssIdentity())) {
 				// remove new node to login to cloud CssRecord
-				for (Iterator<CssNode> iter = record.getCssNodes().iterator(); iter
+				for (Iterator<CssNode> iter = this.cssRecord.getCssNodes().iterator(); iter
 						.hasNext();) {
 					CssNode node = (CssNode) iter.next();
 					CssNode logoutNode = profile.getCssNodes().get(0);
@@ -261,18 +263,59 @@ public class CSSManager implements ICSSLocalManager {
 						break;
 					}
 				}
-				// update the CSS registry
-				this.cssRegistry.updateCssRecord(record);
 
-				result.setProfile(record);
+				result.setProfile(this.cssRecord);
 				result.setResultStatus(true);
-			}
-		} catch (CssRegistrationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
+	
 		return new AsyncResult<CssInterfaceResult>(result);
 	}
+
+//	@Override
+//	/**
+//	 * Requires that CssRecord parameter has one node in its collection and that 
+//	 * the node corresponds to the node being logged out.
+//	 */
+//	public Future<CssInterfaceResult> logoutCSS(CssRecord profile) {
+//		LOG.debug("Calling logoutCSS");
+//
+//		Dbc.require("CssRecord parameter cannot be null", profile != null);
+//		Dbc.require("Cssrecord parameter must contain CSS identity",
+//				profile.getCssIdentity() != null
+//						&& profile.getCssIdentity().length() > 0);
+//
+//		CssInterfaceResult result = new CssInterfaceResult();
+//		result.setProfile(profile);
+//		result.setResultStatus(false);
+//
+//		CssRecord record;
+//		try {
+//			record = this.cssRegistry.getCssRecord();
+//
+//			if (profile.getCssIdentity().equals(record.getCssIdentity())) {
+//				// remove new node to login to cloud CssRecord
+//				for (Iterator<CssNode> iter = record.getCssNodes().iterator(); iter
+//						.hasNext();) {
+//					CssNode node = (CssNode) iter.next();
+//					CssNode logoutNode = profile.getCssNodes().get(0);
+//					if (node.getIdentity().equals(logoutNode.getIdentity())
+//							&& node.getType() == logoutNode.getType()) {
+//						iter.remove();
+//						break;
+//					}
+//				}
+//				// update the CSS registry
+//				this.cssRegistry.updateCssRecord(record);
+//
+//				result.setProfile(record);
+//				result.setResultStatus(true);
+//			}
+//		} catch (CssRegistrationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return new AsyncResult<CssInterfaceResult>(result);
+//	}
 
 	@Override
 	public Future<CssInterfaceResult> logoutXMPPServer(CssRecord profile) {
@@ -544,4 +587,231 @@ public class CSSManager implements ICSSLocalManager {
 		this.serviceDiscovery = serviceDiscovery;
 	}
 
+	
+	/**
+	 * @return the cssManagerRemote
+	 */
+	public ICSSRemoteManager getCssManagerRemote() {
+		return cssManagerRemote;
+	}
+
+
+
+	/**
+	 * @param cssManagerRemote the cssManagerRemote to set
+	 */
+	public void setCssManagerRemote(ICSSRemoteManager cssManagerRemote) {
+		this.cssManagerRemote = cssManagerRemote;
+	}
+
+
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#
+	 * updateAdvertisementRecord
+	 * (org.societies.api.schema.css.directory.CssAdvertisementRecord,
+	 * org.societies.api.schema.css.directory.CssAdvertisementRecord)
+	 */
+	@Override
+	public Future<List<CssRequest>> findAllCssRequests() {
+		List<CssRequest> recordList = new ArrayList<CssRequest>();
+
+		//TODO:
+		try {
+			recordList = cssRegistry.getCssRequests();
+		} catch (CssRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return new AsyncResult<List<CssRequest>>(recordList);
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#
+	 * updateAdvertisementRecord
+	 * (org.societies.api.schema.css.directory.CssAdvertisementRecord,
+	 * org.societies.api.schema.css.directory.CssAdvertisementRecord)
+	 */
+	@Override
+	public Future<List<CssRequest>> findAllCssFriendRequests() {
+		List<CssRequest> recordList = new ArrayList<CssRequest>();
+
+		//TODO:
+		try {
+			recordList = cssRegistry.getCssFriendRequests();
+		} catch (CssRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return new AsyncResult<List<CssRequest>>(recordList);
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#
+	 * updateAdvertisementRecord
+	 * (org.societies.api.schema.css.directory.CssAdvertisementRecord,
+	 * org.societies.api.schema.css.directory.CssAdvertisementRecord)
+	 */
+	@Override
+	public void updateCssRequest(CssRequest request) {
+	
+		//TODO: This is our resp0onse to a request by other css
+		//we can acept, ignored etc
+		try {
+			cssRegistry.updateCssRequestRecord(request);
+		} catch (CssRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		
+
+
+		// We only want to sent messages to remote Css's for this function if we initiated the call locally
+		if (request.getOrigin() == CssRequestOrigin.LOCAL)
+		{
+			
+			// If we have denied the requst , we won't sent message,it will just remain at pending in remote cs db
+			// otherwise send message to remote css
+			if (request.getRequestStatus() != CssRequestStatusType.DENIED )
+			{
+				//called updateCssFriendRequest on remote
+				request.setOrigin(CssRequestOrigin.REMOTE);
+				cssManagerRemote.updateCssFriendRequest(request);
+			}	
+		}
+		
+	}
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#
+	 * updateAdvertisementRecord
+	 * (org.societies.api.schema.css.directory.CssAdvertisementRecord,
+	 * org.societies.api.schema.css.directory.CssAdvertisementRecord)
+	 */
+	@Override
+	public void updateCssFriendRequest(CssRequest request) {
+	
+		//TODO: This is called either locally or remotle
+		//Locally, we can cancel pending request, or leave css's
+		// remotely, it will be an accepted of the request we sent
+		try {
+			cssRegistry.updateCssFriendRequestRecord(request);
+		} catch (CssRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	
+		// If this was initiated locally then inform remote css
+		// We only want to sent messages to remote Css's for this function if we initiated the call locally
+		if (request.getOrigin() == CssRequestOrigin.LOCAL)
+		{
+			
+			// If we have denied the requst , we won't sent message,it will just remain at pending in remote cs db
+			// otherwise send message to remote css
+
+				//called updateCssFriendRequest on remote
+				request.setOrigin(CssRequestOrigin.REMOTE);
+				cssManagerRemote.updateCssRequest(request);
+	
+		}
+		
+		
+				
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#sendCssFriendRequest(java.lang.String)
+	 */
+	@Override
+	public void sendCssFriendRequest(String cssFriendId) {
+		// TODO Auto-generated method stub
+		
+		
+		CssRequest request = new CssRequest();
+		request.setCssIdentity(cssFriendId);
+		//TODO : check if it exists first
+		request.setRequestStatus(CssRequestStatusType.PENDING);
+		try {
+			cssRegistry.updateCssFriendRequestRecord(request);
+		} catch (CssRegistrationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// This will always be initalliated locally so no need to check origin
+		// db updated ow send it to friend and forget about it
+		//cssManagerRemote.se
+		cssManagerRemote.sendCssFriendRequest(cssFriendId);
+		
+		
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.societies.api.internal.css.management.ICSSLocalManager#
+	 * updateAdvertisementRecord
+	 * (org.societies.api.schema.css.directory.CssAdvertisementRecord,
+	 * org.societies.api.schema.css.directory.CssAdvertisementRecord)
+	 */
+	@Override
+	public Future<List<CssAdvertisementRecordDetailed>> getCssAdvertisementRecordsFull() {
+		List<CssAdvertisementRecord> recordList = new ArrayList<CssAdvertisementRecord>();
+		List<CssAdvertisementRecordDetailed> cssDetailList = new ArrayList<CssAdvertisementRecordDetailed>();
+
+		// first get all the cssdirectory records
+		CssDirectoryRemoteClient callback = new CssDirectoryRemoteClient();
+
+		getCssDirectoryRemote().findAllCssAdvertisementRecords(callback);
+		recordList = callback.getResultList();
+		
+		CssRequest cssRequest;
+		CssAdvertisementRecordDetailed adDetailed = null;
+		// now compare them to our css Friends
+		for (CssAdvertisementRecord cssAdd : recordList) {
+			try {
+				
+				adDetailed = new CssAdvertisementRecordDetailed();
+				adDetailed.setResultCssAdvertisementRecord(cssAdd);
+				adDetailed.setStatus(CssRequestStatusType.NOTREQUESTED); //default!
+				
+				cssRequest = cssRegistry.getCssFriendRequest(cssAdd.getId());
+				
+				if (cssRequest != null)
+				{
+					
+					adDetailed.setStatus(cssRequest.getRequestStatus()); 
+				}
+
+				cssDetailList.add(adDetailed);
+				
+				
+
+
+			} catch (CssRegistrationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+	}
+	
+		return new AsyncResult<List<CssAdvertisementRecordDetailed>>(cssDetailList);
+		
+	}
 }

@@ -25,31 +25,18 @@
 
 package org.societies.orchestration.EgocentricCommunityAnalyser.test;
 
+import static org.mockito.Mockito.mock;
+
 import java.util.HashMap;
+import java.util.concurrent.Future;
 
-import junit.framework.Assert;
-
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
-
-import static org.mockito.Mockito.*;
-
-import org.societies.orchestration.EgocentricCommunityAnalyser.impl.EgocentricCommunityConfigurationManager;
-import org.societies.api.identity.IIdentity;
-import org.societies.api.context.model.CtxEntityIdentifier;
-import org.societies.api.mock.EntityIdentifier;
-
-import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
-
-import org.societies.api.cis.management.ICisRecord;
 import org.societies.api.cis.management.ICisManager;
 import org.societies.api.cis.management.ICisOwned;
-import org.societies.api.cis.management.ICisSubscribed;
-import org.societies.api.cis.management.ICisEditor;
-import org.societies.api.cis.management.ICisActivity;
-import org.societies.api.cis.management.ICisActivityFeed;
-
+import org.societies.api.cis.management.ICisRecord;
+import org.societies.api.context.model.CtxEntityIdentifier;
+import org.societies.api.identity.IIdentity;
+import org.societies.orchestration.EgocentricCommunityAnalyser.impl.EgocentricCommunityConfigurationManager;
 import org.societies.orchestration.api.ISuggestedCommunityAnalyser;
 
 /**
@@ -64,20 +51,26 @@ public class EgocentricCommunityConfigurationManagerTest {
 	
 	private EgocentricCommunityConfigurationManager egocentricCommunityConfigurationManager;
 	private ICisManager cisManager;
+	private ISuggestedCommunityAnalyser suggestedCommunityAnalyser;
 	
-	//@Test
+	@Test
     public void testIdentifyCissToConfigure() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
+    	cisManager = mock(ICisManager.class);
+    	suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
     	
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
-		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
+		
+		
 		
     	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
-		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)
@@ -86,19 +79,24 @@ public class EgocentricCommunityConfigurationManagerTest {
 		
 	}
     
-  //@Test
+  @Test
     public void testMergeCiss() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
-    	
+		cisManager = mock(ICisManager.class);
+		suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
+		
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
 		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
 		
-    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
 		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)
@@ -107,19 +105,24 @@ public class EgocentricCommunityConfigurationManagerTest {
 		
 	}
     
-  //@Test
+  @Test
     public void testSplitCiss() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
-    	
+		cisManager = mock(ICisManager.class);
+		suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
+		
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
 		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
 		
-    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
 		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)
@@ -128,19 +131,24 @@ public class EgocentricCommunityConfigurationManagerTest {
 		
 	}
     
-  //@Test
+  @Test
     public void testRemoveCsssFromCis() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
-    	
+		cisManager = mock(ICisManager.class);
+		suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
+		
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
 		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
 		
-    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
 		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)
@@ -149,19 +157,24 @@ public class EgocentricCommunityConfigurationManagerTest {
 		
 	}
     
-  //@Test
+  @Test
     public void testConfigureCisOwner() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
-    	
+		cisManager = mock(ICisManager.class);
+		suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
+		
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
 		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
 		
-    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
 		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)
@@ -170,19 +183,24 @@ public class EgocentricCommunityConfigurationManagerTest {
 		
 	}
     
-  //@Test
+  @Test
     public void testConfigureCisAdministrators() {
 		
     	IIdentity ownerId = mock(IIdentity.class); //James Jents CSS
 		CtxEntityIdentifier entityId = new CtxEntityIdentifier(ownerId.toString(), "James Jents", new Long(1));
-    	
+		cisManager = mock(ICisManager.class);
+		suggestedCommunityAnalyser = mock(ISuggestedCommunityAnalyser.class);
+		
 		//create CIS for James where James himself has been inactive for 1 year.
 	    
 		//CisRecord jamesCisRecord = cisManager.createCis("James", "James CIS");
 		
-    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+		Future<ICisOwned> jamesCisRecord = cisManager.createCis(ownerId.toString(), "James password", "James CIS", "generic type", 0);
 		
-		egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
+    	egocentricCommunityConfigurationManager = new EgocentricCommunityConfigurationManager(ownerId, "CSS");
+    	egocentricCommunityConfigurationManager.setCisManager(cisManager);
+    	egocentricCommunityConfigurationManager.setSuggestedCommunityAnalyser(suggestedCommunityAnalyser);
+    	egocentricCommunityConfigurationManager.identifyCissToConfigure(new HashMap<IIdentity, String>());
 		
 		//James should have been suggested to leave the CIS.
 		// (No members list function in CisRecord API yet)

@@ -25,6 +25,7 @@
 
 package org.societies.orchestration.EgocentricCommunityAnalyser.impl;
 
+import org.societies.api.internal.css.devicemgmt.devicemanager.IDeviceManager;
 import org.societies.api.internal.css.directory.ICssDirectory;
 
 import static org.mockito.Mockito.*;
@@ -43,8 +44,8 @@ import org.societies.api.cis.management.ICisManager;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.cis.management.ICisSubscribed;
 import org.societies.api.cis.management.ICisEditor;
-import org.societies.api.cis.management.ICisActivity;
-import org.societies.api.cis.management.ICisActivityFeed;
+import org.societies.api.activity.IActivity;
+import org.societies.api.activity.IActivityFeed;
 //import org.societies.api.cis.management.ICis;
 
 import org.societies.api.internal.css.management.CSSRecord;
@@ -53,6 +54,8 @@ import org.societies.api.internal.css.management.ICssActivityFeed;
 import org.societies.api.internal.css.management.ICSSLocalManager;
 import org.societies.api.internal.css.management.ICSSManagerCallback;
 import org.societies.api.internal.css.management.ICSSRemoteManager;
+
+import org.societies.api.schema.context.contextschema.CtxBroker;
 
 import java.util.concurrent.Future;
 
@@ -69,15 +72,22 @@ import java.util.concurrent.Future;
 //import org.societies.api.internal.context.broker.IUserCtxBrokerCallback;
 
 import org.societies.api.internal.context.broker.ICtxBroker;
+import org.societies.api.internal.servicelifecycle.IServiceDiscovery;
+import org.societies.api.internal.servicelifecycle.IServiceDiscoveryCallback;
 import org.societies.api.internal.useragent.feedback.IUserFeedback;
 import org.societies.api.internal.useragent.feedback.IUserFeedbackCallback;
 import org.societies.api.internal.useragent.model.ExpProposalContent;
+import org.societies.api.comm.xmpp.interfaces.ICommCallback;
 import org.societies.api.comm.xmpp.interfaces.ICommManager;
 import org.societies.api.context.model.CtxModelType;
 import org.societies.api.context.model.CtxIdentifier;
 
 import org.societies.api.identity.IIdentity;
+import org.societies.api.identity.IIdentityManager;
 import org.societies.orchestration.api.ISuggestedCommunityAnalyser;
+import org.societies.orchestration.api.SuggestedCommunityAnalyserBean;
+import org.societies.orchestration.api.SuggestedCommunityAnalyserMethodType;
+import org.societies.orchestration.api.SuggestedCommunityAnalyserResultBean;
 //import org.societies.api.comm.xmpp.datatypes.Identity;
 //import org.societies.comm.examples.commsmanager.impl.CommsServer; 
 //import org.societies.comm.xmpp.interfaces.ICommCallback;
@@ -133,11 +143,22 @@ public class EgocentricCommunityConfigurationManager //implements ICommCallback
 	private IUserFeedbackCallback userFeedbackCallback;
     
 	private ISuggestedCommunityAnalyser suggestedCommunityAnalyser;
+	private SuggestedCommunityAnalyserBean suggestedCommunityAnalyserBean;
+	private SuggestedCommunityAnalyserResultBean suggestedCommunityAnalyserResultBean;
+	private SuggestedCommunityAnalyserMethodType suggestedCommunityAnalyserMethodType;
+	
 	private ICisManager cisManager;
 	private ICSSLocalManager cssManager;
 	private ICssActivityFeed activityFeed;
 	
 	private ICommManager commManager;
+    private ICommCallback commCallback;
+    private IIdentityManager identityManager;
+	
+	private IDeviceManager deviceManager;
+	
+	private IServiceDiscovery serviceDiscovery;
+	private IServiceDiscoveryCallback serviceDiscoveryCallback;
 	
 	
 	/*
@@ -170,11 +191,17 @@ public class EgocentricCommunityConfigurationManager //implements ICommCallback
 		ArrayList<ICisRecord> cissToConfigure = new ArrayList<ICisRecord>();
 		HashMap<ICisRecord, ICisRecord> configurationsToCiss = new HashMap<ICisRecord, ICisRecord>();
 		
-		cssManager = mock(ICSSLocalManager.class);
-		activityFeed = mock(ICssActivityFeed.class);
+		//cssManager = mock(ICSSLocalManager.class);
+		//activityFeed = mock(ICssActivityFeed.class);
 		
 		if (linkedCss != null) {
 			//CisRecord[] records = ICisManager.getCisList(/** CISs administrated by the CSS */);
+			ICisRecord record = cisManager.getCis(linkedCss.toString(), "default CIS");
+			//edit out all CIS attributes and add attribute 'owner' or 'administrator'
+			
+			ICisRecord[] listOfUserJoinedCiss = cisManager.getCisList(record);
+			//ICisRecord[] listOfUserJoinedCiss = cisManager.getCisList(new ICisRecord(null, null, null, null, null, it, null, null, null));
+			//ICisRecord[] listOfUserJoinedCiss = new ICisRecord[0];
 		}
 		
 		//if (linkedDomain != null) {
@@ -421,6 +448,38 @@ public class EgocentricCommunityConfigurationManager //implements ICommCallback
     
     public void setCommManager(ICommManager commManager) {
     	this.commManager = commManager;
+    }
+    
+    public ICommCallback getCommCallback() {
+    	return commCallback;
+    }
+    
+    public void setCommCallback(ICommCallback commCallback) {
+    	this.commCallback = commCallback;
+    }
+    
+    public IServiceDiscovery getServiceDiscovery() {
+    	return serviceDiscovery;
+    }
+    
+    public void setServiceDiscovery(IServiceDiscovery serviceDiscovery) {
+    	this.serviceDiscovery = serviceDiscovery;
+    }
+    
+    public IServiceDiscoveryCallback getServiceDiscoveryCallback() {
+    	return serviceDiscoveryCallback;
+    }
+    
+    public void setServiceDiscoveryCallback(IServiceDiscoveryCallback serviceDiscoveryCallback) {
+    	this.serviceDiscoveryCallback = serviceDiscoveryCallback;
+    }
+    
+    public IDeviceManager getDeviceManager() {
+    	return deviceManager;
+    }
+    
+    public void setDeviceManager(IDeviceManager deviceManager) {
+    	this.deviceManager = deviceManager;
     }
     
     /**Returns the list of package names of the message beans you'll be passing*/

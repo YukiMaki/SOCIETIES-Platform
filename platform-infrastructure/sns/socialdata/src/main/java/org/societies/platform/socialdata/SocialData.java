@@ -1,6 +1,8 @@
 package org.societies.platform.socialdata;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +12,9 @@ import org.apache.shindig.social.opensocial.model.Group;
 import org.apache.shindig.social.opensocial.model.Person;
 import org.societies.api.internal.sns.ISocialConnector;
 import org.societies.api.internal.sns.ISocialData;
+import org.societies.platform.FacebookConn.impl.FacebookConnectorImpl;
+import org.societies.platform.FoursquareConnector.impl.FoursquareConnectorImpl;
+import org.societies.platform.TwitterConnector.impl.TwitterConnectorImpl;
 import org.societies.platform.socialdata.converters.ActivityConverter;
 import org.societies.platform.socialdata.converters.ActivityConveterFactory;
 import org.societies.platform.socialdata.converters.FriendsConverter;
@@ -19,7 +24,9 @@ import org.societies.platform.socialdata.converters.GroupConveterFactory;
 import org.societies.platform.socialdata.converters.PersonConverter;
 import org.societies.platform.socialdata.converters.PersonConverterFactory;
 
-public class SocialData implements ISocialData {
+
+
+public class SocialData implements ISocialData{
 
     HashMap<String, ISocialConnector> connectors = new HashMap<String, ISocialConnector>();
     
@@ -29,7 +36,7 @@ public class SocialData implements ISocialData {
     
     Map<String, Object>	 			socialActivities;
     
-    long lastUpate;
+    long lastUpate ;
     
     
     public SocialData(){
@@ -37,9 +44,11 @@ public class SocialData implements ISocialData {
     	socialFriends 			= new HashMap<String, Object>();
     	socialGroups			= new HashMap<String, Object>();
     	socialProfiles			= new HashMap<String, Object>();
-    	
     	socialActivities		= new HashMap<String, Object>();
     	
+    	lastUpate				= new Date().getTime();
+    	
+    	System.out.println("SocialData Bundle is started");
     }
     
 
@@ -48,7 +57,10 @@ public class SocialData implements ISocialData {
 		if (connectors.containsKey(socialConnector.getID())){
 			throw new Exception("this connetor already exists");
 		}
+		
+	
 		connectors.put(socialConnector.getID(), socialConnector);
+
 		log("Add connector "+socialConnector.getID());
 	}
 	
@@ -83,7 +95,13 @@ public class SocialData implements ISocialData {
 
 	@Override
 	public List<Object> getSocialActivity() {
-		return new ArrayList(socialActivities.values());
+		List activities = new ArrayList();
+	    Iterator it = socialActivities.values().iterator();
+	    while (it.hasNext()){
+	    	Collection acts = (Collection)it.next();
+	    	activities.addAll(acts);
+	    }
+		return activities;
 	}
 
 	@Override
@@ -106,17 +124,17 @@ public class SocialData implements ISocialData {
 		while (it.hasNext()){
 			ISocialConnector connector = it.next();
 		    
-			updateProfile(connector);
-			updateFriends(connector);
-			updateGroups(connector);
 			getActivities(connector);
-			
+			updateProfile(connector);
+			updateGroups(connector);
+			updateFriends(connector);
 			/// UPDATE ALL DATA
-			
-			
+	
 		}
 		
-		lastUpate = System.currentTimeMillis();
+		
+		
+		lastUpate = new Date().getTime();
 		
 		
 	}
@@ -143,14 +161,17 @@ public class SocialData implements ISocialData {
 
 
 	private void getActivities(ISocialConnector connector) {
-		ActivityConverter parser = ActivityConveterFactory.getPersonConverter(connector);
-		socialActivities.put(connector.getID(), parser.load(connector.getUserActivities()));
+		
+		ActivityConverter parser = ActivityConveterFactory.getActivityConverter(connector);
+		List<?> activities = parser.load(connector.getUserActivities());
+		socialActivities.put(connector.getID(), activities);
 	}
 
 
 	private void updateFriends(ISocialConnector connector) {
+		
 		FriendsConverter parser = FriendsConveterFactory.getPersonConverter(connector);
-		List<Person> friends = parser.load(connector.getUserProfile());
+		List<Person> friends = parser.load(connector.getUserFriends());
 		Iterator<Person> it = friends.iterator();
 		
 		while (it.hasNext()){
@@ -212,6 +233,34 @@ public class SocialData implements ISocialData {
 		else throw new Exception("Connector not found");
 		
 	}
+
+	@Override
+	public ISocialConnector createConnector(ISocialConnector.SocialNetwork snName, Map<String, String> params) {
+		
+		
+		
+		System.out.println("Create a new connector");
+		switch(snName){
+				case Facebook:   return (ISocialConnector) new FacebookConnectorImpl(params.get(ISocialConnector.AUTH_TOKEN), "test");
+				
+				case twitter:    
+					// Just for now that we don't have a way to use our persona token
+						return (ISocialConnector) new TwitterConnectorImpl();
+					//    return (ISocialConnector) new TwitterConnectorImpl (params.get(ISocialConnector.AUTH_TOKEN), "test");
+				
+				case Foursquare: 
+					
+						// Just for now ...
+					    return (ISocialConnector) new FoursquareConnectorImpl();
+					    //return (ISocialConnector) new FoursquareConnectorImpl(params.get(ISocialConnector.AUTH_TOKEN), "test");
+
+				default : return null;
+		}
+		
+		
+
+	}
  
+	
 
 }

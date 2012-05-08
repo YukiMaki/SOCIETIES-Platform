@@ -37,9 +37,12 @@ import org.societies.api.identity.IIdentity;
 import org.societies.api.internal.personalisation.model.IOutcome;
 import org.societies.api.internal.personalisation.model.PreferenceDetails;
 import org.societies.api.internal.useragent.monitoring.UIMEvent;
+import org.societies.api.osgi.event.CSSEvent;
+import org.societies.api.osgi.event.EventTypes;
+import org.societies.api.osgi.event.IEventMgr;
+import org.societies.api.osgi.event.InternalEvent;
 import org.societies.api.personalisation.model.IAction;
 import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
-import org.societies.comm.xmpp.event.InternalEvent;
 import org.societies.personalisation.UserPreferenceManagement.impl.UserPreferenceManagement;
 import org.societies.personalisation.UserPreferenceManagement.impl.monitoring.UserPreferenceConditionMonitor;
 import org.societies.personalisation.preference.api.UserPreferenceLearning.IC45Learning;
@@ -47,14 +50,13 @@ import org.societies.personalisation.preference.api.model.IC45Consumer;
 import org.societies.personalisation.preference.api.model.IC45Output;
 import org.societies.personalisation.preference.api.model.IPreference;
 import org.societies.personalisation.preference.api.model.IPreferenceTreeModel;
-import org.springframework.context.ApplicationListener;
+import org.societies.api.osgi.event.EventListener;
 
-
-public class MergingManager implements IC45Consumer, ApplicationListener<InternalEvent>{
+public class MergingManager implements IC45Consumer{
 
 
 	private Logger logging = LoggerFactory.getLogger(this.getClass());
-	private Hashtable<IIdentity,Hashtable<IAction, Integer>> counters;
+	private Hashtable<IIdentity,Hashtable<IAction, Integer>> counters = new Hashtable<IIdentity,Hashtable<IAction, Integer>>();;
 
 	private UserPreferenceManagement prefImpl;
 
@@ -68,15 +70,6 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 		this.prefImpl = prefImpl;
 		this.pcm = pcm;
 	}
-
-	public void initialise(){
-		
-		this.counters = new Hashtable<IIdentity,Hashtable<IAction, Integer>>();
-		//this.eventMgr.registerListener(this, new String[]{PSSEventTypes.UIM_USERACTION_EVENT}, null);
-		//this.eventMgr.registerListener(this, new String[]{PSSEventTypes.PROACTIVITY_FEEDBACK}, null);
-		logging.debug("**********************"+this.getClass()+"Initialised **********************");    	
-	}
-
 
 
 
@@ -173,7 +166,7 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 	}
 
 
-	private void processActionReceived(IAction action, IIdentity userId){
+	public void processActionReceived(IIdentity userId, IAction action){
 		if (this.counters.containsKey(userId)){
 			logging.debug(this.getClass().getName()+"hashtable for identity: "+userId.toString()+" exists");
 			Hashtable<IAction, Integer> tempTable = counters.get(userId);
@@ -187,7 +180,7 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 					actionExists = true;
 
 					int counter = tempTable.get(tempAction);
-					this.logging.info("Counter for :"+action.toString()+" is "+counter);
+					this.logging.debug("Counter for :"+action.toString()+" is "+counter);
 					if (counter>=2){
 						this.logging.debug("Counter reached 2, requesting learning and resetting counter");
 						tempTable.put(tempAction, new Integer(0)); //reset counter
@@ -205,7 +198,7 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 					}else{
 						logging.debug(this.getClass().getName()+" incrementing counter for action: "+action.toString());
 						counter ++;
-						this.logging.info("Counter for :"+action.toString()+" is "+counter);
+						this.logging.debug("Counter for :"+action.toString()+" is "+counter);
 						tempTable.put(tempAction, new Integer(counter));
 					}
 				}
@@ -236,7 +229,7 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 	/*
 	 * (non-Javadoc)
 	 * @see org.springframework.context.ApplicationListener#onApplicationEvent(org.springframework.context.ApplicationEvent)
-	 */
+	 
 	@Override
 	public void onApplicationEvent(InternalEvent event) {
 		if (event.getEventNode().equals("UIM_EVENT")){
@@ -245,6 +238,8 @@ public class MergingManager implements IC45Consumer, ApplicationListener<Interna
 		}
 		
 	}
+	
+	*/
 
 
 }

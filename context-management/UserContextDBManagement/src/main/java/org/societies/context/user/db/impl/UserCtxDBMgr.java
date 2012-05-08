@@ -24,17 +24,21 @@
  */
 package org.societies.context.user.db.impl;
 
+import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.event.CtxChangeEvent;
 import org.societies.api.context.model.CtxAssociation;
+import org.societies.api.context.model.CtxAssociationIdentifier;
 import org.societies.api.context.model.CtxAttribute;
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxAttributeValueType;
@@ -45,6 +49,7 @@ import org.societies.api.context.model.CtxModelType;
 import org.societies.api.context.model.CtxEntity;
 import org.societies.api.context.model.IndividualCtxEntity;
 import org.societies.api.identity.IIdentity;
+import org.societies.api.context.model.util.SerialisationHelper;
 
 import org.societies.context.api.event.CtxChangeEventTopic;
 import org.societies.context.api.event.CtxEventScope;
@@ -89,8 +94,26 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	 */
 	@Override
 	public CtxAssociation createAssociation(String type) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
+
+		if (type == null)
+			throw new NullPointerException("type can't be null");
+
+		final CtxAssociationIdentifier identifier = new CtxAssociationIdentifier(this.privateIdtoString, 
+				type, CtxModelObjectNumberGenerator.getNextValue());
+		final CtxAssociation association = new  CtxAssociation(identifier);
+		this.modelObjects.put(association.getId(), association);		
+
+		if (this.ctxEventMgr != null) {
+			this.ctxEventMgr.post(new CtxChangeEvent(association.getId()), 
+					new String[] { CtxChangeEventTopic.CREATED }, CtxEventScope.LOCAL);
+		} else {
+			LOG.warn("Could not send context change event to topics '" 
+					+ CtxChangeEventTopic.CREATED 
+					+ "' with scope '" + CtxEventScope.LOCAL + "': "
+					+ "ICtxEventMgr service is not available");
+		}
+		
+		return association;
 	}
 	
 	/*
@@ -182,16 +205,71 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	}
 
 	@Override
-	public List<CtxIdentifier> lookup(CtxModelType arg0, String arg1) throws CtxException {
+	public List<CtxIdentifier> lookup(CtxModelType modelType, String type) throws CtxException {
 		// TODO Auto-generated method stub
-		return null;
+		
+		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		
+		for (CtxIdentifier identifier : modelObjects.keySet()) {
+			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
+				foundList.add(identifier);
+			}		
+		}
+		return foundList;
 	}
 
 	@Override
-	public List<CtxEntityIdentifier> lookupEntities(String arg0, String arg1, Serializable arg2,
-			Serializable arg3) throws CtxException {
-		// TODO Auto-generated method stub
-		return null;
+	public List<CtxEntityIdentifier> lookupEntities(String entityType,
+			String attribType, Serializable minAttribValue,
+			Serializable maxAttribValue) throws CtxException {
+				
+        final List<CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
+        for (CtxIdentifier identifier : modelObjects.keySet()) {
+            if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
+                    && identifier.getType().equals(attribType)) {
+                final CtxAttribute attribute = (CtxAttribute) modelObjects
+                .get(identifier);
+//                if (attribute.getScope().getType().equals(entityType) && attribute.getValue().equals(minAttribValue)) {
+                if (attribute.getScope().getType().equals(entityType)) {
+                	if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+                		if (attribute.getStringValue()!=null) {
+		                	String valueStr = attribute.getStringValue();
+		                		if(valueStr.compareTo(minAttribValue.toString()) >=0 && valueStr.compareTo(maxAttribValue.toString()) <=0)
+		               				foundList.add(attribute.getScope());                			
+        				}
+                	} else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+                		if(attribute.getIntegerValue()!=null) {
+		               		Integer valueInt = attribute.getIntegerValue();
+		          			if(valueInt.compareTo((Integer) minAttribValue) >=0 && valueInt.compareTo((Integer) maxAttribValue) <=0)
+		               			foundList.add(attribute.getScope());
+                		}
+                	} else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
+                		if(attribute.getDoubleValue()!=null) {
+		               		Double valueDouble = attribute.getDoubleValue();
+		           			if(valueDouble.compareTo((Double) minAttribValue) >= 0 && valueDouble.compareTo((Double) maxAttribValue) <= 0)
+		               			foundList.add(attribute.getScope());                			
+                		}
+                	} else {
+                		byte[] valueBytes;
+                		byte[] minValueBytes;
+                		byte[] maxValueBytes;
+						try {
+							minValueBytes = SerialisationHelper.serialise(minAttribValue);
+							maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
+							valueBytes = SerialisationHelper.serialise(attribute.getBinaryValue());
+							if (Arrays.equals(minValueBytes, maxValueBytes))
+								if (Arrays.equals(valueBytes, minValueBytes))
+									foundList.add(attribute.getScope());
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}                		
+                	}
+                	
+                }
+            }
+        }
+        return foundList;
 	}
 
 	@Override
@@ -228,6 +306,29 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 						+ "': ICtxEventMgr service is not available");
 			}
 		}
+		
+		 if (modelObject instanceof CtxAssociation) {
+
+			   CtxEntity ent = null;
+			   CtxEntityIdentifier entId;
+
+			   // Add association to parent entity
+			   entId = ((CtxAssociation) modelObject).getParentEntity();
+			   if (entId != null)
+			     ent = (CtxEntity) this.retrieve(entId);
+			     if (ent != null)
+			       ent.addAssociation(((CtxAssociation) modelObject).getId());
+
+			    // Add association to child entities
+			    Set<CtxEntityIdentifier> entIds = ((CtxAssociation) modelObject).getChildEntities();
+			    for (CtxEntityIdentifier entIdent : entIds) {
+			    	entIdent = ((CtxAssociation) modelObject).getParentEntity();
+			    	ent = (CtxEntity) this.retrieve(entIdent);
+			    	if (ent != null)
+			    		ent.addAssociation(((CtxAssociation) modelObject).getId());
+			    }
+		}
+			      
 		return modelObject;
 	}	
 }

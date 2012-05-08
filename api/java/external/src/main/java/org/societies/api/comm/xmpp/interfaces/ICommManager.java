@@ -26,8 +26,6 @@
 
 package org.societies.api.comm.xmpp.interfaces;
 
-import java.util.List;
-
 import org.societies.api.comm.xmpp.datatypes.Stanza;
 import org.societies.api.comm.xmpp.datatypes.XMPPNode;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
@@ -48,32 +46,78 @@ import org.societies.api.identity.IIdentityManager;
  *         features in order to include that namespace.
  * 
  */
+/**
+ * MISSING_ANNOTATION
+ */
 public interface ICommManager {
+	/**
+	 * MISSING_JAVADOCS
+	 */
+	public boolean isConnected();
+	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void register(IFeatureServer featureServer) throws CommunicationException;
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void register(ICommCallback messageCallback) throws CommunicationException;
 
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void sendIQGet(Stanza stanza, Object payload,
 			ICommCallback callback) throws CommunicationException;
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void sendIQSet(Stanza stanza, Object payload,
 			ICommCallback callback) throws CommunicationException;
 
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void sendMessage(Stanza stanza, String type, Object payload)
 			throws CommunicationException;
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void sendMessage(Stanza stanza, Object payload)
 			throws CommunicationException;
 
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void addRootNode(XMPPNode newNode);
 
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public void removeRootNode(XMPPNode node);
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public String getInfo(IIdentity entity, String node, ICommCallback callback) throws CommunicationException;
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public String getItems(IIdentity entity, String node, ICommCallback callback) throws CommunicationException;
 	
+	/**
+	 * MISSING_JAVADOCS
+	 */
 	public IIdentityManager getIdManager();
+	
+	/**
+	 * MISSING_JAVADOCS
+	 */
+	public boolean UnRegisterCommManager();
 
 	// void sendResult(? originalPayload, Object resultPayload); //TODO only
 	// needed for asynch IQ handling

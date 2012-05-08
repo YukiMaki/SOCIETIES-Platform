@@ -1,6 +1,11 @@
 package org.societies.platform.socialdata.service;
 
+import org.apache.shindig.social.opensocial.model.Person;
 import org.json.JSONObject;
+import org.societies.api.internal.sns.ISocialConnector;
+import org.societies.platform.socialdata.SocialData;
+import org.societies.platform.socialdata.converters.PersonConverterFromTwitter;
+
 
 
 
@@ -29,26 +34,34 @@ public class JsonToSocialDataService {
 	  }
 	  
 	  public static void main(String[]args){
-//		  System.out.println("Convert JSON to SocialDATA");
-//		  String access_token = "AAAFPIhZAkC90BAJy6bV7hnRJcBs3VZAmr4mtSrdJpszhXO6ZAwNdQfSZAZCDx3VLQql84NefBBp11IrnZCUFGP9H731m4K0RoZCMzQbvZCIcZAAZDZD";
-//		  ISocialConnector c = new FacebookConnectorImpl(access_token, null);
-//		  
-//		  JsonToSocialDataService service = new JsonToSocialDataService();
-//		  try {
-//			
-//			service.setDb(new JSONObject(c.getSocialData(FacebookConnector.ME)));
-//			PersonConverterFromFacebook parser = new PersonConverterFromFacebook();
-//			
-//			Person p = parser.load(service.getDb());
-//			
-//			System.out.println("abaut_me:" + p.getAboutMe());
-//			System.out.println("JSON:" + service.getDb().toString(0));
-//			
-//		  } catch (JSONException e) {
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
+		  
+		  
+		  
+		  SocialData sd= new SocialData();
+		  //System.out.println("Convert JSON to SocialDATA");
+		  String access_token = "";
+		  ISocialConnector c = sd.createConnector(ISocialConnector.SocialNetwork.twitter, null);
+		  
+		  
+		  try {
+			
+			String data = c.getUserProfile();
+			
+			int index=0;
+			PersonConverterFromTwitter parser = new PersonConverterFromTwitter();
+			
+			Person p= parser.load(data);
+			System.out.println("p:"+p.getAboutMe());
+//			Iterator<ActivityEntry> it = list.iterator();
+//			while (it.hasNext()){
+//				ActivityEntry entry = it.next();
+//				System.out.println("-- "+entry.getActor().getDisplayName() + " made a  "+entry.getVerb() + " ? " + entry.getContent());
+//				index++;
+//			}
+		
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		  
 	  }
 	  

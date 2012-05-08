@@ -34,6 +34,8 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.societies.api.context.model.CtxAttribute;
@@ -41,11 +43,13 @@ import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.internal.context.broker.ICtxBroker;
 import org.societies.api.internal.personalisation.model.PreferenceDetails;
+import org.societies.api.osgi.event.IEventMgr;
 import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
 import org.societies.personalisation.UserPreferenceManagement.impl.evaluation.PreferenceConditionExtractor;
 import org.societies.personalisation.UserPreferenceManagement.impl.evaluation.PreferenceEvaluator;
 import org.societies.personalisation.UserPreferenceManagement.impl.evaluation.PrivateContextCache;
 import org.societies.personalisation.UserPreferenceManagement.impl.management.PrivatePreferenceCache;
+import org.societies.personalisation.preference.api.UserPreferenceLearning.IC45Learning;
 import org.societies.personalisation.preference.api.model.IPreference;
 import org.societies.personalisation.preference.api.model.IPreferenceConditionIOutcomeName;
 import org.societies.personalisation.preference.api.model.IPreferenceOutcome;
@@ -60,14 +64,14 @@ public class UserPreferenceManagement{
 	private PrivateContextCache contextCache;
 	private PrivatePreferenceCache preferenceCache;
 	private Hashtable<IPreferenceOutcome, List<CtxIdentifier>> outcomeConditionListTable; 
-	private ICtxBroker broker;	
+	private ICtxBroker ctxBroker;	
 	private IIdentity userId; 
 	
 	public UserPreferenceManagement(IIdentity userId, ICtxBroker broker){
 		this.userId = userId;
-		this.broker = broker;
-		this.contextCache = new PrivateContextCache(this.broker);
-		this.preferenceCache = new PrivatePreferenceCache(this.userId,this.broker);
+		this.ctxBroker = broker;
+		this.contextCache = new PrivateContextCache(this.ctxBroker);
+		this.preferenceCache = new PrivatePreferenceCache(this.userId,this.ctxBroker);
 		outcomeConditionListTable = new Hashtable<IPreferenceOutcome,List<CtxIdentifier>>();
 
 	}
@@ -337,7 +341,7 @@ public class UserPreferenceManagement{
 		PreferenceConditionExtractor pce = new PreferenceConditionExtractor();
 		IPreferenceTreeModel model = this.preferenceCache.getPreference(serviceType, serviceID, preferenceName);
 		if (model==null){
-			this.logging.debug("Preference for "+new Tools(this.broker).convertToKey(serviceType, serviceID.toString(), preferenceName)+" doesn't exist");
+			this.logging.debug("Preference for "+new Tools(this.ctxBroker).convertToKey(serviceType, serviceID.toString(), preferenceName)+" doesn't exist");
 			return new ArrayList<CtxIdentifier>();
 		}
 		List<IPreferenceConditionIOutcomeName> list = pce.extractConditions(model);
@@ -365,4 +369,10 @@ public class UserPreferenceManagement{
 			PreferenceDetails details){
 		return this.preferenceCache.getPreference(details);
 	}
+
+
+	public void emptyContextCache(){
+		this.contextCache = new PrivateContextCache(ctxBroker);
+	}
+
 }

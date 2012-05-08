@@ -7,11 +7,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.shindig.social.core.model.ActivityObjectImpl;
 import org.apache.shindig.social.core.model.AddressImpl;
 import org.apache.shindig.social.core.model.ListFieldImpl;
 import org.apache.shindig.social.core.model.NameImpl;
 import org.apache.shindig.social.core.model.PersonImpl;
 import org.apache.shindig.social.opensocial.model.Account;
+import org.apache.shindig.social.opensocial.model.ActivityObject;
 import org.apache.shindig.social.opensocial.model.Address;
 import org.apache.shindig.social.opensocial.model.ListField;
 import org.apache.shindig.social.opensocial.model.Name;
@@ -45,6 +47,10 @@ public class PersonConverterFromFacebook implements PersonConverter{
 	public static String EMAIL			= "email";
 	public static String PROFILELINK 	= "link";
 	public static String PHOTOS 		= "photos";
+	public static String TURNONS		= "turnOns";
+	public static String INTERESTS		= "interests";
+	public static String MUSIC		    = "music";
+	public static String BOOKS		    = "books";
 	
 	
 	// portable contact ids
@@ -62,10 +68,17 @@ public class PersonConverterFromFacebook implements PersonConverter{
 		person = new PersonImpl();
 		this.rawData = data;
 		
+		ActivityObject providerObj = new ActivityObjectImpl();
+		providerObj.setContent("facebook");
+		providerObj.setUrl("www.facebook.com");
+		providerObj.setId("facebook");
+		providerObj.setDisplayName("Facebook");
+		
 		try{
 			
 			db = new JSONObject(this.rawData);
-			person.setId(db.getString(ID));
+			person.setId("facebook:"+db.getString(ID));
+
 			
 			//if(db.has(UCT)) person.setUtcOffset(db.getLong(UCT));
 			if (db.has(BIO))		 	person.setAboutMe(db.getString(BIO));
@@ -80,6 +93,9 @@ public class PersonConverterFromFacebook implements PersonConverter{
 			if (db.has(GENDER))			person.setGender(gender(db.getString(GENDER)));
 			if (db.has(EMAIL))			person.setEmails(getMails(db.getString(EMAIL)));
 			if (db.has(PHOTOS))			person.setPhotos(getPhotos(db.getString(PHOTOS)));
+			if (db.has(TURNONS))		person.setTurnOns(jarrayToList(db.getString(TURNONS)));
+			if (db.has(MUSIC))		    person.setMusic(jarrayToList(db.getString(MUSIC)));
+			if (db.has(INTERESTS))	    person.setInterests(jarrayToList(db.getString(INTERESTS)));
 										
 			
 		}
@@ -95,6 +111,22 @@ public class PersonConverterFromFacebook implements PersonConverter{
 		return person;
 	}
 	
+	private List<String> jarrayToList(String data) {
+		
+		List<String> list = new ArrayList<String>();
+		try {
+			JSONArray jdata = new JSONArray(data);
+			for(int i=0; i<jdata.length();i++){
+				list.add(jdata.getString(i));
+			}
+			
+		}
+		catch (JSONException e) {
+			
+		}
+		return list;
+	}
+
 	private List<ListField> getPhotos(String data) {
 		List<ListField> photos = new ArrayList<ListField>();
 		try {
@@ -107,6 +139,7 @@ public class PersonConverterFromFacebook implements PersonConverter{
 				photo.setType(p.getString("type"));
 				photo.setValue(p.getString("value"));
 				photos.add(photo);
+				
 				
 			}
 		}
@@ -218,8 +251,8 @@ public class PersonConverterFromFacebook implements PersonConverter{
 			name.setFormatted(getString(NAME));
 		}
 		
-		if (getString(FIRSTNAME)!=null) name.setGivenName(getString(FIRSTNAME));
-		if (getString(FAMILYNAME)!=null) name.setGivenName(getString(FAMILYNAME));
+		if (getString(FIRSTNAME)!=null)  name.setGivenName(getString(FIRSTNAME));
+		if (getString(LASTNAME) !=null) name.setFamilyName(getString(LASTNAME));
 		
 		
 		return name;

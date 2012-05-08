@@ -24,11 +24,21 @@
  */
 package org.societies.api.cis.management;
 
+import java.util.List;
+import java.util.concurrent.Future;
+
+import org.societies.utilities.annotations.SocietiesExternalInterface;
+import org.societies.utilities.annotations.SocietiesExternalInterface.SocietiesInterfaceType;
+
+
+
 
 /**
  * @author Babak.Farshchian@sintef.no
  *
  */
+
+@SocietiesExternalInterface(type = SocietiesInterfaceType.PROVIDED)
 public interface ICisManager {
 	/**
 	 * Create a new CIS for the CSS represented by cssId. Password is needed and is the
@@ -49,7 +59,8 @@ public interface ICisManager {
 	 * @return link to the {@link ICisEditor} representing the new CIS, or 
 	 * null if the CIS was not created.
 	 */
-	ICisOwned createCis(String cssId, String cssPassword, String cisName, String cisType, int mode);
+	Future<ICisOwned> createCis(String cssId, String cssPassword, String cisName, String cisType, int mode);
+	
 	/**
 	 * Delete a specific CIS represented by cisId. The cisId is available in the
 	 * method of {@link ICisEditor} representing the CIS to be deleted. This method
@@ -61,7 +72,7 @@ public interface ICisManager {
 	 * @param cisId The ID of the CIS to be deleted.
 	 * @return true if deleted, false otherwise.
 	 */
-	Boolean deleteCis(String cssId, String cssPassword, String cisId);
+	boolean deleteCis(String cssId, String cssPassword, String cisId);
 	/**
 	 * Get a CIS Record with the ID cisId.
 	 * 
@@ -82,6 +93,14 @@ public interface ICisManager {
 	 * @return Array of CIS Records that match the query.
 	 */
 	ICisRecord[] getCisList(ICisRecord query);
+
+	/**
+	 * Return an array of all the CISs that the user own or participates. 
+	 * 
+	 * @return Array of CIS Records .
+	 */
+	List<ICisRecord> getCisList();
+
 	
 	Boolean requestNewCisOwner(String currentOwnerCssId, String currentOwnerCssPassword,
 		String newOwnerCssId, String cisId);

@@ -24,7 +24,11 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
+/**
+ * Called when HTML page has been loaded
+ * Add custom PhoneGap plugins
+ * N.B. Ensure that res/xml/plugins.xml file is updated
+ */
 function onDeviceReady() {
 	console.log("PhoneGap Loaded, Device Ready");
 	
@@ -37,18 +41,253 @@ function onDeviceReady() {
 		
 		console.log("Register LocalCSSManagerService plugin ");
 		PhoneGap.addPlugin('LocalCSSManagerService', new LocalCSSManagerService());
-	 
+		
+		console.log("Register DeviceStatus Service plugin ");
+		PhoneGap.addPlugin("DeviceStatus", DeviceStatus);
+
 	});
 }
+/**
+ * DeviceStatus object
+ */
+var DeviceStatus = {
+		/**
+		 * To retrieve the connectivity provider status
+		 * 
+		 * @param {Object} successCallback The callback which will be called when result is successful.
+		 * Example of JSON result:
+		 * <pre>
+		 * {"isInternetEnabled":true, "providerList":[{"name":"WiFi", "enabled":true}, {"name":"mobile mms", "enabled":false}]}
+		 * </pre>
+		 * Schema of the JSON result:
+		 * <pre>
+		 * {
+		 *  	"name":"ConnectivityProviderStatus",
+		 *  	"properties":{
+		 *  		"isInternetEnabled":{
+		 *  			"required":true,
+		 *  			"type":"boolean",
+		 *  			"description":"To know if Internet is available or not"
+		 *  		},
+		 *  		"providerList":{
+		 *  			"required":false,
+		 *  			"type":"array",
+		 *  			"description":"List of connectivity providers",
+		 *  			"items":{
+		 *  				"name":{
+		 *  					"required":true,
+		 *  					"type":"string",
+		 *  					"description":"Name of the connectivity provider"
+		 *  				},
+		 *  				"enabled":{
+		 *  					"required":true,
+		 *  					"type":"boolean",
+		 *  					"description":"To know if this provider is available or not"
+		 *  				}
+		 *  			}
+		 *  		}
+		 *  	}
+		 * }
+		 * </pre>
+		 * @param {Object} failureCallback The callback which will be called when result encounters an error. (String result)
+		 */
+		getConnectivityStatus: function(successCallback, failureCallback){
+			var parameters = null;
+			return PhoneGap.exec(
+					successCallback,
+					failureCallback,
+					'DeviceStatus',
+					'getConnectivityStatus',
+					[parameters]);
+		},
+
+
+		/**
+		 * To retrieve the location provider status
+		 * 
+		 * @param {Object} successCallback The callback which will be called when result is successful.
+		 * Example of JSON result:
+		 * <pre>
+		 * {"providerList":[{"name":"gps", "enabled":true}, {"name":"network", "enabled":false}]}
+		 * </pre>
+		 * Schema of the JSON result:
+		 * <pre>
+		 * {
+		 *  	"name":"LocationProviderStatus",
+		 *  	"properties":{
+		 *  		"providerList":{
+		 *  			"required":false,
+		 *  			"type":"array",
+		 *  			"description":"List of location providers",
+		 *  			"items":{
+		 *  				"name":{
+		 *  					"required":true,
+		 *  					"type":"string",
+		 *  					"description":"Name of the location provider"
+		 *  				},
+		 *  				"enabled":{
+		 *  					"required":true,
+		 *  					"type":"boolean",
+		 *  					"description":"To know if this provider is available or not"
+		 *  				}
+		 *  			}
+		 *  		}
+		 *  	}
+		 * }
+		 * </pre>
+		 * @param {Object} failureCallback The callback which will be called when result encounters an error. (String result)
+		 */
+		getLocationStatus: function(successCallback, failureCallback){
+			var parameters = null;
+			return PhoneGap.exec(
+					successCallback,
+					failureCallback,
+					'DeviceStatus',
+					'getLocationStatus',
+					[parameters]);
+		},
+
+		/**
+		 * To retrieve the battery status
+		 * 
+		 * @param {Object} successCallback The callback which will be called when result is successful.
+		 * Example of JSON result:
+		 * <pre>
+		 * {"scale":100,"plugged":1,"level":50,"status":2,"voltage":0,"temperature":0}
+		 * </pre>
+		 * Schema of the JSON result:
+		 * <pre>
+		 * {
+		 *  	"name":"BatteryStatus",
+		 *  	"properties":{
+		 *  		"scale":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":0,
+		 *  			"description":"Scale"
+		 *  		},
+		 *  		"plugged":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"enum": [BATTERY_NOT_PLUGGED, BATTERY_PLUGGED_AC, BATTERY_PLUGGED_USB],
+		 *  			"description":"To know if the mobile is plugged or not"
+		 *  		},
+		 *  		"level":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":0,
+		 *  			"max":100,
+		 *  			"description":"Level of battery (%)"
+		 *  		},
+		 *  		"status":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":1,
+		 *  			"max":5,
+		 *  			"enum": [BATTERY_STATUS_UNKNOWN, BATTERY_STATUS_CHARGING, BATTERY_STATUS_DISCHARGING, BATTERY_STATUS_NOT_CHARGING, BATTERY_STATUS_FULL],
+		 *  			"description":"Level of battery (%)"
+		 *  		},
+		 *  		"voltage":{
+		 *  			"required":false,
+		 *  			"type":"nomber",
+		 *  			"description":"Voltage"
+		 *  		},
+		 *  		"temperature":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"description":"Temperatue (°C)"
+		 *  		}
+		 *  	}
+		 * }
+		 * </pre>
+		 * @param {Object} failureCallback The callback which will be called when result encounters an error. (String result)
+		 */
+		getBatteryStatus: function(successCallback, failureCallback){
+			var parameters = null;
+			return PhoneGap.exec(
+					successCallback,
+					failureCallback,
+					'DeviceStatus',
+					'getBatteryStatus',
+					[parameters]);
+		},
+
+		/**
+		 * To register to battery status
+		 * 
+		 * @param {Object} successCallback The callback which will be called when result is successful.
+		 * Example of JSON result:
+		 * <pre>
+		 * {"scale":100,"plugged":1,"level":50,"status":2,"voltage":0,"temperature":0}
+		 * </pre>
+		 * Schema of the JSON result:
+		 * <pre>
+		 * {
+		 *  	"name":"BatteryStatus",
+		 *  	"properties":{
+		 *  		"scale":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":0,
+		 *  			"description":"Scale"
+		 *  		},
+		 *  		"plugged":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"enum": [BATTERY_NOT_PLUGGED, BATTERY_PLUGGED_AC, BATTERY_PLUGGED_USB],
+		 *  			"description":"To know if the mobile is plugged or not"
+		 *  		},
+		 *  		"level":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":0,
+		 *  			"max":100,
+		 *  			"description":"Level of battery (%)"
+		 *  		},
+		 *  		"status":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"min":1,
+		 *  			"max":5,
+		 *  			"enum": [BATTERY_STATUS_UNKNOWN, BATTERY_STATUS_CHARGING, BATTERY_STATUS_DISCHARGING, BATTERY_STATUS_NOT_CHARGING, BATTERY_STATUS_FULL],
+		 *  			"description":"Level of battery (%)"
+		 *  		},
+		 *  		"voltage":{
+		 *  			"required":false,
+		 *  			"type":"nomber",
+		 *  			"description":"Voltage"
+		 *  		},
+		 *  		"temperature":{
+		 *  			"required":false,
+		 *  			"type":"number",
+		 *  			"description":"Temperatue (°C)"
+		 *  		}
+		 *  	}
+		 * }
+		 * </pre>
+		 * @param {Object} failureCallback The callback which will be called when result encounters an error. (String result)
+		 */
+		registerToBatteryStatus: function(successCallback, failureCallback){
+			var parameters = {"register":true};
+			return PhoneGap.exec(
+					successCallback,
+					failureCallback,
+					'DeviceStatus',
+					'getBatteryStatus',
+					[parameters]);
+		}
+};
+
 
 /**
  * LocalCSSManagerService object
- * @return Instance of ConnectionListener
  */
 var LocalCSSManagerService = function() { 
 }
 
 /**
+ * Connect to LocalCSSManager service
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -63,6 +302,8 @@ LocalCSSManagerService.prototype.connectService = function(successCallback, fail
 };
 
 /**
+ * Disconnect from LocalCSSManager service
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -78,10 +319,56 @@ LocalCSSManagerService.prototype.disconnectService = function(successCallback, f
 
 
 /**
+ * Login to CSS on cloud/rich node
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
 LocalCSSManagerService.prototype.loginCSS = function(successCallback, failureCallback) {
+	var client = "org.societies.android.platform.gui";
+	var cssRecord = {
+			  			"archiveCSSNodes": [],
+	                    "cssIdentity": jQuery("#username").val(),
+	                    "cssInactivation": null,
+	                    "cssNodes": [{
+	                        "identity": "android@societies.local/androidOne",
+	                        "status": 0,
+	                        "type": 0}],
+	                    "cssRegistration": null,
+	                    "cssHostingLocation" : null,
+	                    "domainServer" : null,
+	                    "cssUpTime": 0,
+	                    "emailID": null,
+	                    "entity": 0,
+	                    "foreName": null,
+	                    "homeLocation": null,
+	                    "identityName": null,
+	                    "imID": null,
+	                    "name": null,
+	                    "password": jQuery("#userpass").val(),
+	                    "presence": 0,
+	                    "sex": 0,
+	                    "socialURI": null,
+	                    "status": 0
+			                  }
+
+
+	console.log("Call LocalCSSManagerService - loginCSS");
+
+	return PhoneGap.exec(successCallback,    //Callback which will be called when plugin action is successful
+	failureCallback,     //Callback which will be called when plugin action encounters an error
+	'PluginCSSManager',  //Telling PhoneGap that we want to run specified plugin
+	'loginCSS',          //Telling the plugin, which action we want to perform
+	[client, cssRecord]);        //Passing a list of arguments to the plugin
+};
+
+/**
+ * Login to CSS on cloud/rich node
+ * 
+ * @param successCallback The callback which will be called when Java method is successful
+ * @param failureCallback The callback which will be called when Java method has an error
+*/
+LocalCSSManagerService.prototype.logoutCSS = function(successCallback, failureCallback) {
 	var client = "org.societies.android.platform.gui";
 	var cssRecord = {
 			  			"archiveCSSNodes": [],
@@ -110,24 +397,23 @@ LocalCSSManagerService.prototype.loginCSS = function(successCallback, failureCal
 			                  }
 
 
-	console.log("Call LocalCSSManagerService - loginCSS");
+	console.log("Call LocalCSSManagerService - logoutCSS");
 
 	return PhoneGap.exec(successCallback,    //Callback which will be called when plugin action is successful
 	failureCallback,     //Callback which will be called when plugin action encounters an error
 	'PluginCSSManager',  //Telling PhoneGap that we want to run specified plugin
-	'loginCSS',          //Telling the plugin, which action we want to perform
+	'logoutCSS',          //Telling the plugin, which action we want to perform
 	[client, cssRecord]);        //Passing a list of arguments to the plugin
 };
-
 /**
  * CoreServiceMonitorService object
- * @return Instance of CoreServiceMonitorService
  */
 var CoreServiceMonitorService = function() { 
 }
 
 /**
- * Used to bind to service that plugin connects to
+ * Connect to CoreServiceMonitorService service
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -143,7 +429,8 @@ CoreServiceMonitorService.prototype.connectService = function(successCallback, f
 };
 
 /**
- * Used to unbind service that plugin connects to
+ * Disconnect from CoreServiceMonitorService service
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -159,6 +446,8 @@ CoreServiceMonitorService.prototype.disconnectService = function(successCallback
 };
 
 /**
+ * Get all active services
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -174,6 +463,8 @@ CoreServiceMonitorService.prototype.activeServices = function(successCallback, f
 };
 
 /**
+ * Get all active tasks, i.e. apps
+ * 
  * @param successCallback The callback which will be called when Java method is successful
  * @param failureCallback The callback which will be called when Java method has an error
 */
@@ -189,6 +480,9 @@ CoreServiceMonitorService.prototype.activeTasks = function(successCallback, fail
 	["org.societies.android.platform.gui"]);        //Passing a list of arguments to the plugin
 };
 
+/**
+ * Populate HTML elements with device information
+ */
 var deviceInfo = function() {
 	console.log("Get device information");
 	
@@ -205,7 +499,10 @@ var deviceInfo = function() {
 
 };
 
-
+/**
+ * Connect to CSSManager 
+ * @param actionFunction function to be called if successful
+ */
 var connectToLocalCSSManager = function(actionFunction) {
 	console.log("Connect to LocalCSSManager");
 		
@@ -214,26 +511,89 @@ var connectToLocalCSSManager = function(actionFunction) {
 	}
 	
 	function failure(data) {
-		alert(data);
+		alert("connectToLocalCSSManager - failure: " + data);
 	}
     window.plugins.LocalCSSManagerService.connectService(success, failure);
 }
-
+/**
+ * Disconnect from CSSManager 
+ * @param actionFunction function to be called if successful
+ */
+var disconnectFromLocalCSSManager = function() {
+	console.log("Disconnect from LocalCSSManager");
+		
+	function success(data) {
+		console.log(data);
+	}
+	
+	function failure(data) {
+		alert("disconnectFromLocalCSSManager - failure: " + data);
+	}
+    window.plugins.LocalCSSManagerService.disconnectService(success, failure);
+}
+/**
+ * Actions carried in the event that a successful CSS login occurs
+ */
 var successfulLogin = function() {
 	console.log("Login to CSS");
 
 	function success(data) {
+		
+		var status = ["Available for Use", "Unavailable", "Not active but on alert"];
+		var type = ["Android based client", "Cloud Node", "JVM based client"];
+		
+		jQuery("#cssrecordforename").val(data.foreName);
+		jQuery("#cssrecordname").val(data.name);
+		jQuery("#cssrecordemaildetails").val(data.emailID);
+		jQuery("#cssrecordimdetails").val(data.imID);
+		jQuery("#cssrecorduserlocation").val(data.homeLocation);
+		jQuery("#cssrecordsnsdetails").val(data.socialURI);
+		jQuery("#cssrecordidentity").val(data.cssIdentity);
+		jQuery("#cssrecordorgtype").val(data.entity);
+		jQuery("#cssrecordsextype").val(data.sex);
+		
+		//empty table
+		jQuery('#cssNodesTable tbody').remove();
+		
+		for (i  = 0; i < data.cssNodes.length; i++) {
+			var tableEntry = "<tr>" + 
+			"<td>" + data.cssNodes[i].identity + "</td>" + 
+			"<td>" + status[data.cssNodes[i].status] + "</td>" + 
+			"<td>" + type[data.cssNodes[i].type] + "</td>" + 
+				+ "</tr>"
+
+			jQuery('#cssNodesTable').append(tableEntry);
+		}
+
+		
+		
 		$.mobile.changePage( ($("#menu")), { transition: "slideup"} );
 	}
 	
 	function failure(data) {
-		alert(data);
+		alert("successfulLogin - failure: " + data);
 	}
     window.plugins.LocalCSSManagerService.loginCSS(success, failure);
 
 };
 
+var successfulLogout = function() {
+	console.log("Logout from CSS");
 
+	function success(data) {
+		jQuery("#username").val("");
+		jQuery("#userpass").val("");
+		disconnectFromLocalCSSManager();
+
+	}
+
+	function failure(data) {
+		alert("successfulLogout : " + "failure: " + data);
+	}
+	
+    window.plugins.LocalCSSManagerService.logoutCSS(success, failure);
+
+};
 
 var resetDeviceMgr = function(){
     jQuery("#connStatuslist").text("");
@@ -243,21 +603,25 @@ var resetDeviceMgr = function(){
     
     
 }
-
+/**
+ * Bind to the CoreServiceMonitor service
+ * @param actionFunction function to be invoked if action successful
+ */
 var connectToCoreServiceMonitor = function(actionFunction) {
 	console.log("Connect to CoreServiceMonitor");
 		
 	function success(data) {
-//		alert("Success result: " + data);
 		actionFunction();
 	}
 	
 	function failure(data) {
-		alert(data);
+		alert("connectToCoreServiceMonitor - failure: " + data);
 	}
     window.plugins.CoreServiceMonitorService.connectService(success, failure);
 }
-
+/**
+ * List active services
+ */
 var refreshActiveServices = function() {
 	console.log("Refresh Active Service");
 
@@ -271,42 +635,49 @@ var refreshActiveServices = function() {
 			"<td>" + convertMilliseconds(data[i].activeSince) + "</td>" + 
 				+ "</tr>"
 
-			jQuery('#activeServicesTable tr:last').after(tableEntry);
+			jQuery('#activeServicesTable').append(tableEntry);
 		}
 	}
 	
 	function failure(data) {
-		alert(data);
+		alert("refreshActiveServices - failure: " + data);
 	}
 	
 	window.plugins.CoreServiceMonitorService.activeServices(success, failure);
 	
 };
+/**
+ * List active tasks, i.e. apps
+ */
 var refreshActiveTasks = function() {
 	console.log("Refresh Active Tasks");
 
 	function success(data) {
 		//empty table
 		jQuery('#activeTasksTable tbody').remove();
-		
+
+		//add rows
 		for (i  = 0; i < data.length; i++) {
 			var tableEntry = "<tr>" + 
 			"<td>" + data[i].className + "</td>" + 
 			"<td>" + data[i].numRunningActivities + "</td>" + 
 				+ "</tr>"
 
-			jQuery('#activeTasksTable tr:last').after(tableEntry);
+			jQuery('#activeTasksTable').append(tableEntry);
 		}
 	}
 	
 	function failure(data) {
-		alert(data);
+		alert("refreshActiveTasks - failure: " + data);
 	}
 	
 	window.plugins.CoreServiceMonitorService.activeTasks(success, failure);
 };
 
-//Convert an elapsed time in milliseconds
+/**
+ * Convert an elapsed time in milliseconds
+ * @param milliseconds time elapsed
+ */
 var convertMilliseconds = function(milliseconds) {
 	value = milliseconds / 1000
 	seconds = value % 60
@@ -317,6 +688,35 @@ var convertMilliseconds = function(milliseconds) {
 	value /= 24
 	days = value	
 	return "d: " + days + " h: " + hours + " m:" + minutes;
+}
+/**
+ * Validate user login credentials
+ * @param name username
+ * @param password 
+ */
+var validateCredentials = function(name, password) {
+	var retValue = true;
+
+	if (name.length === 0 || password.length === 0) {
+		retValue  = false;
+		alert("validateCredentials: " + "User credentials must be entered");
+	}
+	return retValue;
+}
+
+function onSuccess(data) {
+	console.log("JS Success");
+	console.log(JSON.stringify(data));
+	$('.result').remove();
+	$('.error').remove();
+	$('<span>').addClass('result').html("Result: "+JSON.stringify(data)).appendTo('#main article[data-role=content]');
+}
+function onFailure(e) {
+	console.log("JS Error");
+	console.log(e);
+	$('.result').remove();
+	$('.error').remove();
+	$('<span>').addClass('error').html(e).appendTo('#main article[data-role=content]');
 }
 /**
  * Add Javascript functions to various HTML tags using JQuery
@@ -332,7 +732,9 @@ jQuery(function() {
 	});
 
 	$('#connectXMPP').click(function() {
-		connectToLocalCSSManager(successfulLogin);
+		if (validateCredentials(jQuery("#username").val(), jQuery("#userpass").val())) {
+			connectToLocalCSSManager(successfulLogin);
+		}
 	});
 	
 	$('#resetDeviceManager').click(function() {
@@ -345,6 +747,24 @@ jQuery(function() {
 
 	$('#refreshTasks').click(function() {
 		connectToCoreServiceMonitor(refreshActiveTasks);
+	});
+	$("#logoutIcon").click(function() {
+		connectToLocalCSSManager(successfulLogout);
+	});
+	
+	$('#connectivity').click(function() {
+		window.plugins.DeviceStatus.getConnectivityStatus(onSuccess, onFailure);
+	});
+	
+	$('#location').click(function() {
+		window.plugins.DeviceStatus.getLocationStatus(onSuccess, onFailure);
+	});
+	
+	$('#battery').click(function() {
+		window.plugins.DeviceStatus.getBatteryStatus(onSuccess, onFailure);
+	});
+	$('#registerBattery').click(function() {
+		window.plugins.DeviceStatus.registerToBatteryStatus(onSuccess, onFailure);
 	});
 
 });

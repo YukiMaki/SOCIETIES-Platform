@@ -20,28 +20,45 @@
 package org.societies.orchestration.api;
 
 import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
-import org.societies.api.internal.cis.management.ICisRecord;
+import org.societies.api.cis.management.ICisRecord;
+import org.societies.orchestration.api.SuggestedCommunityAnalyserMethodType;
+
+import org.societies.api.activity.IActivity;
+import org.societies.api.context.model.CtxAssociation;
+import org.societies.api.context.model.CtxAttribute;
+import org.societies.api.css.management.ICssActivity;
+import org.societies.api.identity.IIdentity;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class SuggestedCommunityAnalyserBean {
 
-	public enum methodType {processEgocentricRecommendations, processEgocentricConfigurationRecommendations,
-		                    processCSCWRecommendations, processCSCWConfigurationRecommendations,
-		                    processCSMRecommendations, processCSMConfigurationRecommendations};
-	private methodType method;
+	private SuggestedCommunityAnalyserMethodType method;
 	private HashMap<String, ArrayList<ICisRecord>> ciss;
 	private HashMap<String, ArrayList<ArrayList<ICisRecord>>> configureCiss;
-
-	public methodType getMethod(){
+	private ArrayList<String> cissMetadata;
+	
+	private ArrayList<IIdentity> cssList;
+	private ArrayList<CtxAttribute> sharedContextAttributes;
+	private ArrayList<CtxAssociation> sharedContextAssociations;
+	private ArrayList<ICssActivity> sharedCssActivities;
+	private ArrayList<IActivity> sharedCisActivities;
+	
+	public SuggestedCommunityAnalyserBean() {
+		
+	}
+	
+	public SuggestedCommunityAnalyserMethodType getMethod(){
 		return method;
 	}
 
-	public void setMethod(methodType method){
+	public void setMethod(SuggestedCommunityAnalyserMethodType method){
 		this.method = method;
 	}
 	
-	public HashMap<String, ArrayList<ICisRecord>> getciss(){
+	public HashMap<String, ArrayList<ICisRecord>> getCiss(){
 		return this.ciss;
 	}
 	
@@ -55,6 +72,54 @@ public class SuggestedCommunityAnalyserBean {
 	
 	public void setConfigureCiss(HashMap<String, ArrayList<ArrayList<ICisRecord>>> configureCiss){
 		this.configureCiss = configureCiss;
+	}
+	
+	public ArrayList<String> getCissMetadata(){
+		return this.cissMetadata;
+	}
+	
+	public void setCissMetadata(ArrayList<String> cissMetadata){
+		this.cissMetadata = cissMetadata;
+	}
+	
+	public ArrayList<IIdentity> getCssList(){
+		return this.cssList;
+	}
+	
+	public void setCssList(ArrayList<IIdentity> cssList){
+		this.cssList = cssList;
+	}
+	
+	public ArrayList<CtxAttribute> getSharedContextAttributes(){
+		return this.sharedContextAttributes;
+	}
+	
+	public void setSharedContextAttributes(ArrayList<CtxAttribute> sharedContextAttributes){
+		this.sharedContextAttributes = sharedContextAttributes;
+	}
+	
+	public ArrayList<CtxAssociation> getSharedContextAssociations(){
+		return this.sharedContextAssociations;
+	}
+	
+	public void setSharedContextAssociations(ArrayList<CtxAssociation> sharedContextAssociations){
+		this.sharedContextAssociations = sharedContextAssociations;
+	}
+	
+	public ArrayList<ICssActivity> getSharedCssActivities(){
+		return this.sharedCssActivities;
+	}
+	
+	public void setSharedCssActivities(ArrayList<ICssActivity> sharedCssActivities){
+		this.sharedCssActivities = sharedCssActivities;
+	}
+	
+	public ArrayList<IActivity> getSharedCisActivities(){
+		return this.sharedCisActivities;
+	}
+	
+	public void setSharedCisActivities(ArrayList<IActivity> sharedCisActivities){
+		this.sharedCisActivities = sharedCisActivities;
 	}
 	
 }

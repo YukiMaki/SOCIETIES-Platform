@@ -18,16 +18,27 @@ public class IdentityManagerImpl implements IIdentityManager {
 			.getLogger(IdentityManagerImpl.class);
 	
 	private final INetworkNode thisNode;
+	private final INetworkNode domainAuthorityNode;
 	private final Set<IIdentity> publicIdentities;
 	private final IIdentityContextMapper ctxMapper;
 	// TODO cache known identities
 	
 	public IdentityManagerImpl(String thisNode) throws InvalidFormatException {
 		this.thisNode = fromFullJid(thisNode);
+		this.domainAuthorityNode = null;
 		publicIdentities = new HashSet<IIdentity>();
 		publicIdentities.add(this.thisNode); // TODO pseudonyms
 		ctxMapper = new IdentityContextMapperImpl();
 	}
+	
+	public IdentityManagerImpl(String thisNode, String domainAuthortyNode) throws InvalidFormatException {
+		this.thisNode = fromFullJid(thisNode);
+		this.domainAuthorityNode = fromFullJid(domainAuthortyNode);
+		publicIdentities = new HashSet<IIdentity>();
+		publicIdentities.add(this.thisNode); // TODO pseudonyms
+		ctxMapper = new IdentityContextMapperImpl();
+	}
+	
 	
 	// TODO good domain check 
 	// http://commons.apache.org/validator/apidocs/org/apache/commons/validator/routines/DomainValidator.html
@@ -72,6 +83,12 @@ public class IdentityManagerImpl implements IIdentityManager {
 		return thisNode; // TODO clone?
 	}
 
+	public INetworkNode getDomainAuthorityNode() {
+		if (this.domainAuthorityNode == null)
+			return thisNode;
+		return this.domainAuthorityNode;
+	}
+	
 	public Set<IIdentity> getPublicIdentities() {
 		return publicIdentities; // TODO clone?
 	}
@@ -82,5 +99,20 @@ public class IdentityManagerImpl implements IIdentityManager {
 
 	public IIdentityContextMapper getIdentityContextMapper() {
 		return ctxMapper;
+	}
+
+	public IIdentity newMemorableIdentity(String memorableIdentifier) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public boolean releaseMemorableIdentity(IIdentity memorableIdentity) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	public IIdentity newTransientIdentity() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

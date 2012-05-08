@@ -38,6 +38,12 @@ import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.societies.api.internal.servicelifecycle.IServiceControl;
+import org.societies.api.internal.servicelifecycle.IServiceDiscovery;
+import org.societies.api.internal.servicelifecycle.ServiceControlException;
+import org.societies.api.schema.servicelifecycle.model.Service;
+import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
+import org.societies.api.schema.servicelifecycle.servicecontrol.ServiceControlResult;
 import org.societies.webapp.models.ServiceControlForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -45,15 +51,6 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-
-import org.societies.api.internal.servicelifecycle.IServiceDiscovery;
-import org.societies.api.internal.servicelifecycle.ServiceDiscoveryException;
-import org.societies.api.schema.servicelifecycle.model.Service;
-import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
-import org.societies.api.schema.servicelifecycle.servicecontrol.ServiceControlResult;
-import org.societies.api.servicelifecycle.IServiceControl;
-import org.societies.api.servicelifecycle.ServiceControlException;
-
 
 @Controller
 public class ServiceControlController {
@@ -89,7 +86,7 @@ public class ServiceControlController {
 	}
 	
 	@RequestMapping(value = "/servicecontrol.html", method = RequestMethod.GET)
-	public ModelAndView Servicediscovery() {
+	public ModelAndView serviceControlGet() {
 
 		Map<String, Object> model = new HashMap<String, Object>();
 		model.put("message", "Please input values and submit");
@@ -134,7 +131,7 @@ public class ServiceControlController {
 
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/servicecontrol.html", method = RequestMethod.POST)
-	public ModelAndView serviceDiscovery(@Valid ServiceControlForm scForm,
+	public ModelAndView serviceControlPost(@Valid ServiceControlForm scForm,
 			BindingResult result, Map model) {
 
 		if (result.hasErrors()) {
@@ -248,7 +245,7 @@ public class ServiceControlController {
 					res="ServiceControl Result Installing in Local Node: ";
 					
 				scresult = asynchResult.get();
-				model.put("serviceResult", scresult);
+				model.put("serviceResult", scresult.getMessage());
 				
 			}else if (method.equalsIgnoreCase("InstallServiceRemote")) {
 				
@@ -260,7 +257,7 @@ public class ServiceControlController {
 				res="ServiceControl Result for Node : [" + node + "]";
 				
 				scresult = asynchResult.get();
-				model.put("serviceResult", scresult);
+				model.put("serviceResult", scresult.getMessage());
 					
 			}else if (method.equalsIgnoreCase("StartService")){
 				
@@ -268,7 +265,7 @@ public class ServiceControlController {
 				
 				asynchResult=this.getSCService().startService(serviceId);
 				scresult = asynchResult.get();
-				model.put("serviceResult", scresult);
+				model.put("serviceResult", scresult.getMessage());
 				
 				res="Started service: " + serviceId;
 
@@ -279,7 +276,7 @@ public class ServiceControlController {
 
 				asynchResult=this.getSCService().stopService(serviceId);
 				scresult = asynchResult.get();
-				model.put("serviceResult", scresult);
+				model.put("serviceResult", scresult.getMessage());
 				
 				res="Stopped service: " + serviceId;
 	
@@ -289,7 +286,7 @@ public class ServiceControlController {
 
 				asynchResult=this.getSCService().uninstallService(serviceId);
 				scresult = asynchResult.get();
-				model.put("serviceResult", scresult);
+				model.put("serviceResult", scresult.getMessage());
 				
 				res="Uninstall service: " + serviceId;
 	
