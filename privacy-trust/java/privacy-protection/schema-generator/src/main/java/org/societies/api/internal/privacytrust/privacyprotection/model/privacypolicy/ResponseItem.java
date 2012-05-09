@@ -22,85 +22,47 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection;
+package org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy;
 
-import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Action;
-import org.societies.api.schema.identity.RequestorBean;
+
 
 /**
- * @author Olivier Maridat (Trialog)
+ * The ResponseItem class represents the response to a RequestItem contained in the RequestPolicy of a service provider. 
+ * It is constructed after the privacy preference evaluation has been performed and the system can decide to permit or deny the request. 
+ * The ResponseItem contains the requestItem object and a Decision flag. The Decision flag can be any of the types listed in the Decision enumeration. 
+ * INDETERMINATE suggests that the RequestItem has be altered per the user's wishes (such as adding extra conditions or removing an action) 
+ * and needs to be accepted by the service provider. NOT_APPLICABLE suggests that the piece of data the RequestItem refers to does not exist 
+ * as a type in the CSS (for example a service may request access to room temperature but the CSS does not have such a type in the system 
+ * because the CSS has no temperature sensor )
+ * @author Elizabeth, Olivier Maridat (Trialog)
  *
  */
-public class PrivacyDataManagerBean {
-	public enum methodType  {checkPermission, obfuscateData};
-	private methodType  method;
-	
-	private RequestorBean requestor;
-	/**
-	 * JID of the owner of the requested data
-	 */
-	private String ownerId;
-	/**
-	 * String formatted ID of the requested Data
-	 */
-	private String dataId;
-	private Action action;
-
+public class ResponseItem {
+	RequestItem item;
+	Decision decision;
 	
 	/**
-	 * @return the requestor
+	 * @return the item
 	 */
-	public RequestorBean getRequestor() {
-		return requestor;
+	public RequestItem getItem() {
+		return item;
 	}
 	/**
-	 * @param requestor the requestor to set
+	 * @param item the item to set
 	 */
-	public void setRequestor(RequestorBean requestor) {
-		this.requestor = requestor;
+	public void setItem(RequestItem item) {
+		this.item = item;
 	}
 	/**
-	 * @return the ownerId
+	 * @return the decision
 	 */
-	public String getOwnerId() {
-		return ownerId;
+	public Decision getDecision() {
+		return decision;
 	}
 	/**
-	 * @param ownerId the ownerId to set
+	 * @param decision the decision to set
 	 */
-	public void setOwnerId(String ownerId) {
-		this.ownerId = ownerId;
-	}
-	/**
-	 * @return the dataId
-	 */
-	public String getDataId() {
-		return dataId;
-	}
-	/**
-	 * @param dataId the dataId to set
-	 */
-	public void setDataId(String dataId) {
-		this.dataId = dataId;
-	}
-	/**
-	 * @return the action
-	 */
-	public Action getAction() {
-		return action;
-	}
-	/**
-	 * @param action the action to set
-	 */
-	public void setAction(Action action) {
-		this.action = action;
-	}
-	
-	
-	public methodType  getMethod() {
-		return method;
-	}
-	public void setMethod(methodType  method) {
-		this.method = method;
+	public void setDecision(Decision decision) {
+		this.decision = decision;
 	}
 }

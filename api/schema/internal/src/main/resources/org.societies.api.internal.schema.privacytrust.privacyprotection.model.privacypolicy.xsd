@@ -1,26 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <xs:schema version="1.0" elementFormDefault="qualified"
-	targetNamespace="http://societies.org/api/internal/schema/privacytrust/privacyprotection/privacydatamanagement"
-	xmlns:tns="http://societies.org/api/internal/schema/privacytrust/privacyprotection/privacydatamanagement"
-	xmlns:ns1="http://societies.org/api/schema/identity" 
+	targetNamespace="http://societies.org/api/internal/schema/privacytrust/privacyprotection/model/privacypolicy"
+	xmlns:tns="http://societies.org/api/internal/schema/privacytrust/privacyprotection/model/privacypolicy"
+	
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
-
-  <xs:import namespace="http://societies.org/api/schema/identity" schemaLocation="../../../../external/src/main/resources/org.societies.api.schema.identity.xsd" />
-
-  <xs:element name="privacyDataManagerBeanResult">
-	<xs:complexType>
-    <xs:sequence>
-      <xs:element name="ack" type="xs:boolean"/>
-      <xs:element name="ackMessage" type="xs:string" minOccurs="0"/>
-      <xs:element name="permission" type="tns:responseItem" minOccurs="0"/>
-    </xs:sequence>
-  	</xs:complexType>
-	</xs:element>
 
   <xs:complexType name="responseItem">
     <xs:sequence>
       <xs:element name="decision" type="tns:decision" minOccurs="0"/>
-      <xs:element name="requestItem" type="tns:requestItem" minOccurs="0"/>
+      <xs:element name="item" type="tns:requestItem" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
@@ -42,37 +30,18 @@
 
   <xs:complexType name="condition">
     <xs:sequence>
+      <xs:element name="condition" type="tns:conditionConstants" minOccurs="0"/>
       <xs:element name="optional" type="xs:boolean"/>
-      <xs:element name="theCondition" type="tns:conditionConstants" minOccurs="0"/>
+      <xs:element name="value" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="resource">
     <xs:sequence>
       <xs:element name="contextType" type="xs:string" minOccurs="0"/>
+      <xs:element name="ctxUriIdentifier" type="xs:string" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
-
-  <xs:element name="privacyDataManagerBean">
-	<xs:complexType>
-    <xs:sequence>
-      <xs:element name="action" type="tns:action" minOccurs="0"/>
-      <xs:element name="dataId" type="xs:string" minOccurs="0"/>
-      <xs:element name="method" type="tns:methodType" minOccurs="0"/>
-      <xs:element name="ownerId" type="xs:string" minOccurs="0"/>
-      <xs:element name="requestor" type="ns1:RequestorBean" minOccurs="0"/>
-    </xs:sequence>
-  	</xs:complexType>
-	</xs:element>
-
-  <xs:simpleType name="decision">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="PERMIT"/>
-      <xs:enumeration value="DENY"/>
-      <xs:enumeration value="INDETERMINATE"/>
-      <xs:enumeration value="NOT_APPLICABLE"/>
-    </xs:restriction>
-  </xs:simpleType>
 
   <xs:simpleType name="actionConstants">
     <xs:restriction base="xs:string">
@@ -80,6 +49,15 @@
       <xs:enumeration value="WRITE"/>
       <xs:enumeration value="CREATE"/>
       <xs:enumeration value="DELETE"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:simpleType name="decision">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="PERMIT"/>
+      <xs:enumeration value="DENY"/>
+      <xs:enumeration value="INDETERMINATE"/>
+      <xs:enumeration value="NOT_APPLICABLE"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -93,13 +71,6 @@
       <xs:enumeration value="STORE_IN_SECURE_STORAGE"/>
       <xs:enumeration value="RIGHT_TO_ACCESS_HELD_DATA"/>
       <xs:enumeration value="RIGHT_TO_CORRECT_INCORRECT_DATA"/>
-    </xs:restriction>
-  </xs:simpleType>
-
-  <xs:simpleType name="methodType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="checkPermission"/>
-      <xs:enumeration value="obfuscateData"/>
     </xs:restriction>
   </xs:simpleType>
 </xs:schema>

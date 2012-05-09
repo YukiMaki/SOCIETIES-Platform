@@ -22,54 +22,41 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection;
-
-import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.ResponseItem;
+package org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy;
 
 /**
- * @author Olivier Maridat (Trialog)
+ * the Resource class is used to represent  a piece of data type belonging to the user 
+ * (i.e context data, preference data, profile data). It contains the id of the data and the type of data. 
+ * @author Elizabeth, Olivier Maridat (Trialog)
  *
  */
-public class PrivacyDataManagerBeanResult {
-	private boolean ack;
-	private String ackMessage;
-	private ResponseItem permission;
-	
+public class Resource {
+	private String ctxUriIdentifier;
+	private String contextType;
 	
 	/**
-	 * @return the ack
+	 * @return the contextType
 	 */
-	public boolean isAck() {
-		return ack;
+	public String getContextType() {
+		return contextType;
 	}
 	/**
-	 * @param ack the ack to set
+	 * @param contextType the contextType to set
 	 */
-	public void setAck(boolean ack) {
-		this.ack = ack;
+	public void setContextType(String contextType) {
+		this.contextType = contextType;
 	}
 	/**
-	 * @return the ackMessage
+	 * @return the ctxUriIdentifier
 	 */
-	public String getAckMessage() {
-		return ackMessage;
+	public String getCtxUriIdentifier() {
+		return ctxUriIdentifier;
 	}
 	/**
-	 * @param ackMessage the ackMessage to set
+	 * @param ctxUriIdentifier the ctxUriIdentifier to set
 	 */
-	public void setAckMessage(String ackMessage) {
-		this.ackMessage = ackMessage;
-	}
-	/**
-	 * @return the permission
-	 */
-	public ResponseItem getPermission() {
-		return permission;
-	}
-	/**
-	 * @param permission the permission to set
-	 */
-	public void setPermission(ResponseItem permission) {
-		this.permission = permission;
+	public void setCtxUriIdentifier(String ctxUriIdentifier) {
+		this.ctxUriIdentifier = ctxUriIdentifier;
 	}
 }
+
