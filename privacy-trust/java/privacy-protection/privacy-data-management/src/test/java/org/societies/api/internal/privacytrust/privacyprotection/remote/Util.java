@@ -22,47 +22,75 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy;
+package org.societies.api.internal.privacytrust.privacyprotection.remote;
 
+import java.io.IOException;
+import java.io.Serializable;
 
+import org.societies.api.context.model.util.SerialisationHelper;
 
 /**
- * The ResponseItem class represents the response to a RequestItem contained in the RequestPolicy of a service provider. 
- * It is constructed after the privacy preference evaluation has been performed and the system can decide to permit or deny the request. 
- * The ResponseItem contains the requestItem object and a Decision flag. The Decision flag can be any of the types listed in the Decision enumeration. 
- * INDETERMINATE suggests that the RequestItem has be altered per the user's wishes (such as adding extra conditions or removing an action) 
- * and needs to be accepted by the service provider. NOT_APPLICABLE suggests that the piece of data the RequestItem refers to does not exist 
- * as a type in the CSS (for example a service may request access to room temperature but the CSS does not have such a type in the system 
- * because the CSS has no temperature sensor )
- * @author Elizabeth, Olivier Maridat (Trialog)
+ * Describe your class here...
+ *
+ * @author Eliza
  *
  */
-public class ResponseItem {
-	RequestItem requestItem;
-	Decision decision;
+public class Util {
+
+	public static Object convertToObject(byte[] byteArray, Class c){
+		try {
+			return SerialisationHelper.deserialise(byteArray, c.getClassLoader());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (ClassNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+		/*
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new ByteArrayInputStream(byteArray));
+			Object obj = ois.readObject();
+			return obj;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
+		*/
+		
+		
+		return null;
+	}
 	
-	/**
-	 * @return the decision
-	 */
-	public Decision getDecision() {
-		return decision;
-	}
-	/**
-	 * @param decision the decision to set
-	 */
-	public void setDecision(Decision decision) {
-		this.decision = decision;
-	}
-	/**
-	 * @return the requestItem
-	 */
-	public RequestItem getRequestItem() {
-		return requestItem;
-	}
-	/**
-	 * @param requestItem the requestItem to set
-	 */
-	public void setRequestItem(RequestItem requestItem) {
-		this.requestItem = requestItem;
+	public static byte[] toByteArray(Object obj){
+		try {
+			return SerialisationHelper.serialise((Serializable) obj);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		/*
+		ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+		ObjectOutputStream oos;
+		try {
+			oos = new ObjectOutputStream(bos);
+			oos.writeObject(obj);
+			oos.flush(); 
+			oos.close(); 
+			bos.close();
+			this.logging.debug("Trying to store preference of size: "+bos.size());
+			return bos.toByteArray();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
+		*/
+		return null;
 	}
 }

@@ -8,7 +8,7 @@
   <xs:complexType name="responseItem">
     <xs:sequence>
       <xs:element name="decision" type="tns:decision" minOccurs="0"/>
-      <xs:element name="item" type="tns:requestItem" minOccurs="0"/>
+      <xs:element name="requestItem" type="tns:requestItem" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
