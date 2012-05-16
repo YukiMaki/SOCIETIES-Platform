@@ -35,21 +35,21 @@ import org.societies.api.internal.privacytrust.privacyprotection.model.privacypo
  *
  */
 public class Condition{
-	private ConditionConstants condition;
+	private ConditionConstants conditionConstant;
 	private String value;
 	private boolean optional;
 	
 	/**
 	 * @return the condition
 	 */
-	public ConditionConstants getCondition() {
-		return condition;
+	public ConditionConstants getConditionConstant() {
+		return conditionConstant;
 	}
 	/**
 	 * @param condition the condition to set
 	 */
-	public void setCondition(ConditionConstants condition) {
-		this.condition = condition;
+	public void setConditionConstant(ConditionConstants conditionConstant) {
+		this.conditionConstant = conditionConstant;
 	}
 	/**
 	 * @return the value

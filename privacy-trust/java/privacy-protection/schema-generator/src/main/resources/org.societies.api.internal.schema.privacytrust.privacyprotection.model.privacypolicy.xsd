@@ -23,14 +23,14 @@
 
   <xs:complexType name="action">
     <xs:sequence>
-      <xs:element name="action" type="tns:actionConstants" minOccurs="0"/>
+      <xs:element name="actionConstant" type="tns:actionConstants" minOccurs="0"/>
       <xs:element name="optional" type="xs:boolean"/>
     </xs:sequence>
   </xs:complexType>
 
   <xs:complexType name="condition">
     <xs:sequence>
-      <xs:element name="condition" type="tns:conditionConstants" minOccurs="0"/>
+      <xs:element name="conditionConstant" type="tns:conditionConstants" minOccurs="0"/>
       <xs:element name="optional" type="xs:boolean"/>
       <xs:element name="value" type="xs:string" minOccurs="0"/>
     </xs:sequence>

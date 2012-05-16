@@ -36,19 +36,19 @@ import org.societies.api.internal.privacytrust.privacyprotection.model.privacypo
  *
  */
 public class Action {
-	private ActionConstants action;
+	private ActionConstants actionConstant;
 	private boolean optional;
 	/**
 	 * @return the action
 	 */
-	public ActionConstants getAction() {
-		return action;
+	public ActionConstants getActionConstant() {
+		return actionConstant;
 	}
 	/**
 	 * @param action the action to set
 	 */
-	public void setAction(ActionConstants action) {
-		this.action = action;
+	public void setActionConstant(ActionConstants actionConstant) {
+		this.actionConstant = actionConstant;
 	}
 	/**
 	 * @return the optional

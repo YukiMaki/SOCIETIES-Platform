@@ -174,22 +174,30 @@ public class XMPPMojo extends AbstractMojo
 			Pattern patternImportCheck = Pattern.compile("schemaLocation", Pattern.CASE_INSENSITIVE);
 			Matcher matcherImportCheck = patternImportCheck.matcher(newSchemaContent);
 			if (matcherImportCheck.find()) {
-				Pattern patternImport = Pattern.compile("<xs:import namespace=\"http://societies.org/api/(internal/)?schema/([^\"]+)\" schemaLocation=\"([^\"]*)\" ?/>", Pattern.CASE_INSENSITIVE);
+				Pattern patternImport = Pattern.compile("<xs:import namespace=\"(http://societies.org/api/(internal/)?schema/([^\"]+))\" schemaLocation=\"([^\"]*)\" ?/>", Pattern.CASE_INSENSITIVE);
 				Matcher matcherImport = patternImport.matcher(newSchemaContent);
 				StringBuffer importsContent = new StringBuffer();
 				while (matcherImport.find()) {
-					String type = "external";
 					Pattern patternInternalCheck = Pattern.compile("internal/", Pattern.CASE_INSENSITIVE);
-					Matcher matcherInternalCheck = patternInternalCheck.matcher(importsContent);
+					Matcher matcherInternalCheck = patternInternalCheck.matcher(matcherImport.group());
+					String httpNs = matcherImport.group(1);
+					String typeHttpNs = matcherImport.group(2);
+					String endHttpNs = matcherImport.group(3);
 					if (matcherInternalCheck.find()) {
-						type = "internal";
+						getLog().info("internal:"+httpNs);
+						getLog().info("internal:"+typeHttpNs);
+						getLog().info("internal:"+endHttpNs);
+						matcherImport.appendReplacement(importsContent, "<xs:import namespace=\"http://societies.org/api/$2schema/$3\" schemaLocation=\"org.societies.api."+typeHttpNs.replace("/", ".")+"schema."+endHttpNs.replace("/", ".")+".xsd\" />");
 					}
-					matcherImport.appendReplacement(importsContent, "<xs:import namespace=\"http://societies.org/api/$1schema/$2\" schemaLocation=\"../../../../"+type+"/src/main/resources/"+httpNs2packageNs("http://societies.org/api/schema/$1$2")+"\" />");
+					else {
+						getLog().info("external:"+httpNs);
+						getLog().info("external:"+typeHttpNs);
+						getLog().info("external:"+endHttpNs);
+						matcherImport.appendReplacement(importsContent, "<xs:import namespace=\"http://societies.org/api/$2schema/$3\" schemaLocation=\"../../../../external/src/main/resources/org.societies.api.schema."+endHttpNs.replace("/", ".")+".xsd\" />");
+					}
 				}
 				matcherImport.appendTail(importsContent);
 				newSchemaContent = importsContent.toString();
-
-				//			    newSchemaContent = matcherImport.replaceAll("<xs:import namespace=\"http://societies.org/api/schema/$1$2\" schemaLocation=\"../../../../external/src/main/resources/org.societies.api.schema.$1.$2.xsd\">");
 				getLog().info("#################### After Import");
 				getLog().info(newSchemaContent);
 			}
@@ -236,18 +244,13 @@ public class XMPPMojo extends AbstractMojo
 	}
 
 	private String httpNs2packageNs(String httpNs) {
-		// Check internal
-		String type = "";
-		Pattern patternInternalCheck = Pattern.compile("internal/", Pattern.CASE_INSENSITIVE);
-		Matcher matcherInternalCheck = patternInternalCheck.matcher(httpNs);
-		if (matcherInternalCheck.find()) {
-			type = "internal.";
-		}
-
-		// Change http to package
-		Pattern patternEndHttpNs = Pattern.compile("http://societies.org/api/(?:internal/)?schema/([^\"]+)", Pattern.CASE_INSENSITIVE);
-		Matcher matcherEndHttpNs = patternEndHttpNs.matcher(httpNs);
-		String endHttpNs = matcherEndHttpNs.replaceAll("$1");
-		return new String("org.societies.api.schema."+type+endHttpNs.replace("/", ".")+".xsd");
+//		getLog().info("httpNs2packageNs: "+httpNs);
+//		Pattern pattern = Pattern.compile("http://societies.org/api/(internal/)?schema/([^\"]+)", Pattern.CASE_INSENSITIVE);
+//		Matcher matcher = pattern.matcher(httpNs);
+//		String type = matcher.group(1);
+//		String endHttpNs = matcher.group(2);
+//		getLog().info("httpNs2packageNs: "+type+", endHttpNs:"+endHttpNs);
+//		return new String("org.societies.api.schema."+type.replace("/", ".")+endHttpNs.replace("/", "."));
+		return new String("org.societies.api.schema.");
 	}
 }
