@@ -22,56 +22,93 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
+package org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.util;
+
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.LocationCoordinates;
 
 /**
- * This data wrapper is an abstraction between obfuscation manager
- * and data models. This is the way for wrapping data to obfuscate them,
- * and filling a type of data (needed to know how obfuscate them) 
- * This wrapper is linked to a specific data obfuscator
- * and know what kind of data is needed to launch the obfuscation. 
- * @author Olivier Maridat (Trialog)
- * @date 18 oct. 2011
+ * Describe your class here...
+ *
+ * @author olivierm
+ *
  */
-public interface IDataWrapper<E> {
-	/**
-	 * @return Id of the data to be obfuscated
-	 */
-	public String getDataId();
-	/**
-	 * @param dataId Id of the data to be obfuscated
-	 */
-	public void setDataId(String dataId);
+public class LocationCoordinates4Obfuscation extends LocationCoordinates {
+	private double obfuscationLevel;
+	private int obfuscationAlgorithm;
+	private double shiftDirection;
+	private double shiftDistance;
+	private double shiftAlpha;
+	
 	
 	/**
-	 * Data
-	 * @return The data to be obfuscated
+	 * @param latitude
+	 * @param longitude
+	 * @param accuracy
 	 */
-	public E getData();
-	/**
-	 * Set the data to be obfuscated
-	 * @param data The data to be obfuscated
-	 */
-	public void setData(E data);
+	public LocationCoordinates4Obfuscation(double latitude, double longitude,
+			double accuracy) {
+		super(latitude, longitude, accuracy);
+	}
+	
 	
 	/**
-	 * To know if obfuscated data will be stored with this obfuscator
-	 * 
-	 * @return True if this obfuscator has enabled persistence
-	 * @return Otherwise false
+	 * @return the obfuscationLevel
 	 */
-	public boolean isPersistenceEnabled();
+	public double getObfuscationLevel() {
+		return obfuscationLevel;
+	}
 	/**
-	 * To enable storage of obfuscated data
-	 * @param persist True to persist the data, false otherwise
+	 * @param obfuscationLevel the obfuscationLevel to set
 	 */
-	public void setPersistenceEnabled(boolean persist);
-	
+	public void setObfuscationLevel(double obfuscationLevel) {
+		this.obfuscationLevel = obfuscationLevel;
+	}
 	/**
-	 * To know if this wrapper is ready for obfuscation operation
-	 * 
-	 * @return True if this DataWrapper is ready for obfuscation
-	 * @return Otherwise false
+	 * @return the obfuscationAlgorithm
 	 */
-	public boolean isReadyForObfuscation();
+	public int getObfuscationAlgorithm() {
+		return obfuscationAlgorithm;
+	}
+	/**
+	 * @param obfuscationAlgorithm the obfuscationAlgorithm to set
+	 */
+	public void setObfuscationAlgorithm(int obfuscationAlgorithm) {
+		this.obfuscationAlgorithm = obfuscationAlgorithm;
+	}
+	/**
+	 * @return the shiftDirection
+	 */
+	public double getShiftDirection() {
+		return shiftDirection;
+	}
+	/**
+	 * @param shiftDirection the shiftDirection to set
+	 */
+	public void setShiftDirection(double shiftDirection) {
+		this.shiftDirection = shiftDirection;
+	}
+	/**
+	 * @return the shiftDistance
+	 */
+	public double getShiftDistance() {
+		return shiftDistance;
+	}
+	/**
+	 * @param shiftDistance the shiftDistance to set
+	 */
+	public void setShiftDistance(double shiftDistance) {
+		this.shiftDistance = shiftDistance;
+	}
+	/**
+	 * @return the shiftAlpha
+	 */
+	public double getShiftAlpha() {
+		return shiftAlpha;
+	}
+	/**
+	 * @param shiftAlpha the shiftAlpha to set
+	 */
+	public void setShiftAlpha(double shiftAlpha) {
+		this.shiftAlpha = shiftAlpha;
+	}
 }

@@ -22,39 +22,51 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator;
-
-import java.lang.reflect.Type;
+package org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator;
 
 import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.ObfuscationLevelType;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
-
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.Name;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.NameWrapper;
 
 /**
- * This interface defines an obfuscator.
- * An Obfuscator represents an obfuscation algorithm,
- * and each type of data needs an obfuscation algorithm.
- * @author Olivier Maridat
- * @date 14 oct. 2011
+ * Obfuscator for name
+ *
+ * @author Olivier Maridat (Trialog)
+ *
  */
-public interface IDataObfuscator {
+public class NameObfuscator extends DataObfuscator<NameWrapper> {
 	/**
-	 * Protect data wrapped in the obfuscator to a correct obfuscation level.
-	 * 
-	 * @param obfuscationLevel Obfuscation level, a real number between 0 and 1.  With 0, there is no obfuscation
-	 * @return Obfuscated data wrapped in a DataWrapper (of the same type that the one used to instanciate the obfuscator)
-	 * @throws Exception
+	 * @param data
 	 */
-	public IDataWrapper obfuscateData(double obfuscationLevel) throws PrivacyException;
+	public NameObfuscator(NameWrapper data) {
+		super(data);
+		obfuscationLevelType = ObfuscationLevelType.DISCRETE;
+		dataType = NameWrapper.class;
+	}
 
-	/**
-	 * Type of the obfuscation
-	 * @return
+
+	/* (non-Javadoc)
+	 * @see org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.IDataObfuscator#obfuscateData(double)
 	 */
-	public ObfuscationLevelType getObfuscationLevelType();
-	/**
-	 * Type of the data wrapper to obfuscate
-	 * @return
-	 */
-	public Type getDataType();
+	@Override
+	public IDataWrapper<Name> obfuscateData(double obfuscationLevel)
+			throws PrivacyException {
+		Name obfuscatedName = new Name();
+		if (obfuscationLevel <= 0) {
+			obfuscatedName.setFirstName("");
+			obfuscatedName.setLastName("");
+		}
+		else if (obfuscationLevel > 0 && obfuscationLevel < 2) {
+			obfuscatedName.setFirstName(data.getData().getFirstName());
+			obfuscatedName.setLastName("");
+		}
+		else if (obfuscationLevel >= 2) {
+			obfuscatedName.setFirstName(data.getData().getFirstName());
+			obfuscatedName.setLastName(data.getData().getLastName());
+		}
+		return new NameWrapper(obfuscatedName);
+	}
+
 }

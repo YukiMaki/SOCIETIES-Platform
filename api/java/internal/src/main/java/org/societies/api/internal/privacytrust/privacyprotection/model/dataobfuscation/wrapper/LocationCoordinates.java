@@ -22,39 +22,74 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator;
-
-import java.lang.reflect.Type;
-
-import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
-import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
-
+package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
 
 /**
- * This interface defines an obfuscator.
- * An Obfuscator represents an obfuscation algorithm,
- * and each type of data needs an obfuscation algorithm.
- * @author Olivier Maridat
- * @date 14 oct. 2011
+ * Describe your class here...
+ *
+ * @author olivierm
+ *
  */
-public interface IDataObfuscator {
+public class LocationCoordinates {
+	private double latitude;
+	private double longitude;
+	private double accuracy;
+	
 	/**
-	 * Protect data wrapped in the obfuscator to a correct obfuscation level.
-	 * 
-	 * @param obfuscationLevel Obfuscation level, a real number between 0 and 1.  With 0, there is no obfuscation
-	 * @return Obfuscated data wrapped in a DataWrapper (of the same type that the one used to instanciate the obfuscator)
-	 * @throws Exception
+	 * @param latitude
+	 * @param longitude
 	 */
-	public IDataWrapper obfuscateData(double obfuscationLevel) throws PrivacyException;
+	public LocationCoordinates(double latitude, double longitude, double accuracy) {
+		super();
+		this.latitude = latitude;
+		this.longitude = longitude;
+		this.accuracy = accuracy;
+	}
+	
+	
+	/**
+	 * @return the latitude
+	 */
+	public double getLatitude() {
+		return latitude;
+	}
+	/**
+	 * @param latitude the latitude to set
+	 */
+	public void setLatitude(double latitude) {
+		this.latitude = latitude;
+	}
+	/**
+	 * @return the longitude
+	 */
+	public double getLongitude() {
+		return longitude;
+	}
+	/**
+	 * @param longitude the longitude to set
+	 */
+	public void setLongitude(double longitude) {
+		this.longitude = longitude;
+	}
+	/**
+	 * @return the accuracy
+	 */
+	public double getAccuracy() {
+		return accuracy;
+	}
+	/**
+	 * @param accuracy the accuracy to set
+	 */
+	public void setAccuracy(double accuracy) {
+		this.accuracy = accuracy;
+	}
+
 
 	/**
-	 * Type of the obfuscation
 	 * @return
 	 */
-	public ObfuscationLevelType getObfuscationLevelType();
-	/**
-	 * Type of the data wrapper to obfuscate
-	 * @return
-	 */
-	public Type getDataType();
+	public String toJSON() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

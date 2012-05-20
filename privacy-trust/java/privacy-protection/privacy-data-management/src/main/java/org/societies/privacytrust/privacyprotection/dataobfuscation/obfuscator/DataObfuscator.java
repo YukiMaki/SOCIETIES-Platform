@@ -22,39 +22,64 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator;
+package org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator;
 
 import java.lang.reflect.Type;
 
-import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
-import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
-
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.IDataObfuscator;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.ObfuscationLevelType;
 
 /**
- * This interface defines an obfuscator.
- * An Obfuscator represents an obfuscation algorithm,
- * and each type of data needs an obfuscation algorithm.
- * @author Olivier Maridat
- * @date 14 oct. 2011
+ * Abstract class helping the creation of an obfuscator
+ *
+ * @author Olivier Maridat (Trialog)
+ *
  */
-public interface IDataObfuscator {
+public abstract class DataObfuscator<E> implements IDataObfuscator {
 	/**
-	 * Protect data wrapped in the obfuscator to a correct obfuscation level.
-	 * 
-	 * @param obfuscationLevel Obfuscation level, a real number between 0 and 1.  With 0, there is no obfuscation
-	 * @return Obfuscated data wrapped in a DataWrapper (of the same type that the one used to instanciate the obfuscator)
-	 * @throws Exception
+	 * Data to obfuscate
 	 */
-	public IDataWrapper obfuscateData(double obfuscationLevel) throws PrivacyException;
+	protected E data;
+	/**
+	 * Type of the obfuscation level
+	 */
+	protected ObfuscationLevelType obfuscationLevelType;
+	/**
+	 * Type of the data to obfuscate
+	 */
+	protected Type dataType;
+	
+	
+	public DataObfuscator(E data) {
+		super();
+		this.data = data;
+	}
 
+	
 	/**
-	 * Type of the obfuscation
-	 * @return
+	 * @return the data
 	 */
-	public ObfuscationLevelType getObfuscationLevelType();
+	public E getData() {
+		return data;
+	}
 	/**
-	 * Type of the data wrapper to obfuscate
-	 * @return
+	 * @param data the data to set
 	 */
-	public Type getDataType();
+	public void setData(E data) {
+		this.data = data;
+	}
+	/* (non-Javadoc)
+	 * @see org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.IDataObfuscator#getObfuscationType()
+	 */
+	@Override
+	public ObfuscationLevelType getObfuscationLevelType() {
+		return obfuscationLevelType;
+	}
+	/* (non-Javadoc)
+	 * @see org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.IDataObfuscator#getDataType()
+	 */
+	@Override
+	public Type getDataType() {
+		return dataType;
+	}
 }

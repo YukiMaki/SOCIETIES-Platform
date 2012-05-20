@@ -19,10 +19,11 @@
  */
 package org.societies.privacytrust.privacyprotection.test.datamanagement;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,8 +37,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.societies.api.context.model.CtxAttributeIdentifier;
-import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.context.model.CtxIdentifierFactory;
 import org.societies.api.context.model.MalformedCtxIdentifierException;
@@ -46,13 +45,14 @@ import org.societies.api.identity.Requestor;
 import org.societies.api.internal.privacytrust.privacyprotection.IPrivacyDataManager;
 import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.Name;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.NameWrapper;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Action;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Decision;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.ResponseItem;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.constants.ActionConstants;
 import org.societies.privacytrust.privacyprotection.api.IPrivacyDataManagerInternal;
 import org.societies.privacytrust.privacyprotection.datamanagement.PrivacyDataManagerInternal;
-import org.societies.privacytrust.privacyprotection.dataobfuscation.wrapper.SampleWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
@@ -99,7 +99,7 @@ public class PrivacyDataManagerTest {
 	@Test
 	@Ignore
 	public void testObfuscateData() {
-		IDataWrapper actual = new SampleWrapper(3);
+		IDataWrapper actual = new NameWrapper(new Name("Olivier", "Maridat"));
 		boolean expection = false;
 		try {
 			privacyDataManager.obfuscateData(null, null, null);
@@ -115,7 +115,7 @@ public class PrivacyDataManagerTest {
 	@Test
 	@Ignore
 	public void testHasObfuscatedVersion() {
-		CtxIdentifier actual = new CtxAttributeIdentifier(new CtxEntityIdentifier(null, null, null), null, null);
+		String actual = "";
 		boolean expection = false;
 		try {
 			actual = privacyDataManager.hasObfuscatedVersion(null, null, null);

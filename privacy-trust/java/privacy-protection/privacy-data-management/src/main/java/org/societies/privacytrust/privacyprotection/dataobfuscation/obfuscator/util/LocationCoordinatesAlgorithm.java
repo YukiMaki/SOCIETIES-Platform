@@ -22,65 +22,14 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.privacyprotection.dataobfuscation.wrapper;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.societies.privacytrust.privacyprotection.dataobfuscation.DataWrapper;
-import org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.SampleObfuscator;
+package org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.util;
 
 /**
- * This is a sample wrapper, it doing nothing
- * @state skeleton 
- * @author olivierm
+ * Describe your class here...
+ *
+ * @author Olivier Maridat
+ *
  */
-public class SampleWrapper extends DataWrapper {
-	private SampleObfuscator obfuscator;
-	
-	// -- CONSTRUCTOR
-	public SampleWrapper(int param1) {
-		super();
-		obfuscator = new SampleObfuscator(param1);
-		setObfuscator(obfuscator);
-		setAsReadyForObfuscation();
-	}
-
-	
-	// -- GET/SET
-	/**
-	 * @return the param1
-	 */
-	public double getParam1() {
-		return obfuscator.getParam1();
-	}
-	/**
-	 * @param param1 the param1 to set
-	 */
-	public void setParam1(int param1) {
-		obfuscator.setParam1(param1);
-		if (-1 != obfuscator.getParam1()) {
-			setAsReadyForObfuscation();
-		}
-	}
-
-
-	/*
-	 * @see org.societies.privacytrust.privacyprotection.dataobfuscation.DataWrapper#equals(java.lang.Object)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		// -- Verify reference equality
-        if (obj == this) {
-            return true;
-        }
-        
-        // -- Verify obj type
-        if (obj instanceof SampleWrapper) {
-        	SampleWrapper other = (SampleWrapper) obj;
-        	return (new EqualsBuilder()
-	            .append(this.getParam1(), other.getParam1())
-	            .isEquals()) && (super.equals(obj));
-        }
-        
-        return false;
-	}
+public enum LocationCoordinatesAlgorithm {
+	OPERATION_E, OPERATION_R, OPERATION_S, OPERATION_ES, OPERATION_SE, OPERATION_SR;
 }
