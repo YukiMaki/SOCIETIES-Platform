@@ -111,4 +111,33 @@ public class LocationCoordinates4Obfuscation extends LocationCoordinates {
 	public void setShiftAlpha(double shiftAlpha) {
 		this.shiftAlpha = shiftAlpha;
 	}
+	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Geolocation [latitude=" + getLatitude() + ", longitude=" + getLongitude()
+				+ ", horizontalAccuracy=" + getAccuracy()
+				+ ", obfuscationLevel=" + obfuscationLevel
+				+ ", obfuscationAlgorithm=" + obfuscationAlgorithm + "]";
+	}
+	public String toXMLString() {
+		return "<geolocation>\n" +
+				"\t<latitude>" + getLatitude() + "</latitude>\n" +
+				"\t<longitude>" + getLongitude()+ "</longitude>\n" +
+				"\t<horizontalAccuracy>" + getAccuracy() + "</horizontalAccuracy>\n" +
+				"\t<obfuscationLevel>" + obfuscationLevel + "</obfuscationLevel>\n" +
+				"\t<obfuscationAlgorithm>" + obfuscationAlgorithm + "</obfuscationAlgorithm>\n" +
+			"</geolocation>";
+	}
+	public String toJSONString() {
+		return "{\n" +
+				"\"latitude\": \""+getLatitude()+"\"\n" +
+				"\"longitude\": \""+getLongitude()+"\"\n" +
+				"\"horizontalAccuracy\": \""+getAccuracy()+"\"\n" +
+				"\"obfuscationLevel\": \""+obfuscationLevel+"\"\n" +
+				"\"obfuscationAlgorithm\": \""+obfuscationAlgorithm+"\"\n" +
+				"}";
+	}
 }

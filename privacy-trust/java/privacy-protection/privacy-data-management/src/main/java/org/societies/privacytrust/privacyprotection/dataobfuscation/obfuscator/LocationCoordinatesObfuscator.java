@@ -116,8 +116,8 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		LocationCoordinates obfuscatedLocationCoordinates = obfuscateLocation(geolocation, obfuscationLevel, obfuscationOperation, middleObfuscationLevel, theta);
 
 		// -- Send to callback ?
-		LOG.debug(geolocation.toJSON());
-		LOG.debug(obfuscatedLocationCoordinates.toJSON());
+		LOG.debug(geolocation.toJSONString());
+		LOG.debug(obfuscatedLocationCoordinates.toJSONString());
 
 		// -- Return
 		LocationCoordinatesWrapper dataWrapper = new LocationCoordinatesWrapper(obfuscatedLocationCoordinates);
@@ -321,7 +321,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		// -- Enlarge
 		middleObfuscatedLocationCoordinates = EObfuscation(geolocation, middleObfuscationLevel);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-		System.out.println(middleObfuscatedLocationCoordinates.toJSON()+",");
+		System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
 		
 		// -- Shift
 		/* Solve the following system
@@ -374,7 +374,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		// -- Shift
 		middleObfuscatedLocationCoordinates = SObfuscation(geolocation, middleObfuscationLevel, theta);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-			System.out.println(middleObfuscatedLocationCoordinates.toJSON()+",");
+			System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
 		
 		// -- Enlarge
 		/* Solve the following system
@@ -421,7 +421,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		// -- Shift
 		middleObfuscatedLocationCoordinates = SObfuscation(geolocation, middleObfuscationLevel, theta);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-			System.out.println(middleObfuscatedLocationCoordinates.toJSON()+",");
+			System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
 		
 		// -- Reduce
 		/* Solve the following system

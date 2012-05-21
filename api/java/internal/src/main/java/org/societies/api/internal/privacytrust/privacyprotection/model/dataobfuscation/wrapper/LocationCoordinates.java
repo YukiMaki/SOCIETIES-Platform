@@ -85,11 +85,26 @@ public class LocationCoordinates {
 	}
 
 
-	/**
-	 * @return
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
 	 */
-	public String toJSON() {
-		// TODO Auto-generated method stub
-		return null;
+	@Override
+	public String toString() {
+		return "Geolocation [latitude=" + latitude + ", longitude=" + longitude
+				+ ", accuracy=" + accuracy + "]";
+	}
+	public String toXMLString() {
+		return "<geolocation>\n" +
+				"\t<latitude>" + latitude + "</latitude>\n" +
+				"\t<longitude>" + longitude+ "</longitude>\n" +
+				"\t<horizontalAccuracy>" + accuracy + "</horizontalAccuracy>\n" +
+			"</geolocation>";
+	}
+	public String toJSONString() {
+		return "{\n" +
+				"\"latitude\": \""+latitude+"\",\n" +
+				"\"longitude\": \""+longitude+"\",\n" +
+				"\"horizontalAccuracy\": \""+accuracy+"\"\n" +
+				"}";
 	}
 }
