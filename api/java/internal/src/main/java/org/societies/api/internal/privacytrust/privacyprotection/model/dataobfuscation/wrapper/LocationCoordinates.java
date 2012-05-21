@@ -24,6 +24,8 @@
  */
 package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 /**
  * Describe your class here...
  *
@@ -106,5 +108,27 @@ public class LocationCoordinates {
 				"\"longitude\": \""+longitude+"\",\n" +
 				"\"horizontalAccuracy\": \""+accuracy+"\"\n" +
 				"}";
+	}
+	
+	/*
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// -- Verify reference equality
+		if (obj == this) {
+			return true;
+		}
+
+		// -- Verify obj type
+		if (obj instanceof LocationCoordinates) {
+			LocationCoordinates other = (LocationCoordinates) obj;
+			return new EqualsBuilder()
+			.append(this.getLatitude(), other.getLatitude())
+			.append(this.getLongitude(), other.getLongitude())
+			.append(this.getAccuracy(), other.getAccuracy())
+			.isEquals();
+		}
+		return false;
 	}
 }

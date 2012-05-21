@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
-import org.societies.api.context.model.CtxIdentifierFactory;
 import org.societies.api.context.model.MalformedCtxIdentifierException;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
@@ -109,7 +108,6 @@ public class PrivacyDataManager implements IPrivacyDataManager {
 		// RequestItem
 		Resource resource = new Resource(dataAttributeId);
 		RequestItem requestItemNull = new RequestItem(resource, actions, conditions);
-
 
 		// -- Retrieve a stored permission
 		ResponseItem permission = privacyDataManagerInternal.getPermission(requestor, ownerId, dataId);
@@ -200,7 +198,7 @@ public class PrivacyDataManager implements IPrivacyDataManager {
 		if (null == requestor || null == ownerId) {
 			throw new NullPointerException("Not enought information: requestor or owner id is missing");
 		}
-		if (null == dataId && (null == dataWrapper || null == dataWrapper.getDataId())) {
+		if (null == dataId && (null == dataWrapper || null == dataWrapper.getData())) {
 			throw new PrivacyException("Not enought information: data id is missing");
 		}
 	}

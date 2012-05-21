@@ -38,7 +38,6 @@ import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
-import org.societies.api.internal.privacytrust.privacyprotection.IPrivacyDataManager;
 import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Action;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Decision;
@@ -47,7 +46,6 @@ import org.societies.api.internal.privacytrust.privacyprotection.model.privacypo
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.ResponseItem;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.constants.ActionConstants;
 import org.societies.privacytrust.privacyprotection.api.IPrivacyDataManagerInternal;
-import org.societies.privacytrust.privacyprotection.datamanagement.PrivacyDataManager;
 import org.societies.privacytrust.privacyprotection.datamanagement.PrivacyDataManagerInternal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;

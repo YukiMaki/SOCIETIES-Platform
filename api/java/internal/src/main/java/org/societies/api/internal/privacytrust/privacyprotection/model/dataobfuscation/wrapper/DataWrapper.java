@@ -24,6 +24,9 @@
  */
 package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
+
 
 
 /**
@@ -127,6 +130,27 @@ public class DataWrapper<E> implements IDataWrapper<E> {
 	public boolean isReadyForObfuscation() {
 		if (null != data) {
 			return true;
+		}
+		return false;
+	}
+	
+	/*
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// -- Verify reference equality
+		if (obj == this) {
+			return true;
+		}
+
+		// -- Verify obj type
+		if (obj instanceof DataWrapper) {
+			DataWrapper other = (DataWrapper) obj;
+			return new EqualsBuilder()
+			.append(this.getDataId(), other.getDataId())
+			.append(this.getData(), other.getData())
+			.isEquals();
 		}
 		return false;
 	}

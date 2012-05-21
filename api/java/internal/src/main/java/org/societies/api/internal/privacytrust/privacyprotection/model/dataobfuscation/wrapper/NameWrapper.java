@@ -24,6 +24,8 @@
  */
 package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 /**
  * Wrapper for name obfuscation
  *
@@ -45,7 +47,4 @@ public class NameWrapper extends DataWrapper<Name> {
 	private NameWrapper(String dataId, Name data) {
 		super(data);
 	}
-
-	
-	
 }

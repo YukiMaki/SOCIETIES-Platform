@@ -43,6 +43,7 @@ public class NameObfuscator extends DataObfuscator<NameWrapper> {
 	public NameObfuscator(NameWrapper data) {
 		super(data);
 		obfuscationLevelType = ObfuscationLevelType.DISCRETE;
+		stepNumber = 4;
 		dataType = NameWrapper.class;
 	}
 
@@ -53,18 +54,39 @@ public class NameObfuscator extends DataObfuscator<NameWrapper> {
 	@Override
 	public IDataWrapper<Name> obfuscateData(double obfuscationLevel)
 			throws PrivacyException {
+		// -- Verify
+		if (null == dataWrapper.getData().getFirstName()) {
+			dataWrapper.getData().setFirstName("");
+		}
+		if (null == dataWrapper.getData().getLastName()) {
+			dataWrapper.getData().setLastName("");
+		}
+		
+		// -- Obfuscate
+		// 0: nothing
 		Name obfuscatedName = new Name();
 		if (obfuscationLevel <= 0) {
 			obfuscatedName.setFirstName("");
 			obfuscatedName.setLastName("");
 		}
-		else if (obfuscationLevel > 0 && obfuscationLevel < 2) {
-			obfuscatedName.setFirstName(data.getData().getFirstName());
+		// 1: first letters
+		else if (obfuscationLevel > 0 && obfuscationLevel <= 1/stepNumber) {
+			obfuscatedName.setFirstName((dataWrapper.getData().getFirstName() != "" ? dataWrapper.getData().getFirstName().substring(0, 1)+"." : ""));
+			obfuscatedName.setLastName((dataWrapper.getData().getFirstName() != "" ? dataWrapper.getData().getLastName().substring(0, 1)+"." : ""));
+		}
+		// 2: firstname only
+		else if (obfuscationLevel > 1/stepNumber && obfuscationLevel <= 2/stepNumber) {
+			obfuscatedName.setFirstName(dataWrapper.getData().getFirstName());
 			obfuscatedName.setLastName("");
 		}
-		else if (obfuscationLevel >= 2) {
-			obfuscatedName.setFirstName(data.getData().getFirstName());
-			obfuscatedName.setLastName(data.getData().getLastName());
+		// 3: lastname only
+		else if (obfuscationLevel > 2/stepNumber && obfuscationLevel <= 3/stepNumber) {
+			obfuscatedName.setFirstName("");
+			obfuscatedName.setLastName(dataWrapper.getData().getLastName());
+		}
+		// 4: everything
+		else if (obfuscationLevel >= 1) {
+			obfuscatedName = dataWrapper.getData();
 		}
 		return new NameWrapper(obfuscatedName);
 	}

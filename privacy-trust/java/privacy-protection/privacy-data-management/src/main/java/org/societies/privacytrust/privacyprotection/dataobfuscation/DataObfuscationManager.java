@@ -24,13 +24,11 @@
  */
 package org.societies.privacytrust.privacyprotection.dataobfuscation;
 
-import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.obfuscator.IDataObfuscator;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.LocationCoordinatesWrapper;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.NameWrapper;
-import org.societies.api.internal.privacytrust.privacyprotection.model.listener.IDataObfuscationListener;
 import org.societies.privacytrust.privacyprotection.api.IDataObfuscationManager;
 import org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.LocationCoordinatesObfuscator;
 import org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.NameObfuscator;
@@ -45,23 +43,36 @@ public class DataObfuscationManager implements IDataObfuscationManager {
 		// TODO : populate this stub function
 
 		// -- Verify params
+		// Wrapper ready for obfuscation
 		if (!dataWrapper.isReadyForObfuscation()) {
 			throw new PrivacyException("This data wrapper is not ready for obfuscation. Data are needed.");
 		}
+		// Obfuscation level in [0, 1]
+		if (obfuscationLevel > 1) {
+			obfuscationLevel = 1;
+		}
+		if (obfuscationLevel < 0) {
+			obfuscationLevel = 0.000001;
+		}
+		// Return directly if obfuscation level is 1
+		if (1 == obfuscationLevel) {
+			return dataWrapper;
+		}
+
 
 		// -- Mapping: retrieve the relevant obfuscator
 		IDataObfuscator obfuscator = getDataObfuscator(dataWrapper);
-		
+
 		// -- Obfuscate
 		IDataWrapper obfuscatedDataWrapper = null;
 		try {
 			// - Obfuscation
 			obfuscatedDataWrapper = obfuscator.obfuscateData(obfuscationLevel);
 			// - Persistence
-//			if (dataWrapper.isPersistenceEnabled()) {
-				// TODO: persiste the obfuscated data using a data broker
-				//				System.out.println("Persist the data "+dataWrapper.getDataId());
-//			}
+			//			if (dataWrapper.isPersistenceEnabled()) {
+			// TODO: persiste the obfuscated data using a data broker
+			//				System.out.println("Persist the data "+dataWrapper.getDataId());
+			//			}
 		}
 		catch(Exception e) {
 			throw new PrivacyException("Obfuscation aborted", e);
@@ -72,18 +83,18 @@ public class DataObfuscationManager implements IDataObfuscationManager {
 	@Override
 	public String hasObfuscatedVersion(IDataWrapper dataWrapper, double obfuscationLevel) throws PrivacyException {
 		// TODO : populate this stub function
-		
+
 		// -- Search obfuscatred version
-//		if (dataWrapper.isPersistenceEnabled()) {
-			// TODO: retrieve obfsucated data ID using data broker
-			// An obfuscated version exist
-			//			if (false) {
-			//				System.out.println("Retrieve the persisted data id of data id "+dataWrapper.getDataId());
-			//			}
-//		}
+		//		if (dataWrapper.isPersistenceEnabled()) {
+		// TODO: retrieve obfsucated data ID using data broker
+		// An obfuscated version exist
+		//			if (false) {
+		//				System.out.println("Retrieve the persisted data id of data id "+dataWrapper.getDataId());
+		//			}
+		//		}
 		return dataWrapper.getDataId();
 	}
-	
+
 	private IDataObfuscator getDataObfuscator(IDataWrapper data) throws PrivacyException {
 		IDataObfuscator obfuscator = null;
 		if (data instanceof LocationCoordinatesWrapper) {

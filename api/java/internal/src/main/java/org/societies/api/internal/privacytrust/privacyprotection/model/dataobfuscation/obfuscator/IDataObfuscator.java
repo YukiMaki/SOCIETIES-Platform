@@ -49,12 +49,22 @@ public interface IDataObfuscator {
 
 	/**
 	 * Type of the obfuscation
-	 * @return
+	 * @return the type of the obfuscation
 	 */
 	public ObfuscationLevelType getObfuscationLevelType();
 	/**
+	 * Number of classes for a discrete obfuscation level
+	 * @return the number of steps available
+	 */
+	int getStepNumber();
+	/**
+	 * Wrapper of the data to obfuscate
+	 * @return the wrapped data to obfuscate
+	 */
+	public IDataWrapper getDataWrapper();
+	/**
 	 * Type of the data wrapper to obfuscate
-	 * @return
+	 * @return the type of the data wrapper to obfuscate
 	 */
 	public Type getDataType();
 }

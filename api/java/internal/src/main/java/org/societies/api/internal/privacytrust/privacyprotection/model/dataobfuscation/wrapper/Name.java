@@ -24,6 +24,8 @@
  */
 package org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+
 /**
  * Describe your class here...
  *
@@ -71,5 +73,33 @@ public class Name {
 	 */
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	/*
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// -- Verify reference equality
+		if (obj == this) {
+			return true;
+		}
+
+		// -- Verify obj type
+		if (obj instanceof Name) {
+			Name other = (Name) obj;
+			return new EqualsBuilder()
+			.append(this.getFirstName(), other.getFirstName())
+			.append(this.getLastName(), other.getLastName())
+			.isEquals();
+		}
+		return false;
+	}
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Name [firstName=" + firstName + ", lastName=" + lastName + "]";
 	}
 }

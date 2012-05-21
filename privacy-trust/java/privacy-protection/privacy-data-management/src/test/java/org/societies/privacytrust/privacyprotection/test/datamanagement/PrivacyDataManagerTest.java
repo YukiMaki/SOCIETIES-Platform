@@ -24,9 +24,12 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import org.hibernate.SessionFactory;
 import org.junit.After;
@@ -44,9 +47,9 @@ import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.Requestor;
 import org.societies.api.internal.privacytrust.privacyprotection.IPrivacyDataManager;
 import org.societies.api.internal.privacytrust.privacyprotection.model.PrivacyException;
+import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.DataWrapperFactory;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.IDataWrapper;
 import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.Name;
-import org.societies.api.internal.privacytrust.privacyprotection.model.dataobfuscation.wrapper.NameWrapper;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Action;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.Decision;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacypolicy.ResponseItem;
@@ -97,16 +100,39 @@ public class PrivacyDataManagerTest {
 	 * @throws PrivacyException 
 	 */
 	@Test
-	@Ignore
+	@Ignore("PrivacyPreferenceManager not ready yet")
 	public void testObfuscateData() {
-		IDataWrapper actual = new NameWrapper(new Name("Olivier", "Maridat"));
-		boolean expection = false;
+		LOG.info("[Test begin] testObfuscateData()");
+		IDataWrapper<Name> wrapper = DataWrapperFactory.getNameWrapper("Olivier", "Maridat");
+		Future<IDataWrapper> obfuscatedDataWrapperAsync = null;
+		IDataWrapper<Name> obfuscatedDataWrapper = null;
 		try {
-			privacyDataManager.obfuscateData(null, null, null);
+			IIdentity requestorId = Mockito.mock(IIdentity.class);
+			Mockito.when(requestorId.getJid()).thenReturn("otherCss@societies.local");
+			Requestor requestor = new Requestor(requestorId);
+			IIdentity ownerId = Mockito.mock(IIdentity.class);
+			Mockito.when(ownerId.getJid()).thenReturn("me@societies.local");
+			CtxIdentifier dataId = CtxIdentifierFactory.getInstance().fromString("john@societies.local/ENTITY/person/1/ATTRIBUTE/name/13");
+			obfuscatedDataWrapperAsync = privacyDataManager.obfuscateData(requestor, ownerId, wrapper);
+			obfuscatedDataWrapper = obfuscatedDataWrapperAsync.get();
 		} catch (PrivacyException e) {
-			expection = true;
+			LOG.info("testObfuscateData(): obfuscation error "+e.getLocalizedMessage()+"\n", e);
+			fail("testObfuscateData(): obfuscation error "+e.getLocalizedMessage());
+		} catch (MalformedCtxIdentifierException e) {
+			LOG.info("testObfuscateData(): CtxId creation error "+e.getLocalizedMessage()+"\n", e);
+			fail("testObfuscateData(): CtxId creation error "+e.getLocalizedMessage());
+		} catch (InterruptedException e) {
+			LOG.info("testObfuscateData(): Async interrupted error "+e.getLocalizedMessage()+"\n", e);
+			fail("testObfuscateData(): Async interrupted error "+e.getLocalizedMessage());
+		} catch (ExecutionException e) {
+			LOG.info("testObfuscateData(): Async excecution error "+e.getLocalizedMessage()+"\n", e);
+			fail("testObfuscateData(): Async excecution error "+e.getLocalizedMessage());
 		}
-		assertFalse(expection);
+		
+		// Verify
+		LOG.info("### Orginal name:\n"+wrapper.getData().toString());
+		LOG.info("### Obfuscated name:\n"+obfuscatedDataWrapper.getData().toString());
+		assertNotNull("Obfuscated data null", obfuscatedDataWrapper);
 	}
 
 	/**

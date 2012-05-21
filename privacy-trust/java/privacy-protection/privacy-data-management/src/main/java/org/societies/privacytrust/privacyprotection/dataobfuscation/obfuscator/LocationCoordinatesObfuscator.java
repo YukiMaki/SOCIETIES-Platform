@@ -46,7 +46,7 @@ import org.societies.privacytrust.privacyprotection.dataobfuscation.obfuscator.u
  */
 public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordinatesWrapper> {
 	private static Logger LOG = LoggerFactory.getLogger(LocationCoordinatesObfuscator.class.getSimpleName());
-	
+
 	/**
 	 * Copy of the data to obfuscate
 	 */
@@ -102,11 +102,6 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	@Override
 	public IDataWrapper<LocationCoordinates> obfuscateData(double obfuscationLevel)
 			throws PrivacyException {
-		// -- Return directly if obfuscation level is 1
-		if (1 == obfuscationLevel) {
-			return data;
-		}
-		
 		// -- Init
 		rand = new RandomBetween();
 		// -- Algorithm
@@ -115,15 +110,11 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		Double theta = (double) -1;
 		LocationCoordinates obfuscatedLocationCoordinates = obfuscateLocation(geolocation, obfuscationLevel, obfuscationOperation, middleObfuscationLevel, theta);
 
-		// -- Send to callback ?
-		LOG.debug(geolocation.toJSONString());
-		LOG.debug(obfuscatedLocationCoordinates.toJSONString());
-
 		// -- Return
 		LocationCoordinatesWrapper dataWrapper = new LocationCoordinatesWrapper(obfuscatedLocationCoordinates);
 		return dataWrapper;
 	}
-	
+
 	/**
 	 * Location obfuscation algorithm
 	 * @param geolocation Location to obfuscate
@@ -132,9 +123,9 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	 */
 	private LocationCoordinates obfuscateLocation(LocationCoordinates geolocation, double obfuscationLevel, int obfuscationOperation, double middleObfuscationLevel, double theta) {
 		/* ALGORITHM
-		* Select randomly an algorithm
-		* And apply it
-		*/
+		 * Select randomly an algorithm
+		 * And apply it
+		 */
 		LocationCoordinates4Obfuscation obfuscatedLocationCoordinates = null;
 		int operation;
 		// Select a random operation
@@ -145,73 +136,73 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		else {
 			operation = obfuscationOperation;
 		}
-//		operation = 5;
+		//		operation = 5;
 		switch(operation) {
-			case OPERATION_E:
-				obfuscatedLocationCoordinates = EObfuscation(geolocation, obfuscationLevel);
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_E);
+		case OPERATION_E:
+			obfuscatedLocationCoordinates = EObfuscation(geolocation, obfuscationLevel);
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_E);
 			break;
-			case OPERATION_R:
-				obfuscatedLocationCoordinates = RObfuscation(geolocation, obfuscationLevel);
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_R);
+		case OPERATION_R:
+			obfuscatedLocationCoordinates = RObfuscation(geolocation, obfuscationLevel);
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_R);
 			break;
-			case OPERATION_S:
-				// SObfuscation with a random direction theta
-				if (-1 == theta) {
-					obfuscatedLocationCoordinates = SObfuscation(geolocation, obfuscationLevel);
-				}
-				// SObfuscation with a defined direction theta
-				else {
-					obfuscatedLocationCoordinates = SObfuscation(geolocation, obfuscationLevel, theta);
-				}
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_S);
+		case OPERATION_S:
+			// SObfuscation with a random direction theta
+			if (-1 == theta) {
+				obfuscatedLocationCoordinates = SObfuscation(geolocation, obfuscationLevel);
+			}
+			// SObfuscation with a defined direction theta
+			else {
+				obfuscatedLocationCoordinates = SObfuscation(geolocation, obfuscationLevel, theta);
+			}
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_S);
 			break;
-			case OPERATION_ES:
-				// ESObfuscation with a random direction theta and a random middleObfuscationLevel
-				if (-1 == theta && -1 == middleObfuscationLevel) {
-					obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel);
-				}
-				// ESObfuscation with a random direction theta and a defined middleObfuscationLevel
-				else if (-1 == theta && -1 != middleObfuscationLevel) {
-					obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel);
-				}
-				// ESObfuscation with a defined direction theta and a random middleObfuscationLevel
-				else if (-1 != theta && -1 == middleObfuscationLevel) {
-					obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, theta);
-				}
-				// ESObfuscation with a defined direction theta and a middleObfuscationLevel
-				else {
-					obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
-				}
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_ES);
+		case OPERATION_ES:
+			// ESObfuscation with a random direction theta and a random middleObfuscationLevel
+			if (-1 == theta && -1 == middleObfuscationLevel) {
+				obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel);
+			}
+			// ESObfuscation with a random direction theta and a defined middleObfuscationLevel
+			else if (-1 == theta && -1 != middleObfuscationLevel) {
+				obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel);
+			}
+			// ESObfuscation with a defined direction theta and a random middleObfuscationLevel
+			else if (-1 != theta && -1 == middleObfuscationLevel) {
+				obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, theta);
+			}
+			// ESObfuscation with a defined direction theta and a middleObfuscationLevel
+			else {
+				obfuscatedLocationCoordinates = ESObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
+			}
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_ES);
 			break;
-			case OPERATION_SE:
-				// SEObfuscation with a random direction theta and a random middleObfuscationLevel
-				if (-1 == theta && -1 == middleObfuscationLevel) {
-					obfuscatedLocationCoordinates = SEObfuscation(geolocation, obfuscationLevel);
-				}
-				// SEObfuscation with a defined direction theta and a middleObfuscationLevel
-				else {
-					obfuscatedLocationCoordinates = SEObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
-				}
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_SE);
+		case OPERATION_SE:
+			// SEObfuscation with a random direction theta and a random middleObfuscationLevel
+			if (-1 == theta && -1 == middleObfuscationLevel) {
+				obfuscatedLocationCoordinates = SEObfuscation(geolocation, obfuscationLevel);
+			}
+			// SEObfuscation with a defined direction theta and a middleObfuscationLevel
+			else {
+				obfuscatedLocationCoordinates = SEObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
+			}
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_SE);
 			break;
-			case OPERATION_SR:
-				// SRObfuscation with a random direction theta and a random middleObfuscationLevel
-				if (-1 == theta && -1 == middleObfuscationLevel) {
-					obfuscatedLocationCoordinates = SRObfuscation(geolocation, obfuscationLevel);
-				}
-				// SRObfuscation with a defined direction theta and a middleObfuscationLevel
-				else {
-					obfuscatedLocationCoordinates = SRObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
-				}
-				obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_SR);
+		case OPERATION_SR:
+			// SRObfuscation with a random direction theta and a random middleObfuscationLevel
+			if (-1 == theta && -1 == middleObfuscationLevel) {
+				obfuscatedLocationCoordinates = SRObfuscation(geolocation, obfuscationLevel);
+			}
+			// SRObfuscation with a defined direction theta and a middleObfuscationLevel
+			else {
+				obfuscatedLocationCoordinates = SRObfuscation(geolocation, obfuscationLevel, middleObfuscationLevel, theta);
+			}
+			obfuscatedLocationCoordinates.setObfuscationAlgorithm(OPERATION_SR);
 			break;
 		}
 		obfuscatedLocationCoordinates.setObfuscationLevel(obfuscationLevel);
 		return obfuscatedLocationCoordinates;
 	}
-	
+
 	/**
 	 * Location obfuscation algorithm
 	 * by enlarging the radius
@@ -221,7 +212,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	 * @return obfuscated location
 	 */
 	private LocationCoordinates4Obfuscation EObfuscation(LocationCoordinates geolocation, double obfuscationLevel) {
-		return new LocationCoordinates4Obfuscation(geolocation.getLatitude(), geolocation.getLongitude(), geolocation.getAccuracy()/((float) Math.sqrt(obfuscationLevel)));
+		return new LocationCoordinates4Obfuscation(geolocation.getLatitude(), geolocation.getLongitude(), geolocation.getAccuracy()/((double) Math.sqrt(obfuscationLevel)));
 	}
 	/**
 	 * Location obfuscation algorithm
@@ -231,7 +222,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	 * @return obfuscated location
 	 */
 	private LocationCoordinates4Obfuscation RObfuscation(LocationCoordinates geolocation, double obfuscationLevel) {
-		return new LocationCoordinates4Obfuscation(geolocation.getLatitude(), geolocation.getLongitude(), geolocation.getAccuracy()*((float) Math.sqrt(obfuscationLevel)));
+		return new LocationCoordinates4Obfuscation(geolocation.getLatitude(), geolocation.getLongitude(), geolocation.getAccuracy()*((double) Math.sqrt(obfuscationLevel)));
 	}
 	/**
 	 * Location obfuscation algorithm
@@ -272,7 +263,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		obfuscatedLocationCoordinates.setShiftDirection(theta);
 		obfuscatedLocationCoordinates.setShiftDistance(d);
 		obfuscatedLocationCoordinates.setShiftAlpha(alpha);
-		
+
 		return obfuscatedLocationCoordinates;
 	}
 	/**
@@ -317,12 +308,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	private LocationCoordinates4Obfuscation ESObfuscation(LocationCoordinates geolocation, double obfuscationLevel, double middleObfuscationLevel, double theta) {
 		LocationCoordinates4Obfuscation finalObfuscatedLocationCoordinates = null;
 		LocationCoordinates4Obfuscation middleObfuscatedLocationCoordinates = null;
-		
+
 		// -- Enlarge
 		middleObfuscatedLocationCoordinates = EObfuscation(geolocation, middleObfuscationLevel);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-		System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
-		
+		LOG.debug(middleObfuscatedLocationCoordinates.toJSONString()+",");
+
 		// -- Shift
 		/* Solve the following system
 		 * ri*sin(alpha/2) - rf*sin(gamma/2) = 0
@@ -370,12 +361,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	private LocationCoordinates4Obfuscation SEObfuscation(LocationCoordinates geolocation, double obfuscationLevel, double middleObfuscationLevel, double theta) {
 		LocationCoordinates4Obfuscation finalObfuscatedLocationCoordinates = null;
 		LocationCoordinates4Obfuscation middleObfuscatedLocationCoordinates = null;
-		
+
 		// -- Shift
 		middleObfuscatedLocationCoordinates = SObfuscation(geolocation, middleObfuscationLevel, theta);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-			System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
-		
+		LOG.debug(middleObfuscatedLocationCoordinates.toJSONString()+",");
+
 		// -- Enlarge
 		/* Solve the following system
 		 * ri*sin(alpha/2) - rf*sin(gamma/2) = 0
@@ -384,7 +375,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		 * 
 		 * obfuscationLevel, ri and d are well-known
 		 */
-		float rf = solveAlphaGammaRfByNewton(geolocation, middleObfuscatedLocationCoordinates, obfuscationLevel, true);
+		double rf = solveAlphaGammaRfByNewton(geolocation, middleObfuscatedLocationCoordinates, obfuscationLevel, true);
 		finalObfuscatedLocationCoordinates = new LocationCoordinates4Obfuscation(middleObfuscatedLocationCoordinates.getLatitude(), middleObfuscatedLocationCoordinates.getLongitude(), rf);
 		finalObfuscatedLocationCoordinates.setObfuscationLevel(obfuscationLevel);
 		return finalObfuscatedLocationCoordinates;
@@ -417,12 +408,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	private LocationCoordinates4Obfuscation SRObfuscation(LocationCoordinates geolocation, double obfuscationLevel, double middleObfuscationLevel, double theta) {
 		LocationCoordinates4Obfuscation finalObfuscatedLocationCoordinates = null;
 		LocationCoordinates4Obfuscation middleObfuscatedLocationCoordinates = null;
-		
+
 		// -- Shift
 		middleObfuscatedLocationCoordinates = SObfuscation(geolocation, middleObfuscationLevel, theta);
 		middleObfuscatedLocationCoordinates.setObfuscationLevel(middleObfuscationLevel);
-			System.out.println(middleObfuscatedLocationCoordinates.toJSONString()+",");
-		
+		LOG.debug(middleObfuscatedLocationCoordinates.toJSONString()+",");
+
 		// -- Reduce
 		/* Solve the following system
 		 * ri*sin(alpha/2) - rf*sin(gamma/2) = 0
@@ -431,12 +422,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		 * 
 		 * obfuscationLevel, ri and d are well-known
 		 */
-		float rf = solveAlphaGammaRfByNewton(geolocation, middleObfuscatedLocationCoordinates, obfuscationLevel, false);
+		double rf = solveAlphaGammaRfByNewton(geolocation, middleObfuscatedLocationCoordinates, obfuscationLevel, false);
 		finalObfuscatedLocationCoordinates = new LocationCoordinates4Obfuscation(middleObfuscatedLocationCoordinates.getLatitude(), middleObfuscatedLocationCoordinates.getLongitude(), rf);
 		finalObfuscatedLocationCoordinates.setObfuscationLevel(obfuscationLevel);
 		return finalObfuscatedLocationCoordinates;
 	}
-	
+
 	/**
 	 * Solve x-sin(x)-C=0 with Newton's Method
 	 * @param obfuscationLevel
@@ -449,12 +440,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		f(x)=x-sin(x)-C
 		f'(x)=1-cos(x)
 		xn = xnmoins - f(x)/f'(x)
-		
+
 		The difficulty is initialization, but :
 		A sign study show that f is growing
 		And f(PI/2)=-1.62, and f(PI)=0.9
 		So, we choose a value between PI/2 and PI, for example: 2
-		*/
+		 */
 		double xn = 2;
 		double precision = xn;
 		double precisionMax = 0.00000000000000000001;
@@ -465,12 +456,12 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 			if (0 == xnmoins1) {
 				xnmoins1 = 0.0000000001;
 			}
-//			LOG.info("xn"+i+"="+xn+" (precision = "+precision+")");
+			//			LOG.info("xn"+i+"="+xn+" (precision = "+precision+")");
 			xn = xnmoins1-((-C+xnmoins1-Math.sin(xnmoins1))/(1-Math.cos(xnmoins1)));
 			precision = Math.abs(xn-xnmoins1);
 			i++;
 		}	
-//		LOG.info("xnfinal="+xn+" ou "+Math.toDegrees(xn)+"°");
+		//		LOG.info("xnfinal="+xn+" ou "+Math.toDegrees(xn)+"°");
 		return xn;
 	}
 	/**
@@ -493,11 +484,11 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		}
 		double gammaMax = 2*Math.asin(ri/rf);
 		double gamma0Max = gammaMax;
-		
+
 		// Initialize
 		double alpha0 = 1;
 		double gamma0 = 1;
-		
+
 		double alphan;
 		double gamman;
 		double precisionAlpha;
@@ -506,20 +497,20 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		// While correct values have not been computed
 		do {
 			restart = false;
-			
+
 			// Values n-1 = initialization values
 			alphan = alpha0;
 			gamman = gamma0;
 			precisionAlpha = alpha0;
 			precisionGamma = gamma0;
-			
+
 			// While a good precision have been reached
 			int i = 0;
 			while(i<nbMaxIteration && (precisionAlpha > precisionMax || precisionGamma > precisionMax)) {
 				// Save precedent values
 				double alphanmoins1 = alphan;
 				double gammanmoins1 = gamman;
-//				LOG.info("alphan"+i+"="+alphan+" ("+precisionAlpha+"), gamman"+i+"="+gamman+" ("+precisionGamma+")");
+				//				LOG.info("alphan"+i+"="+alphan+" ("+precisionAlpha+"), gamman"+i+"="+gamman+" ("+precisionGamma+")");
 				// Compute functions and their derivates
 				double f = ri*Math.sin(alphanmoins1/2)-rf*Math.sin(gammanmoins1/2);
 				double dfByAlpha = ri/2*Math.cos(alphanmoins1/2);
@@ -527,7 +518,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 				double g = ri2/2*(alphanmoins1-Math.sin(alphanmoins1))+rf2/2*(gammanmoins1-Math.sin(gammanmoins1))-C;
 				double dgByAlpha = ri2*(1-Math.cos(alphanmoins1));
 				double dgByGamma = rf2*(1-Math.cos(gammanmoins1));
-				
+
 				// Compute new values
 				/* Algorithm
 				 * alphan = alphan-1 - (f(alphan-1)*dgByGamma-g(alphan-1)*dfByGamma)/(dfByAlpha*dgByGamma-dfByGamma*dgByAlpha)
@@ -536,28 +527,28 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 				double delta = dfByAlpha*dgByGamma-dfByGamma*dgByAlpha;
 				alphan = alphanmoins1 - (f*dgByGamma-g*dfByGamma)/delta;
 				gamman = gammanmoins1 - (g*dfByAlpha-f*dgByAlpha)/delta;
-//				/* Alternative algorithm
-//				 * Xn = (alphan gamman)
-//				 * Xn = Xn-1 - F(Xn-1)/J_F(Xn-1)
-//				 */
-//				double [][] valuesF = {{f}, {g}};
-//				double [][] valuesJ_F = {{dfByAlpha, dfByGamma}, {dgByAlpha, dgByGamma}};
-//		        RealMatrix F = new Array2DRowRealMatrix(valuesF);
-//		        RealMatrix J_F = new Array2DRowRealMatrix(valuesJ_F);
-//		        RealMatrix J_FinverseTimeF = new LUDecompositionImpl(J_F).getSolver().getInverse().multiply(F);
-//				alphan = alphanmoins1 - J_FinverseTimeF.getEntry(0,0);
-//				gamman = gammanmoins1 - J_FinverseTimeF.getEntry(1,0);
-				
+				//				/* Alternative algorithm
+				//				 * Xn = (alphan gamman)
+				//				 * Xn = Xn-1 - F(Xn-1)/J_F(Xn-1)
+				//				 */
+				//				double [][] valuesF = {{f}, {g}};
+				//				double [][] valuesJ_F = {{dfByAlpha, dfByGamma}, {dgByAlpha, dgByGamma}};
+				//		        RealMatrix F = new Array2DRowRealMatrix(valuesF);
+				//		        RealMatrix J_F = new Array2DRowRealMatrix(valuesJ_F);
+				//		        RealMatrix J_FinverseTimeF = new LUDecompositionImpl(J_F).getSolver().getInverse().multiply(F);
+				//				alphan = alphanmoins1 - J_FinverseTimeF.getEntry(0,0);
+				//				gamman = gammanmoins1 - J_FinverseTimeF.getEntry(1,0);
+
 				// Compute precision
 				precisionAlpha = Math.abs(alphan-alphanmoins1);
 				precisionGamma = Math.abs(gamman-gammanmoins1);
 				i++;
 			}
-			
+
 			// Check if computed values are correct, else: restart
-//			LOG.info("Restart");
-//			LOG.info("alpha0="+alpha0+", alphanfinal="+alphan+" ou "+Math.toDegrees(alphan)+"°");
-//			LOG.info("gamma0="+gamma0+", gammanfinal="+gamman+" ou "+Math.toDegrees(gamman)+"°");
+			//			LOG.info("Restart");
+			//			LOG.info("alpha0="+alpha0+", alphanfinal="+alphan+" ou "+Math.toDegrees(alphan)+"°");
+			//			LOG.info("gamma0="+gamma0+", gammanfinal="+gamman+" ou "+Math.toDegrees(gamman)+"°");
 			if (alpha0 < alpha0Max && (alphan <= 0 || alphan >= 2*Math.PI)) {
 				restart = true;
 				alpha0 += step;
@@ -568,9 +559,9 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 			}
 		}
 		while(restart);
-		
+
 		double d = ri*Math.cos(alphan/2)+rf*Math.cos(gamman/2);
-		
+
 		List<Double> solutions = new ArrayList<Double>();
 		solutions.add(alphan);
 		solutions.add(gamman);
@@ -587,7 +578,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 	 * @param obfuscationLevel
 	 * @return
 	 */
-	private float solveAlphaGammaRfByNewton(LocationCoordinates initialLocation, LocationCoordinates4Obfuscation middleLocation, double obfuscationLevel, boolean enlargement) {
+	private double solveAlphaGammaRfByNewton(LocationCoordinates initialLocation, LocationCoordinates4Obfuscation middleLocation, double obfuscationLevel, boolean enlargement) {
 		// Rename some variables
 		double ri = initialLocation.getAccuracy();
 		double ri2 = Math.pow(ri, 2);
@@ -604,21 +595,21 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 		boolean restart;
 		double maxH = 0;
 		double minH = 0;
-//		int nbTour = 0;
-		
+		//		int nbTour = 0;
+
 		// While correct values have not been computed
 		do {
 			restart = false;
-			
+
 			// - Select rf
 			rf = rf0;
 			// - Compute alpha and gamma
 			double rf2 = Math.pow(rf, 2);
 			// Ci are in Cf or they are similar
 			if (d == 0 || rf == 0 || rf >= (ri+d)) {
-	        	alpha = 2*Math.PI;
-	        	gamma = 0;
-	    	}
+				alpha = 2*Math.PI;
+				gamma = 0;
+			}
 			// Cf are in Ci
 			else if ((d <= ri && ri >= (d+rf)) || ri == 0) {
 				alpha = 0;
@@ -626,15 +617,15 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 			}
 			// Circles are disjoints
 			else if (d > ri+rf) {
-	    		alpha = 0;
-	        	gamma = 0;
-	    	}
+				alpha = 0;
+				gamma = 0;
+			}
 			// Normal case
-	    	else {
-	    		alpha = 2*Math.acos((ri2+d2-rf2)/(2*ri*d));
-	        	gamma = 2*Math.acos((rf2+d2-ri2)/(2*rf*d));
-	    	}
-	    	
+			else {
+				alpha = 2*Math.acos((ri2+d2-rf2)/(2*ri*d));
+				gamma = 2*Math.acos((rf2+d2-ri2)/(2*rf*d));
+			}
+
 			// - Compute the function h that must be equals to 0
 			double Aintersection = ri2/2*(alpha-Math.sin(alpha))+rf2/2*(gamma-Math.sin(gamma));
 			double Atotal = Math.PI*ri2;
@@ -642,7 +633,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 				Atotal = Math.PI*rf2;
 			}
 			double h = Aintersection/Atotal-obfuscationLevel;
-			
+
 			// ( If h != 0 : restart
 			if (rf0 > 0 && rf0 < rf0Max && (h <= -precision ||  h >= precision)) {
 				// - Compute the step, to go faster when we are far away of the solution
@@ -661,7 +652,7 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 				 */
 				double m = 2;
 				double step = 2*m/Math.PI*Math.atan(Math.abs(h));
-//				LOG.info(Math.abs(h)+" "+step);
+				//				LOG.info(Math.abs(h)+" "+step);
 				// We continy only if rf0 can be > 0
 				if (rf0 > step) {
 					restart = true;
@@ -673,20 +664,20 @@ public class LocationCoordinatesObfuscator extends DataObfuscator<LocationCoordi
 					}
 				}
 			}
-			
-//			nbTour++;
-//			if (!restart) {
-//				System.out.println("Soluce "+nbTour+" : " +
-//						"alpha="+Math.toDegrees(alpha)+"°, " +
-//						"| gamma="+Math.toDegrees(gamma)+"°, " +
-//						"| rf="+rf+" meters,"+
-//						"| ri="+ri+" meters, "+
-//						"| d="+d+" meters, "+
-//						"h="+h+" (maxH="+maxH+", minH="+minH+")");
-//			}
+
+			//			nbTour++;
+			//			if (!restart) {
+			//				LOG.info("Soluce "+nbTour+" : " +
+			//						"alpha="+Math.toDegrees(alpha)+"°, " +
+			//						"| gamma="+Math.toDegrees(gamma)+"°, " +
+			//						"| rf="+rf+" meters,"+
+			//						"| ri="+ri+" meters, "+
+			//						"| d="+d+" meters, "+
+			//						"h="+h+" (maxH="+maxH+", minH="+minH+")");
+			//			}
 		}
 		while(restart);
-		return (float) rf;
+		return (double) rf;
 	}
 
 	// -- GETTER / SETTER
