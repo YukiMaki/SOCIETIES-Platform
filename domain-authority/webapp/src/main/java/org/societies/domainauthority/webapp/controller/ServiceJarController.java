@@ -28,8 +28,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 /**
@@ -39,22 +41,30 @@ import org.springframework.web.servlet.ModelAndView;
  */
 
 @Controller
-public class DefaultController {
+public class ServiceJarController {
 
 	/**
-	 * This method get called when user request for login page by using
-	 * url http://localhost:8080/societies/login.html
-	 * @return login jsp page and model object
+	 * @return Jar file for installation of client for the requested service
 	 */
-	@RequestMapping(value="/default.html",method = RequestMethod.GET)
-	public ModelAndView DefaultPage() {
+	@RequestMapping(value="/servicejar.jar", method = RequestMethod.GET)
+	public byte[] getJar(@RequestParam(value = "key", required = true) String key) {
+
+		byte[] jar = new byte[] {'a', 'h', 'o', 'j'};
+		jar = key.getBytes();
+
+		return jar;
+	}
+
+	/**
+	 * @return Jar file for installation of client for the requested service
+	 */
+	@RequestMapping(value="/servicejar2.jar", method = RequestMethod.GET)
+	public ModelAndView getJar2(@RequestParam(value = "key", required = true) String key) {
+
 		//model is nothing but a standard Map object
 		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("message", "Please login to your Societies account");
+		model.put("message", "ahoj");
 
 		return new ModelAndView("default", model) ;
 	}
-	
-	
-	
 }
