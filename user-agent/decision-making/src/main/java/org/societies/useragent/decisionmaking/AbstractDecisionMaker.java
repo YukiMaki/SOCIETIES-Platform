@@ -72,6 +72,18 @@ public abstract class AbstractDecisionMaker implements IDecisionMaker {
 		// TODO Auto-generated method stub
 		HashSet<IOutcome> conflicts=new HashSet<IOutcome>();
 		logging.debug("start resolving DM");
+		if(intents.size()==0){
+			for(IOutcome action:preferences){
+				this.implementIAction(action);
+			}
+			return;
+		}
+		if(preferences.size()==0){
+			for(IOutcome action:intents){
+				this.implementIAction(action);
+			}
+			return;
+		}
 		for (IOutcome intent : intents) {
 			IOutcome action=intent;
 			//unresolved preference ioutcomes
@@ -86,13 +98,15 @@ public abstract class AbstractDecisionMaker implements IDecisionMaker {
 					/*handler the unknown work*/
 				}
 			}
-			if(conflicts.size()==0)//no unresolved conflicts
+			if(conflicts.size()==0){//no unresolved conflicts
+				logging.debug("no unresolved conflicts");
 				this.implementIAction(action);
-			else{
+			}else{
 				List<String> options=new ArrayList<String>();
 				options.add(intent.toString());
 				for(IOutcome conf:conflicts)
 				options.add(conf.toString());
+				logging.debug("Call Feedback Manager");
 				ExpProposalContent epc=new ExpProposalContent("Conflict Detected!",
 						options.toArray(new String[options.size()]));
 				feedbackHandler.getExplicitFB(ExpProposalType.RADIOLIST, epc, 

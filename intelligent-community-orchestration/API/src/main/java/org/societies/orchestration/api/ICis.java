@@ -76,6 +76,10 @@ public class ICis {
    // public String getUserDefineName();
     //public String getCisType();
     
+    public String getDescription() {
+    	return "";
+    }
+    
     public Future<Set<ICisParticipant>> getMembersList() {
     	return null;
     }
@@ -88,6 +92,10 @@ public class ICis {
     
     public ArrayList<String> getMembershipCriteria() {
     	return new ArrayList<String>();
+    }
+    
+    public Future<Set<ICisParticipant>> getAdministrators() {
+    	return null;
     }
     
     public Boolean addSubCis(ICis cis) {

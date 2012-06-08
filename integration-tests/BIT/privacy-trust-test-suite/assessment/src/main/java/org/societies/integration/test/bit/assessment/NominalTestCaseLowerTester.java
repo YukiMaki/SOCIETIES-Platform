@@ -3,6 +3,7 @@ package org.societies.integration.test.bit.assessment;
 import static org.junit.Assert.*;
 
 import java.util.Calendar;
+import java.util.concurrent.ExecutionException;
 
 import org.junit.After;
 import org.junit.Before;
@@ -10,9 +11,13 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.societies.api.comm.xmpp.interfaces.ICommManager;
+import org.societies.api.context.CtxException;
+import org.societies.api.context.broker.ICtxBroker;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.IIdentityManager;
 import org.societies.api.identity.Requestor;
+import org.societies.api.internal.privacytrust.privacyprotection.model.privacyassessment.IAssessment;
 import org.societies.api.internal.privacytrust.privacyprotection.model.privacyassessment.IPrivacyLogAppender;
 import org.societies.integration.test.IntegrationTestUtils;
 
@@ -27,8 +32,12 @@ public class NominalTestCaseLowerTester {
 	private static final long PRIVACY_LOGGER_MAX_EXECUTION_TIME_IN_MS = 200;
 	
 	private static IPrivacyLogAppender privacyLogAppender;
+	private static IAssessment assessment;
 	private static IIdentityManager identityManager;
-	
+	private static ICommManager commManager;
+	private static ICtxBroker ctxBrokerExternal;
+	private static org.societies.api.internal.context.broker.ICtxBroker ctxBrokerInternal;
+
 	/**
 	 * Tools for integration test
 	 */
@@ -57,10 +66,18 @@ public class NominalTestCaseLowerTester {
 		LOG.info("[#1055] Prerequisite: The user is logged to the CSS");
 
 		privacyLogAppender = TestCase1055.getPrivacyLogAppender();
+		assessment = TestCase1055.getAssessment();
 		identityManager = TestCase1055.getIdentityManager();
+		commManager = TestCase1055.getCommManager();
+		ctxBrokerExternal = TestCase1055.getCtxBrokerExternal();
+		ctxBrokerInternal = TestCase1055.getCtxBrokerInternal();
 		
 		assertNotNull(privacyLogAppender);
+		assertNotNull(assessment);
 		assertNotNull(identityManager);
+		assertNotNull(commManager);
+		assertNotNull(ctxBrokerExternal);
+		assertNotNull(ctxBrokerInternal);
 	}
 
 	/**
@@ -122,7 +139,100 @@ public class NominalTestCaseLowerTester {
 	}
 	
 	@Test
-	public void testAssessment() {
-		// TODO
+	public void testContextBrokerInternalLogging() throws CtxException, InterruptedException, ExecutionException {
+
+		LOG.info("[#1055] testContextBrokerInternalLogging()");
+
+		CtxBrokerInternalHelper ctx = new CtxBrokerInternalHelper(ctxBrokerInternal);
+		long num1;
+		long num2;
+		
+		num1 = assessment.getNumDataAccessEvents();
+		LOG.debug("[#1055] testContextBrokerInternalLogging() 1");
+		ctx.retrieveCssOperator();
+
+		num2 = assessment.getNumDataAccessEvents();
+		assertEquals("ctx.retrieveCssOperator()", num1 + 1, num2);
+		
+		LOG.debug("[#1055] testContextBrokerInternalLogging() 2");
+		ctx.createContext();
+		LOG.debug("[#1055] testContextBrokerInternalLogging() 3");
+		
+		num1 = num2;
+		num2 = assessment.getNumDataAccessEvents();
+		assertEquals("Number of data access events not same after ctx.createContext()", num1, num2);
+
+		ctx.retrieveContext();
+		LOG.debug("[#1055] testContextBrokerInternalLogging() 4");
+		num1 = num2;
+		num2 = assessment.getNumDataAccessEvents();
+		LOG.debug("[#1055] testContextBrokerInternalLogging(): Number of data access events: before access = " +
+				num1 + ", after access = " + num2);
+		assertEquals("Number of data access events not increased properly after ctx.retrieveContext()", num1 + 2, num2);
 	}
+	
+	@Test
+	public void testContextBrokerExternalLogging() throws CtxException, InterruptedException, ExecutionException {
+
+		LOG.info("[#1055] testContextBrokerExternalLogging()");
+
+		IIdentity requestor = identityManager.getThisNetworkNode();
+		CtxBrokerExternalHelper ctx = new CtxBrokerExternalHelper(ctxBrokerExternal, requestor);
+		long num1;
+		long num2;
+		
+		num1 = assessment.getNumDataAccessEvents();
+		
+		LOG.debug("[#1055] testContextBrokerExternalLogging() 2");
+		ctx.createContext();
+		LOG.debug("[#1055] testContextBrokerExternalLogging() 3");
+		
+		num2 = assessment.getNumDataAccessEvents();
+		assertEquals("Number of data access events not same after ctx.createContext()", num1, num2);
+
+		ctx.retrieveContext();
+		LOG.debug("[#1055] testContextBrokerExternalLogging() 4");
+		num1 = num2;
+		num2 = assessment.getNumDataAccessEvents();
+		LOG.debug("[#1055] testContextBrokerExternalLogging(): Number of data access events: before access = " +
+				num1 + ", after access = " + num2);
+		assertEquals("Number of data access events not increased properly after ctx.retrieveContext()", num1 + 4, num2);
+	}
+
+//	@Test
+//	public void testCommsManagerLogging() throws CommunicationException {
+//		
+//		LOG.info("[#1055] testCommsManagerLogging()");
+//
+//		IIdentity from = identityManager.getThisNetworkNode();
+//		IIdentity to = identityManager.getThisNetworkNode();
+//		Stanza stanza = new Stanza(to);
+//		
+//		stanza.setId("001");
+//		
+//		ProviderBean payload = new ProviderBean();
+//		payload.setMethod(MethodType.ACCEPT_POLICY_AND_GET_SLA);
+//		payload.setServiceId("service-1");
+//		payload.setSessionId(1);
+//		payload.setSignedPolicyOption("<sla/>");
+//		payload.setModified(false);
+//
+//		LOG.debug("[#1055] testCommsManagerLogging(): from identity = " + stanza.getFrom());
+//		LOG.debug("[#1055] testCommsManagerLogging(): to identity = " + stanza.getTo());
+//		
+//		LOG.debug("[#1055] testCommsManagerLogging() 1");
+//		long num1 = assessment.getNumDataTransmissionEvents();
+//		LOG.debug("[#1055] testCommsManagerLogging() 2");
+//		commManager.sendMessage(stanza, payload);
+//		LOG.debug("[#1055] testCommsManagerLogging() 3");
+//		commManager.sendIQGet(stanza, payload, null);
+//		LOG.debug("[#1055] testCommsManagerLogging() 4");
+//		long num2 = assessment.getNumDataTransmissionEvents();
+//		LOG.debug("[#1055] testCommsManagerLogging() 5");
+//		
+//		LOG.debug("[#1055] testCommsManagerLogging(): Number of data transmission events: before transmission = " +
+//				num1 + ", after transmission = " + num2);
+//		
+//		assertEquals(num1 + 2, num2);
+//	}
 }

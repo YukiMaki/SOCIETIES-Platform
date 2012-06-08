@@ -33,6 +33,13 @@ package org.societies.api.context.model;
 public class CtxEntityTypes {
 
 	/**
+	 * The type of all {@link CommunityCtxEntity CommunityCtxEntities}.
+	 * 
+     * @since 0.2
+     */
+    public static final String COMMUNITY = "community";
+    
+	/**
      * @since 0.0.8 
      */
     public static final String CSS_NODE = "cssNode";
@@ -63,6 +70,13 @@ public class CtxEntityTypes {
     public static final String PRIVACY_POLICY = "privacyPolicy";
     
     /**
+     * Privacy Policy Agreement
+     * To be moved to the internal API
+     */
+    @Deprecated
+    public static final String PRIVACY_POLICY_AGREEMENT = "privacyPolicyAgreement";
+    
+    /**
      * 
      */
     public static final String PRIVACY_PREFERENCE = "privacyPreference";
@@ -76,4 +90,11 @@ public class CtxEntityTypes {
      * 
      */
     public static final String SERVICE_PARAMETER = "serviceParameter";
+    
+    /**
+     * 
+     */
+    public static final String SOCIAL_NETWORK = "socialNetwork";
+    
+    
 }

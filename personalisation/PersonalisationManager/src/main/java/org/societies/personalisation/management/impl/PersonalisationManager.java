@@ -372,13 +372,30 @@ IInternalPersonalisationManager, CtxChangeEventListener {
 	@Override
 	public Future<IAction> getPreference(IIdentity ownerID, String serviceType,
 			ServiceResourceIdentifier serviceID, String preferenceName) {
-		Future<List<IDIANNEOutcome>> futureDianneOuts = this.dianne.getOutcome(ownerID, serviceID, preferenceName);
-		Future<IOutcome> futurePrefOuts = this.pcm.getOutcome(ownerID, serviceID, preferenceName);
+		Future<List<IDIANNEOutcome>> futureDianneOuts;
+		try{
+		futureDianneOuts = this.dianne.getOutcome(ownerID, serviceID, preferenceName);
+		}catch(Exception e){
+			e.printStackTrace();
+			futureDianneOuts = new AsyncResult<List<IDIANNEOutcome>>(new ArrayList<IDIANNEOutcome>());
+		}
+		Future<IOutcome> futurePrefOuts;
+		try{
+		 futurePrefOuts = this.pcm.getOutcome(ownerID, serviceID, preferenceName);
+		}catch(Exception e){
+			e.printStackTrace();
+			 futurePrefOuts = new AsyncResult<IOutcome>(null);
+		}
 		IAction action;
 		try {
-			IDIANNEOutcome dianneOut = futureDianneOuts.get().get(0);
+			List<IDIANNEOutcome> dianneOutList = futureDianneOuts.get();
+			if (dianneOutList.size()>0){
+			IDIANNEOutcome dianneOut = dianneOutList.get(0);
 			IPreferenceOutcome prefOut = (IPreferenceOutcome) futurePrefOuts.get();
 
+			if (null==prefOut){
+				return new AsyncResult<IAction>(dianneOut);
+			}
 			if (dianneOut.getvalue().equalsIgnoreCase(prefOut.getvalue())){
 				action = new Action(serviceID, serviceType, preferenceName, prefOut.getvalue());
 				action.setServiceID(serviceID);
@@ -388,6 +405,11 @@ IInternalPersonalisationManager, CtxChangeEventListener {
 			}else{
 				return new AsyncResult<IAction>(this.resolvePreferenceConflicts(dianneOut, prefOut));
 			}
+			
+			}else{
+				IPreferenceOutcome prefOut = (IPreferenceOutcome) futurePrefOuts.get();
+				return new AsyncResult<IAction>(prefOut);
+			}
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -396,7 +418,7 @@ IInternalPersonalisationManager, CtxChangeEventListener {
 			e.printStackTrace();
 		}
 
-		return null;
+		return new AsyncResult<IAction>(null);
 	}
 
 	/*
@@ -438,14 +460,39 @@ IInternalPersonalisationManager, CtxChangeEventListener {
 	public Future<IAction> getIntentAction(IIdentity ownerID,
 			ServiceResourceIdentifier serviceID, String preferenceName) {
 
-		Future<IUserIntentAction> futureCAUIOuts = this.cauiPrediction.getCurrentIntentAction(ownerID, serviceID, preferenceName);
-		Future<CRISTUserAction> futureCRISTOuts = this.cristPrediction.getCurrentUserIntentAction(ownerID, serviceID, preferenceName);
+		Future<IUserIntentAction> futureCAUIOuts;
+		try{
+			futureCAUIOuts = this.cauiPrediction.getCurrentIntentAction(ownerID, serviceID, preferenceName);
+		}catch(Exception e){
+			e.printStackTrace();
+			futureCAUIOuts = new AsyncResult<IUserIntentAction>(null);
+		}
+		Future<CRISTUserAction> futureCRISTOuts;
+		try{
+		futureCRISTOuts = this.cristPrediction.getCurrentUserIntentAction(ownerID, serviceID, preferenceName);
+		}catch(Exception e){
+			e.printStackTrace();
+			futureCRISTOuts = new AsyncResult<CRISTUserAction>(null);
+		}
 		IAction action;
 
 		try {
 			IUserIntentAction cauiOut = futureCAUIOuts.get();
 			CRISTUserAction cristOut = futureCRISTOuts.get();
 
+			if (cauiOut==null){
+				if (cristOut==null){
+					return new AsyncResult<IAction>(null);
+				}else{
+					return new AsyncResult<IAction>(cristOut);
+				}
+			}else{
+				if (cristOut==null){
+					return new AsyncResult<IAction>(cauiOut);
+				}
+			}
+			
+			
 			if (cauiOut.getvalue().equalsIgnoreCase(cristOut.getvalue())){
 				action = new Action(serviceID, "", preferenceName, cauiOut.getvalue());
 				return new AsyncResult<IAction>(action);
@@ -459,7 +506,7 @@ IInternalPersonalisationManager, CtxChangeEventListener {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return null;
+		return new AsyncResult<IAction>(null);
 	}
 
 

@@ -25,48 +25,11 @@
 
 package org.societies.orchestration.cpa.impl;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-
-
-//import org.societies.api.internal.cis.management.ICisManager;
-//import org.societies.api.cis.management.ICisManager;
-//import org.societies.api.cis.management.ICis;
-import org.societies.api.comm.xmpp.interfaces.ICommCallback;
-import org.societies.api.comm.xmpp.interfaces.ICommManager;
-//import org.societies.api.internal.cis.management.ICis;
-import org.societies.api.internal.context.broker.ICtxBroker;
-import org.societies.api.internal.css.devicemgmt.devicemanager.IDeviceManager;
-import org.societies.api.internal.servicelifecycle.IServiceDiscovery;
-import org.societies.api.internal.servicelifecycle.IServiceDiscoveryCallback;
-
-import org.societies.api.activity.IActivity;
-import org.societies.api.activity.IActivityFeed;
-//import org.societies.api.cis.management.ICis;
-
-/**import org.societies.api.cis.management.ICis;
-import org.societies.api.cis.management.ICisManager;
 import org.societies.api.cis.management.ICisOwned;
-import org.societies.api.cis.management.ICisEditor;*/
-
-import org.societies.orchestration.api.ICis;
-import org.societies.orchestration.api.ICisManager;
-import org.societies.orchestration.api.ICisOwned;
-import org.societies.orchestration.api.ICisParticipant;
 import org.societies.orchestration.api.ICisProposal;
-//import org.societies.orchestration.api.ICisEditor;
-
-//import org.societies.api.internal.context.broker.ICommunityCtxBroker;
-
 import org.societies.api.identity.IIdentity;
-//import org.societies.api.comm.xmpp.datatypes.Identity;
-import org.societies.api.identity.IIdentityManager;
-
-//import org.societies.api.comm.xmpp.datatypes.Identity;
-//import org.societies.comm.examples.commsmanager.impl.CommsServer;
-//import org.societies.comm.xmpp.interfaces.ICommCallback;
 
 /**
  * This is the class for the Egocentric Community Analyser component
@@ -81,12 +44,11 @@ import org.societies.api.identity.IIdentityManager;
 
 public class CPA
 {
-	
-	private CPACreationPatterns egocentricCreationManager;
+	public CPA(){}
+	private CPACreationPatterns cpaCreationPatterns;
 	
 	private Date lastTemporaryCheck;
-	private Date lastOngoingCheck;
-	private List<ICis> currentCises;
+	private List<ICisOwned> currentCises;
 	/*
      * Constructor for EgocentricCommunityAnalyser
      * 
@@ -98,18 +60,13 @@ public class CPA
 	 */
 	
 	public CPA(IIdentity linkedEntity, String linkType) {
-		
 		lastTemporaryCheck = new Date();
-		lastOngoingCheck = new Date();
-		
-		//else
-		//	this.linkedDomain = linkedEntity;
 	}
 	private void sendToCSM(List<ICisProposal> list){
 	}
 	private void process() {
 		
-		sendToCSM(egocentricCreationManager.analyze(currentCises));
+		sendToCSM(cpaCreationPatterns.analyze(currentCises));
 
 	}
 	
@@ -141,18 +98,18 @@ public class CPA
 	}
 	
     
-    public void initialiseEgocentricCommunityAnalyser() {
+    public void initialiseCPA() {
     	loop();
     }
     
-    public CPACreationPatterns getEgocentricCreationManager() {
-    	return egocentricCreationManager;
+    public CPACreationPatterns getCPACreationPatterns() {
+    	return cpaCreationPatterns;
     }
     
-    public void setEgocentricCreationManager(CPACreationPatterns egocentricCreationManager) {
-    	this.egocentricCreationManager = egocentricCreationManager;
+    public void setCPACreationPatterns(CPACreationPatterns cpaCreationPatterns) {
+    	this.cpaCreationPatterns = cpaCreationPatterns;
     }
-    
+    public void init(){}
     
     
 }

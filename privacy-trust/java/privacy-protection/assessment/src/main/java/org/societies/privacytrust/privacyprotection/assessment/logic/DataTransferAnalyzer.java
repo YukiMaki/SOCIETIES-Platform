@@ -50,15 +50,12 @@ public class DataTransferAnalyzer {
 	private static Logger LOG = LoggerFactory.getLogger(DataTransferAnalyzer.class);
 
 	private PrivacyLog privacyLog;
-//	private Correlation correlation;
-	
-//	private List<AssessmentResultClassName> assessmentResultClassName = new ArrayList<AssessmentResultClassName>();
-//	private List<AssessmentResultIIdentity> assessmentResultIIdentity = new ArrayList<AssessmentResultIIdentity>();
+	private Correlation correlation;
 	
 	public DataTransferAnalyzer(PrivacyLog privacyLog) {
 		LOG.info("Constructor");
 		this.privacyLog = privacyLog;
-//		this.correlation = new Correlation(privacyLog.getDataAccess(), privacyLog.getDataTransmission());
+		correlation = new Correlation(privacyLog);
 	}
 	
 	public AssessmentResultIIdentity estimatePrivacyBreach(IIdentity sender) throws AssessmentException {
@@ -68,6 +65,8 @@ public class DataTransferAnalyzer {
 			throw new AssessmentException("sender or sender JID is null");
 		}
 		
+		correlation.run();
+
 		AssessmentResultIIdentity result = new AssessmentResultIIdentity(sender);
 		PrivacyLogFilter filter = new PrivacyLogFilter();
 		filter.setSender(sender);
@@ -91,6 +90,8 @@ public class DataTransferAnalyzer {
 			throw new AssessmentException("sender is null");
 		}
 		
+		correlation.run();
+
 		AssessmentResultClassName result = new AssessmentResultClassName(sender);
 		PrivacyLogFilter filter = new PrivacyLogFilter();
 		filter.setSenderClass(sender);
@@ -113,13 +114,16 @@ public class DataTransferAnalyzer {
 		result.setCorrWithDataAccessByAll(corrByAll);
 		result.setCorrWithDataAccessBySender(corrBySender);
 		result.setNumAllPackets(matchedTransmissions.size());
-		if (matchedTransmissions.size() > 0) {
+		if (matchedTransmissions.size() < 1) {
 			result.setNumPacketsPerMonth(0);
 		}
 		else {
-			long timePeriodInMs;
-			timePeriodInMs = new Date().getTime() - matchedTransmissions.get(0).getTimeInMs();
-			result.setNumPacketsPerMonth((double) matchedTransmissions.size() / timePeriodInMs);
+			long timePeriod;
+			// Calculate time period in ms
+			timePeriod = new Date().getTime() - matchedTransmissions.get(0).getTimeInMs();
+			// Convert time period to months
+			timePeriod /= 1e3 * 3600 * 24 * 30.5;
+			result.setNumPacketsPerMonth((double) matchedTransmissions.size() / timePeriod);
 		}
 	}
 }

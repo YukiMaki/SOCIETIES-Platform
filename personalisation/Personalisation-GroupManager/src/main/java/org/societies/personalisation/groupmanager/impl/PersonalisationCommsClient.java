@@ -71,7 +71,7 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 	
 	
 	
-	private ICommManager commManager;
+	private ICommManager commsMgr;
 	private static Logger LOG = LoggerFactory.getLogger(PersonalisationCommsClient.class);
 	private IIdentityManager idMgr;
 	Hashtable<String,IAction> results = new Hashtable<String, IAction>();
@@ -81,25 +81,13 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 	public void InitService(){
 		//REGISTER OUR ServiceManager WITH THE XMPP Communication Manager
 		try {
-			commManager.register(this); 
+			getCommsMgr().register(this); 
 		} catch (CommunicationException e) {
 			e.printStackTrace();
 		}
-		idMgr = getCommManager().getIdManager();
+		
 	}
-	/**
-	 * @return the commManager
-	 */
-	public ICommManager getCommManager() {
-		return commManager;
-	}
-	/**
-	 * @param commManager the commManager to set
-	 */
-	public void setCommManager(ICommManager commManager) {
-		this.commManager = commManager;
-		this.idMgr = commManager.getIdManager();
-	}
+
 	@Override
 	public List<String> getJavaPackages() {
 		// TODO Auto-generated method stub
@@ -148,6 +136,7 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 			}
 			
 			this.results.put(getId(action.getServiceID(), action.getparameterName()), action);
+			this.results.notifyAll();
 		}
 		
 	}
@@ -168,15 +157,25 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 		bean.setParameterName(parameterName);
 		
 		try {
-			commManager.sendIQGet(stanza, bean, this);
+			getCommsMgr().sendIQGet(stanza, bean, this);
 		} catch (CommunicationException e) {
 			LOG.warn(e.getMessage());
 		};
 		
+		
 		//waiting for the result to be returned
-		while (null==this.results.get(id).getparameterName()){
+/*		while (null==this.results.get(id).getparameterName()){
 			try {
 				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}*/
+		
+		while (!this.results.containsKey(id)){
+			try {
+				this.results.wait();
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -185,6 +184,7 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 		return new AsyncResult<IAction>(this.results.get(id));
 	}
 
+	
 	@Override
 	public Future<IAction> getPreference(Requestor requestor, IIdentity userIdentity,
 			String serviceType, ServiceResourceIdentifier serviceID, String parameterName) {
@@ -202,7 +202,7 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 		bean.setParameterName(parameterName);
 		
 		try {
-			commManager.sendIQGet(stanza, bean, this);
+			getCommsMgr().sendIQGet(stanza, bean, this);
 		} catch (CommunicationException e) {
 			LOG.warn(e.getMessage());
 		};
@@ -242,5 +242,18 @@ public class PersonalisationCommsClient implements IPersonalisationManager, ICom
 		RequestorBean bean = new RequestorBean();
 		bean.setRequestorId(requestor.getRequestorId().getJid());
 		return bean;
+	}
+	/**
+	 * @return the commsMgr
+	 */
+	public ICommManager getCommsMgr() {
+		return commsMgr;
+	}
+	/**
+	 * @param commsMgr the commsMgr to set
+	 */
+	public void setCommsMgr(ICommManager commsMgr) {
+		this.commsMgr = commsMgr;
+		this.idMgr = commsMgr.getIdManager();
 	}
 }

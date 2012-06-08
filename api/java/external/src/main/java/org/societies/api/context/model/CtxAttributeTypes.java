@@ -33,6 +33,16 @@ package org.societies.api.context.model;
 public class CtxAttributeTypes {
 
 	/**
+     *  @since 0.0.8
+     */
+    public static final String ABOUT = "aboutMe";
+	 
+	/**
+     *  @since 0.0.8
+     */
+    public static final String ACTION = "action";
+    
+	/**
      * 
      * @since 0.0.8
      */
@@ -66,7 +76,9 @@ public class CtxAttributeTypes {
      * 
      * @since 0.0.8
      */
-    public static final String ADDRESS_WORK_COUNTRY = "addressWorkCountry";
+    public static final String ADDRESS_WORK_COUNTRY = 
+
+"addressWorkCountry";
 	
 	/**
      * 
@@ -80,23 +92,72 @@ public class CtxAttributeTypes {
      */
     public static final String ADDRESS_WORK_STREET_NUMBER = "addressWorkStreetNumber";
 	
-	/**
+    /**
      * 
+     * @since 0.0.8
+     */
+    public static final String BIRTHDAY = "birthday";
+   
+    /**
+     * 
+     * @since 0.0.8
+     */
+    public static final String BOOKS = "books";
+   
+   /**
+     * TODO moved to platform CtxAttributeTypes
+     */
+    @Deprecated
+    public static final String CAUI_MODEL = "caui_model";
+    
+    /**
+     * TODO moved to platform CtxAttributeTypes
+     */
+    @Deprecated
+    public static final String CRIST_MODEL = "crist_model";
+        
+    /**
+     * @since 0.0.8
+     */
+    public static final String FAVOURITE_QUOTES = "favoriteQuotes";
+        
+	/**
+     * @since 0.0.8
      */
     public static final String ID = "id";
     
     /**
-     * 
+     * @since 0.0.8
+     */
+    public static final String INTERESTS = "interests";
+
+    /**
+     * @since 0.0.8
+     */
+    public static final String LAST_ACTION = "lastAction";
+    
+    /**
+     * @since 0.0.8
      */
     public static final String LOCATION_COORDINATES = "locationCoordinates";
     
     /**
-     * 
+     * @since 0.0.8
      */
     public static final String LOCATION_SYMBOLIC = "locationSymbolic";
+        
+    /**
+     * @since 0.0.8
+     */
+    public static final String MOVIES = "movies";
+   
+    /**
+     * @since 0.0.8
+     */
+    public static final String MUSIC = "music";
     
     /**
-     * 
+     * @since 0.0.8
      */
     public static final String NAME = "name";
     
@@ -113,46 +174,52 @@ public class CtxAttributeTypes {
     public static final String NAME_LAST = "nameLast";
     
     /**
-     * 
-     */
-    public static final String STATUS = "status";
-    
-    /**
-     * 
-     */
-    public static final String TEMPERATURE = "temperature";
-   
-    /**
-     * 
-     */
-    public static final String ACTION = "action";
-   
-    /**
-     * TODO move to platform CtxAttributeTypes
-     */
-    @Deprecated
-    public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-   
-    /**
-     * TODO move to platform CtxAttributeTypes
-     */
-    @Deprecated
-    public static final String CAUI_MODEL = "caui_model";
-    
-    /**
-     * TODO move to platform CtxAttributeTypes
-     */
-    @Deprecated
-    public static final String CRIST_MODEL = "crist_model";
-       
-    /**
-     * 
+     * @since 0.0.8
      */
     public static final String PARAMETER_NAME = "parameterName";
     
     /**
-     * 
+     * @since 0.0.8
      */
-    public static final String LAST_ACTION = "lastAction";
+    public static final String POLITICAL_VIEWS = "politicalViews";
+ 
+    /**
+     * @since 0.0.8
+     */
+    public static final String RELIGIOUS_VIEWS = "religiouslViews";
+ 
+    /**
+     * @since 0.0.8
+     */
+    public static final String SEX = "sex";
+  
+    /**
+     * @since 0.0.8
+     */
+    public static final String STATUS = "status";
+    
+    /**
+     * @since 0.0.8
+     */
+    public static final String TEMPERATURE = "temperature";
+   
+    /**
+     * @since 0.0.8
+     */
+    public static final String WEIGHT = "weight";
+       
+    /**
+     * TODO moved to platform CtxAttributeTypes
+     */
+    @Deprecated
+    public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
+    
+    /**
+     * Privacy Policy Agreement Attribute type
+     * To be moved in internal API
+     */
+    @Deprecated
+    public static final String PRIVACY_POLICY_AGREEMENT = "privacy-policy-agreement-of_";
+
     
 }
