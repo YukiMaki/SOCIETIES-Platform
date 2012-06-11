@@ -29,6 +29,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.societies.api.identity.Requestor;
 
 /**
@@ -83,5 +84,25 @@ public class RequestPolicy implements Serializable{
 	}
 	public String toString(){
 		return this.toXMLString();
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		// -- Verify reference equality
+		if (obj == null) { return false; }
+		if (obj == this) { return true; }
+		if (obj.getClass() != getClass()) {
+			return false;
+		}
+		// -- Verify obj type
+		RequestPolicy rhs = (RequestPolicy) obj;
+		return new EqualsBuilder()
+			.append(this.getRequestor(), rhs.getRequestor())
+			.append(this.getRequests(), rhs.getRequests())
+			.isEquals();
 	}
 }
