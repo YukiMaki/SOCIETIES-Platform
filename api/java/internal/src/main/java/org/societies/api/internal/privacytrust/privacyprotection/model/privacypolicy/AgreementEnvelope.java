@@ -47,7 +47,7 @@ public class AgreementEnvelope implements IAgreementEnvelope, Serializable{
 
 	private IAgreement agreement;
 	private byte[] signature;
-	private Checksum agreementCheckSum;
+	private transient Checksum agreementCheckSum;
 	private byte[] publicKey;
 	
 	AgreementEnvelope(){

@@ -96,6 +96,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  * - delete a not existing service privacy policy
  * - delete a cis privacy policy
  * - delete a service privacy policy
+ * - generate a privacy policy from XML string
+ * - generate a privacy policy from empty XML string
+ * - transform a privacy policy to a XML string
+ * - transform an empty privacy policy to a XML string
  * - equality between two RequestPolicy
  * 
  * @author Olivier Maridat (Trialog)
@@ -163,13 +167,6 @@ public class PrivacyPolicyManagerTest extends AbstractJUnit4SpringContextTests {
 		((PrivacyPolicyManager) privacyPolicyManager).init();
 	}
 
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-	}
-
 
 	/**
 	 * Test method for {@link org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager#getPrivacyPolicy(java.lang.String)}.
@@ -185,7 +182,7 @@ public class PrivacyPolicyManagerTest extends AbstractJUnit4SpringContextTests {
 			LOG.info("[Test PrivacyException] testGetCisPrivacyPolicyNonExisting: retrieve a non-existing privacy policy", e);
 			fail("[Error testGetCisPrivacyPolicyNonExisting] Privacy error");
 		} catch (Exception e) {
-			fail("[Error testDeletePrivacyPolicy] error");
+			fail("[Error testGetCisPrivacyPolicyNonExisting] error");
 		}
 		assertEquals("Expected null privacy policy, but it is not.", privacyPolicy, expectedPrivacyPolicy);
 	}
@@ -400,6 +397,77 @@ public class PrivacyPolicyManagerTest extends AbstractJUnit4SpringContextTests {
 		assertEquals("Expected a privacy policy, but it what not the good one.", privacyPolicyBefore, addedPrivacyPolicy);
 		assertTrue("Privacy policy not deleted.", deleteResult);
 		assertNull("Privacy policy not really deleted.", privacyPolicyAfter);
+	}
+	
+	/**
+	 * Test method for {@link org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager#fromXMLString(org.lang.String privacyPolicy)}.
+	 */
+	@Test
+	public void testFromXmlNull() {
+		LOG.info("[Test] testFromXml");
+		RequestPolicy privacyPolicy = null;
+		try {
+			privacyPolicy = privacyPolicyManager.fromXMLString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+		} catch (PrivacyException e) {
+			LOG.info("[Test PrivacyException] testFromXml", e);
+			fail("[Error testUpdatePrivacyPolicy] Privacy error");
+		} catch (Exception e) {
+			LOG.info("[Test Exception] testFromXml", e);
+			fail("[Error testFromXml] error");
+		}
+		assertNull("Privacy policy not null, but it should", privacyPolicy);
+	}
+	
+	
+	/**
+	 * Test method for {@link org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager#fromXMLString(org.lang.String privacyPolicy)}.
+	 */
+	@Test
+	public void testFromXml() {
+		LOG.info("[Test] testFromXml");
+		RequestPolicy privacyPolicy = null;
+		try {
+			privacyPolicy = privacyPolicyManager.fromXMLString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+cisPolicy.toXMLString());
+		} catch (PrivacyException e) {
+			LOG.info("[Test PrivacyException] testFromXml", e);
+			fail("[Error testUpdatePrivacyPolicy] Privacy error");
+		} catch (Exception e) {
+			LOG.info("[Test Exception] testFromXml", e);
+			fail("[Error testFromXml] error");
+		}
+		assertEquals("Privacy policy generated not equal to the original policy", cisPolicy, privacyPolicy);
+	}
+	
+	/**
+	 * Test method for {@link org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager#fromXMLString(org.lang.String privacyPolicy)}.
+	 */
+	@Test
+	public void testToXmlNull() {
+		LOG.info("[Test] testToXmlNull");
+		String privacyPolicy = null;
+		try {
+			privacyPolicy = privacyPolicyManager.toXMLString(null);
+		} catch (Exception e) {
+			LOG.info("[Test Exception] testToXmlNull", e);
+			fail("[Error testFromXml] error");
+		}
+		assertEquals("Privacy policy generated not equal to the original policy", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>", privacyPolicy);
+	}
+	
+	/**
+	 * Test method for {@link org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager#fromXMLString(org.lang.String privacyPolicy)}.
+	 */
+	@Test
+	public void testToXml() {
+		LOG.info("[Test] testToXml");
+		String privacyPolicy = null;
+		try {
+			privacyPolicy = privacyPolicyManager.toXMLString(cisPolicy);
+		} catch (Exception e) {
+			LOG.info("[Test Exception] testToXml", e);
+			fail("[Error testFromXml] error");
+		}
+		assertEquals("Privacy policy generated not equal to the original policy", "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"+cisPolicy.toXMLString(), privacyPolicy);
 	}
 
 

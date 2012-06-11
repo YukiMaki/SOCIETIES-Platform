@@ -104,9 +104,9 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.societies.context-management</groupId>
-			<artifactId>context-broker</artifactId>
-			<version>${version.cm}</version>
+			<groupId>org.societies.privacytrust.privacyprotection</groupId>
+			<artifactId>privacynegotiationmanagement</artifactId>
+			<version>${version.pt}</version>
 			<scope>test</scope>
 		</dependency>
 		<!-- Logging -->

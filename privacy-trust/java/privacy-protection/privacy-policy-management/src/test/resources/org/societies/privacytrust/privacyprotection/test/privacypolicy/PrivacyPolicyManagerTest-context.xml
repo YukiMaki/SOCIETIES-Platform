@@ -11,7 +11,6 @@
 	xmlns:jdbc="http://www.springframework.org/schema/jdbc" xmlns:osgix="http://www.springframework.org/schema/osgi-compendium"
 	xmlns:tx="http://www.springframework.org/schema/tx">
 
-
 	<context:annotation-config />
 
 	<tx:annotation-driven />
@@ -20,12 +19,12 @@
 		class="org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyPolicyManager">
 	</bean>
 
+	<bean name="PrivacyAgreementManager"
+		class="org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyAgreementManager">
+	</bean>
 
-	<!-- <bean name="PrivacyAgreementManager" class="org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyAgreementManager" 
-		depends-on="ctxBorker"> <property name="commManager" ref="CommManagerBundle"/> 
-		<property name="ctxBroker" ref="ctxBroker" /> </bean> <bean name="PrivacyAgreementManagerInternal" 
-		class="org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyAgreementManagerInternal" 
-		depends-on="ctxBorker"> <property name="commManager" ref="CommManagerBundle"/> 
-		<property name="ctxBroker" ref="ctxBroker" /> </bean> -->
+	<bean name="PrivacyAgreementManagerInternal"
+		class="org.societies.privacytrust.privacyprotection.privacypolicy.PrivacyAgreementManagerInternal">
+	</bean>
 
 </beans>

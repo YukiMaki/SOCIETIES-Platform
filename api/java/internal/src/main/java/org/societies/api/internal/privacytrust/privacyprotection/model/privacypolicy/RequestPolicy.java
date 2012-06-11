@@ -70,7 +70,7 @@ public class RequestPolicy implements Serializable{
 	public String toXMLString(){
 		String str = "<RequestPolicy>";
 		if (this.hasRequestor()){
-			str = str.concat(this.requestor.toXMLString());
+			str = str.concat("<Subject>"+this.requestor.toXMLString()+"</Subject>");
 		}
 		for (RequestItem item : requests){
 			str = str.concat(item.toXMLString());
