@@ -33,37 +33,23 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-/**
- * Hosting 3rd party service client jar files.
- *
- * @author Mitja Vardjan
- */
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
-@Controller
-public class ServiceJarController {
+@Path("/images")
+public class ServiceJar {	
 
-	/**
-	 * @return Jar file for installation of client for the requested service
-	 */
-	@RequestMapping(value="/servicejar.jar", method = RequestMethod.GET)
-	public byte[] getJar(@RequestParam(value = "key", required = true) String key) {
-
+	@Path("{sop}.jar")
+	@GET
+	@Produces("application/java-archive ")
+//	@RequestMapping(value="/servicejar.jar", method = RequestMethod.GET)
+	public Response getSOP(@PathParam("sop") String sopName) {		
+		
 		byte[] jar = new byte[] {'a', 'h', 'o', 'j'};
-		jar = key.getBytes();
-
-		return jar;
-	}
-
-	/**
-	 * @return Jar file for installation of client for the requested service
-	 */
-	@RequestMapping(value="/servicejar2.jar", method = RequestMethod.GET)
-	public ModelAndView getJar2(@RequestParam(value = "key", required = true) String key) {
-
-		//model is nothing but a standard Map object
-		Map<String, Object> model = new HashMap<String, Object>();
-		model.put("message", "ahoj");
-
-		return new ModelAndView("default", model) ;
+		return Response.ok(jar).build();
 	}
 }
