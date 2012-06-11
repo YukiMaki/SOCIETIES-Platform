@@ -48,12 +48,28 @@
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
+	<servlet>
+		<display-name>Jar Provider Servlet</display-name>
+		<servlet-name>JarProviderServlet</servlet-name>
+		<servlet-class>org.apache.wink.server.internal.servlet.RestServlet</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>org.societies.domainauthority.webapp.rest.ServiceProviderApplication</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+
 	<servlet-mapping>
 		<servlet-name>domain-authority</servlet-name>
 		<url-pattern>*.html</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>domain-authority</servlet-name>
+		<url-pattern>*.jar</url-pattern>
+	</servlet-mapping>
+	
+	<servlet-mapping>
+		<servlet-name>JarProviderServlet</servlet-name>
 		<url-pattern>*.jar</url-pattern>
 	</servlet-mapping>
 
