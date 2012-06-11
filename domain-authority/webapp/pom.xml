@@ -119,21 +119,21 @@
 			<artifactId>mail</artifactId>
 			<version>1.4.1</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<version>1.6.0</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-server</artifactId>
 			<version>1.7</version>
 			<type>pom</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.wink</groupId>
@@ -275,11 +275,12 @@
 							org.apache.taglibs.standard.tlv; version="[1.2.0,2)",
 							org.osgi.framework,
 							org.apache.wink.server.internal.servlet,
-
+							javax.ws.rs,
+							javax.ws.rs.core,
 							<!-- Form validation -->
-							javax.validation,*;resolution:=optional
+							javax.validation,*;resolution:=optional,**
 						</Import-Package>
-						<Bundle-ClassPath>WEB-INF/classes,.</Bundle-ClassPath>
+						<Bundle-ClassPath>WEB-INF/classes,.,WEB-INF/lib</Bundle-ClassPath>
 						<Webapp-Context>domain-authority</Webapp-Context>
 						<Web-ContextPath>domain-authority</Web-ContextPath>
 					</instructions>
@@ -295,7 +296,7 @@
 						<manifestFile>${project.build.directory}/META-INF/MANIFEST.MF</manifestFile>
 					</archive>
 					<!-- Make a skinny WAR -->
-					<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+					<!--packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes-->
 				</configuration>
 			</plugin>
 			<plugin>
@@ -333,6 +334,36 @@
 									<groupId>org.apache.wink</groupId>
 									<artifactId>wink-server</artifactId>
 									<version>1.2.0-incubating</version>
+									<type>jar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.wink</groupId>
+									<artifactId>wink-common</artifactId>
+									<version>1.2.0-incubating</version>
+									<type>jar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>javax.mail</groupId>
+									<artifactId>mail</artifactId>
+									<version>1.4.1</version>
+									<type>jar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.jsoup</groupId>
+									<artifactId>jsoup</artifactId>
+									<version>1.6.0</version>
+									<type>jar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>com.sun.jersey</groupId>
+									<artifactId>jersey-server</artifactId>
+									<version>1.7</version>
+									<type>pom</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>javax.ws.rs</groupId>
+									<artifactId>jsr311-api</artifactId>
+									<version>1.1.1</version>
 									<type>jar</type>
 								</artifactItem>
 
