@@ -135,6 +135,11 @@
 			<type>pom</type>
 			<scope>compile</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.wink</groupId>
+			<artifactId>wink-server</artifactId>
+			<version>1.2.0-incubating</version>
+		</dependency>
 
 		
 		
@@ -269,6 +274,7 @@
 							org.apache.taglibs.standard.tei; version="[1.2.0,2)",
 							org.apache.taglibs.standard.tlv; version="[1.2.0,2)",
 							org.osgi.framework,
+							org.apache.wink.server.internal.servlet,
 
 							<!-- Form validation -->
 							javax.validation,*;resolution:=optional
@@ -321,6 +327,12 @@
 									<groupId>org.springframework.osgi</groupId>
 									<artifactId>org.springframework.osgi.web</artifactId>
 									<version>1.2.1</version>
+									<type>jar</type>
+								</artifactItem>
+								<artifactItem>
+									<groupId>org.apache.wink</groupId>
+									<artifactId>wink-server</artifactId>
+									<version>1.2.0-incubating</version>
 									<type>jar</type>
 								</artifactItem>
 
