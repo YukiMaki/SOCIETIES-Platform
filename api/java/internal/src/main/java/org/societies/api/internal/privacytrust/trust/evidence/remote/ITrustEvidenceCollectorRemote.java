@@ -22,23 +22,22 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.privacytrust.trust.evidence;
+package org.societies.api.internal.privacytrust.trust.evidence.remote;
 
 import java.io.Serializable;
 import java.util.Date;
 
-import org.societies.api.identity.IIdentity;
 import org.societies.api.internal.privacytrust.trust.TrustException;
+import org.societies.api.internal.privacytrust.trust.evidence.TrustEvidenceType;
 import org.societies.api.internal.privacytrust.trust.model.TrustedEntityId;
-import org.societies.api.schema.servicelifecycle.model.ServiceResourceIdentifier;
 
 /**
  * Describe your class here...
  *
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.2
+ * @since 0.3
  */
-public interface ITrustEvidenceCollector {
+public interface ITrustEvidenceCollectorRemote {
 	
 	/**
 	 * Adds the specified piece of direct trust evidence. The
@@ -62,7 +61,6 @@ public interface ITrustEvidenceCollector {
 	 * @throws NullPointerException
 	 *            if any of the teid, type or timestamp parameter is
 	 *            <code>null</code>
-	 * @since 0.3
 	 */
 	public void addDirectEvidence(final TrustedEntityId teid, final TrustEvidenceType type,
 			final Date timestamp, final Serializable info) throws TrustException;
@@ -91,65 +89,8 @@ public interface ITrustEvidenceCollector {
 	 * @throws NullPointerException
 	 *            if any of the source, teid, type or timestamp parameter is
 	 *            <code>null</code>
-	 * @since 0.3
 	 */
 	public void addIndirectEvidence(final String source, final TrustedEntityId teid,
 			final TrustEvidenceType type, final Date timestamp, final Serializable info)
 					throws TrustException;
-	
-	/**
-	 * Assigns the specified trust rating to the identified trustee by the
-	 * supplied trustor. The identified trustee can be either a CSS or a CIS,
-	 * while the trustor must reference a CSS. The trust rating value should be
-	 * in the range of [0,1].
-	 * 
-	 * @param trustor 
-	 *            the CSS that assigns the trust rating
-	 * @param trustee
-	 *            the CSS or CIS to assign the rating to
-	 * @param rating
-	 *            the trust rating [0,1]
-	 * @param timestamp
-	 *            the timestamp of the given rating, or the current time if
-	 *            a <code>null</code> value is specified
-	 * @throws TrustException
-	 *            if the operation fails
-	 * @throws NullPointerException
-	 *            if any of the trustor or trustee parameters are
-	 *            <code>null</code>
-	 * @throws IllegalArgumentException
-	 *            if the trustor does not identify a CSS; the trustee does not
-	 *            identify a CSS or CIS; the trust rating is not in the range
-	 *            of [0,1] 
-	 */
-	public void addTrustRating(final IIdentity trustor, final IIdentity trustee,
-			final double rating, final Date timestamp) throws TrustException;
-
-	/**
-	 * Assigns the specified trust rating to the identified trustee by the
-	 * supplied trustor. The identified trustee is a service, while the trustor
-	 * must reference a CSS. The trust rating value should be in the range of
-	 * [0,1].
-	 * 
-	 * @param trustor 
-	 *            the CSS that assigns the trust rating
-	 * @param trustee
-	 *            the service to assign the rating to
-	 * @param rating
-	 *            the trust rating [0,1]
-	 * @param timestamp
-	 *            the timestamp of the given rating, or the current time if
-	 *            a <code>null</code> value is specified
-	 * @throws TrustException
-	 *            if the operation fails
-	 * @throws NullPointerException
-	 *            if any of the trustor or trustee parameters are
-	 *            <code>null</code>
-	 * @throws IllegalArgumentException
-	 *            if the trustor does not identify a CSS or the trust rating is
-	 *            not in the range of [0,1] 
-	 */
-	public void addTrustRating(final IIdentity trustor, 
-			final ServiceResourceIdentifier trustee, final double rating,
-			final Date timestamp) throws TrustException;
 }
