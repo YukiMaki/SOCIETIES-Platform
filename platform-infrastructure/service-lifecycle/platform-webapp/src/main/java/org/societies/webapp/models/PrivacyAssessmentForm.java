@@ -33,7 +33,16 @@ package org.societies.webapp.models;
 public class PrivacyAssessmentForm {
 
 	private String method;
-	private int autoReassessmentInSecs; 
+	
+	// Settings and control
+	private boolean autoReassessment;
+	private int autoReassessmentInSecs;
+	private boolean assessNow;
+	
+	// Showing assessment results
+	private String assessmentSubjectType;
+	private String presentationFormat;
+	private String assessmentSubject;
 
 	/**
 	 * @return the method
@@ -50,6 +59,20 @@ public class PrivacyAssessmentForm {
 	}
 	
 	/**
+	 * @return the autoReassessment
+	 */
+	public boolean isAutoReassessment() {
+		return autoReassessment;
+	}
+
+	/**
+	 * @param autoReassessment the autoReassessment to set
+	 */
+	public void setAutoReassessment(boolean autoReassessment) {
+		this.autoReassessment = autoReassessment;
+	}
+
+	/**
 	 * @return the autoReassessmentInSecs
 	 */
 	public int getAutoReassessmentInSecs() {
@@ -61,5 +84,61 @@ public class PrivacyAssessmentForm {
 	 */
 	public void setAutoReassessmentInSecs(int autoReassessmentInSecs) {
 		this.autoReassessmentInSecs = autoReassessmentInSecs;
+	}
+
+	/**
+	 * @return the assessNow
+	 */
+	public boolean isAssessNow() {
+		return assessNow;
+	}
+
+	/**
+	 * @param assessNow the assessNow to set
+	 */
+	public void setAssessNow(boolean assessNow) {
+		this.assessNow = assessNow;
+	}
+
+	/**
+	 * @return the assessmentSubjectType
+	 */
+	public String getAssessmentSubjectType() {
+		return assessmentSubjectType;
+	}
+
+	/**
+	 * @param assessmentSubjectType the assessmentSubjectType to set
+	 */
+	public void setAssessmentSubjectType(String assessmentSubjectType) {
+		this.assessmentSubjectType = assessmentSubjectType;
+	}
+
+	/**
+	 * @return the presentationFormat
+	 */
+	public String getPresentationFormat() {
+		return presentationFormat;
+	}
+
+	/**
+	 * @param presentationFormat the presentationFormat to set
+	 */
+	public void setPresentationFormat(String presentationFormat) {
+		this.presentationFormat = presentationFormat;
+	}
+
+	/**
+	 * @return the assessmentSubject
+	 */
+	public String getAssessmentSubject() {
+		return assessmentSubject;
+	}
+
+	/**
+	 * @param assessmentSubject the assessmentSubject to set
+	 */
+	public void setAssessmentSubject(String assessmentSubject) {
+		this.assessmentSubject = assessmentSubject;
 	}
 }

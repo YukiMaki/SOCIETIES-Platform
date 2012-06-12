@@ -34,30 +34,46 @@
 <!-- .................PLACE YOUR CONTENT HERE ................ -->
 
 	<h3>Privacy Assessment</h3>
+	
+	<h4>Results</h4>
 
-	<form:form method="POST" action="privacyassessment.html"
+	<form:form method="POST" action="privacy-assessment.html"
 		commandName="assForm">
 		<form:errors path="*" cssClass="errorblock" element="div" />
-		<a href="barchart.html">Bar chart</a>
 		<table>
 			<tr>
-				<td>Privacy Assessment Methods :</td>
-				<td><form:select path="method">
-						<form:option value="NONE" label="--- Select ---" />
-						<form:options items="${methods}" />
+				<td>Show for</td>
+				<td><form:select path="assessmentSubjectType">
+						<!--form:option value="NONE" label="--- Select ---" /-->
+						<form:options items="${assessmentSubjectTypes}" />
 					</form:select></td>
-				<td><form:errors path="method" cssClass="error" /></td>
+				<td><form:errors path="assessmentSubjectType" cssClass="error" /></td>
 			</tr>
 			<tr>
-				<td>Automatic re-assessment period in seconds:</td>
-				<td><form:input path="autoReassessmentInSecs" /></td>
-				<td><form:errors path="autoReassessmentInSecs" cssClass="error" /></td>
-			</tr>
+				<td>Presentation format</td>
+				<td><form:select path="presentationFormat">
+						<!--form:option value="NONE" label="--- Select ---" /-->
+						<form:options items="${presentationFormats}" />
+					</form:select></td>
+				<td><form:errors path="presentationFormat" cssClass="error" /></td>
+			<tr/>
+			<tr>
+				<td>Identities / classes</td>
+				<td><form:select path="assessmentSubject">
+						<!--form:option value="NONE" label="--- Select ---" /-->
+						<form:options items="${assessmentSubjects}" />
+					</form:select></td>
+				<td><form:errors path="assessmentSubject" cssClass="error" /></td>
+			<tr/>
 			<tr>
 				<td colspan="3"><input type="submit" /></td>
 			</tr>
 		</table>
+		
 	</form:form>
+
+	<h4>Settings</h4>
+	<a href="privacy-assessment-settings.html">Assessment Settings and Control</a>
 
 	<!-- .................END PLACE YOUR CONTENT HERE ................ -->
 	<!-- FOOTER -->
