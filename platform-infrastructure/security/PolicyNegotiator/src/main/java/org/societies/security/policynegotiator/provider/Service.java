@@ -22,14 +22,46 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.trust.api.evidence.model;
+package org.societies.security.policynegotiator.provider;
+
+import java.net.URI;
 
 /**
- * Describe your class here...
+ * 
  *
- * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.8
+ * @author Mitja Vardjan
+ *
  */
-public interface IIndirectTrustOpinion extends IIndirectTrustEvidence {
+public class Service {
+	
+	private String id;
+	private String slaXmlOptions;
+	private URI clientJarUri;
 
+	public Service(String id, String slaXmlOptions, URI clientJarUri) {
+		this.id = id;
+		this.slaXmlOptions = slaXmlOptions;
+		this.clientJarUri = clientJarUri;
+	}
+	
+	/**
+	 * @return the id
+	 */
+	public String getId() {
+		return id;
+	}
+	
+	/**
+	 * @return the slaXmlOptions
+	 */
+	public String getSlaXmlOptions() {
+		return slaXmlOptions;
+	}
+
+	/**
+	 * @return The base URL, without the key parameter
+	 */
+	public URI getClientJarUri() {
+		return clientJarUri;
+	}
 }

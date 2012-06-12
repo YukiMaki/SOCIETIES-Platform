@@ -22,14 +22,57 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.trust.api.evidence.model;
+package org.societies.security.policynegotiator;
+
+import static org.junit.Assert.*;
+
+import java.net.URI;
+
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.societies.security.policynegotiator.provider.ServiceJarUri;
 
 /**
- * Describe your class here...
+ * 
  *
- * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.8
+ * @author Mitja Vardjan
+ *
  */
-public interface IServiceExperience extends IDirectTrustEvidence {
+public class ServiceJarUriTest {
+
+	ServiceJarUri classUnderTest;
+	String serviceBaseUri = "http://www.example.com/service1";
+	
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@Before
+	public void setUp() throws Exception {
+		URI service = new URI(serviceBaseUri);
+		classUnderTest = new ServiceJarUri(service);
+	}
+
+	/**
+	 * @throws java.lang.Exception
+	 */
+	@After
+	public void tearDown() throws Exception {
+	}
+
+	/**
+	 * Test method for {@link org.societies.security.policynegotiator.provider.ServiceJarUri#getFullUri()}.
+	 */
+	@Test
+	public void testGenerateFullUri() {
+		URI result = classUnderTest.generateFullUri();
+		String resultStr = result.toString();
+		String addon = "?" + ServiceJarUri.KEY + "=";
+		
+		assertTrue(resultStr.startsWith(serviceBaseUri));
+		assertTrue(resultStr.contains(addon));
+		assertTrue(resultStr.startsWith(serviceBaseUri + addon));
+		assertTrue(resultStr.length() > serviceBaseUri.length() + addon.length());
+	}
 
 }

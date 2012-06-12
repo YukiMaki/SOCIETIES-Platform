@@ -22,19 +22,56 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.trust.api.evidence.model;
+package org.societies.security.policynegotiator.provider;
+
+import java.net.URI;
+import java.util.Random;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * Describe your class here...
+ * 
  *
- * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.8
+ * @author Mitja Vardjan
+ *
  */
-public interface IDirectTrustOpinion extends IDirectTrustEvidence {
+public class ServiceJarUri {
+
+	private static Logger LOG = LoggerFactory.getLogger(ServiceJarUri.class);
 
 	/**
-	 * 
-	 * @return
+	 * URL parameter keyword for the service session key
 	 */
-	public Double getTrustRating();
+	public static final String KEY = "key";
+	
+	URI baseUri;
+	
+	public ServiceJarUri(URI service) {
+		this.baseUri = service;
+	}
+	
+	public URI generateFullUri() {
+		
+		String fullUri;
+		
+		fullUri = addParameter(baseUri.toString(), KEY, generateKey());
+		LOG.debug("generateFullUri(): {}", fullUri);
+		
+		return URI.create(fullUri);
+	}
+	
+	private String generateKey() {
+		Random rand = new Random();
+		String key = String.valueOf(rand.nextInt());
+		return key;
+	}
+	
+	private String addParameter(String base, String key, String value) {
+		
+		if (base.contains("?")) {
+			base += "&";
+		}
+		return base + "?" + key + "=" + value;
+	}
 }

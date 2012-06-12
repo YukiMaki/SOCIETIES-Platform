@@ -22,63 +22,33 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.privacytrust.trust.impl.evidence.repo.model;
-
-import java.util.Date;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import org.societies.api.internal.privacytrust.trust.model.TrustedEntityId;
-import org.societies.privacytrust.trust.api.evidence.model.IDirectTrustOpinion;
+package org.societies.api.internal.privacytrust.trust.evidence;
 
 /**
  * Describe your class here...
  *
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.8
+ * @since 0.3
  */
-@Entity
-@Table(
-		name = TableName.DIRECT_TRUST_OPINION, 
-		uniqueConstraints = { @UniqueConstraint(columnNames = { "trustor_id", "trustee_id", "timestamp" }) }
-)
-public class DirectTrustOpinion extends DirectTrustEvidence implements
-		IDirectTrustOpinion {
+public enum TrustEvidenceType {
 
-	private static final long serialVersionUID = 1259370033409872732L;
-	
-	/** The trust rating assigned to the trustee by the trustor. */
-	@Column(name = "trustRating", nullable = false, updatable = false)
-	private final Double trustRating;
-	
-	/* Empty constructor required by Hibernate */
-	private DirectTrustOpinion() {
-		
-		super(null, null);
-		this.trustRating = null;
-	}
+	/**
+	 * The enum constant for trust ratings.
+	 */
+	RATED,
 	
 	/**
 	 * 
-	 * @param teid
-	 * @param timestamp
 	 */
-	public DirectTrustOpinion(final TrustedEntityId teid, final Date timestamp,
-			final Double trustRating) {
-		
-		super(teid, timestamp);
-		this.trustRating = trustRating;
-	}
-
-	/*
-	 * @see org.societies.privacytrust.trust.api.evidence.model.IDirectTrustOpinion#getTrustRating()
+	JOINED_COMMUNITY,
+	
+	/**
+	 * 
 	 */
-	@Override
-	public Double getTrustRating() {
-		
-		return this.trustRating;
-	}
+	LEFT_COMMUNITY,
+	
+	/**
+	 * 
+	 */
+	USED_SERVICE,
 }
