@@ -37,14 +37,14 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
-public class ContextManagement extends Service /*implements IAndroidUserAgent*/{
+public class ContextManagement extends Service {
 	
 	private static final String LOG_TAG = ContextManagement.class.getName();
-	private static final List<String> ELEMENT_NAMES = Arrays.asList("userActionMonitorBean");
+	private static final List<String> ELEMENT_NAMES = Arrays.asList("contextManagementBean");
     private static final List<String> NAME_SPACES = Arrays.asList(
-    		"http://societies.org/api/schema/useragent/monitoring");
+    		"http://societies.org/api/schema/context/contextmanagement");
     private static final List<String> PACKAGES = Arrays.asList(
-		"org.societies.api.schema.useragent.monitoring");
+		"org.societies.api.schema.context.contextmanagement");
     
     //currently hard coded but should be injected
     private static final String DESTINATION = "xcmanager.societies.local";
