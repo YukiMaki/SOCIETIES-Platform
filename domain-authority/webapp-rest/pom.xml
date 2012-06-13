@@ -143,9 +143,26 @@
 			<artifactId>wink-server</artifactId>
 			<version>1.2.0-incubating</version>
 		</dependency>
-
-		
-		
+		<dependency>
+			<groupId>org.apache.wink</groupId>
+			<artifactId>wink-client</artifactId>
+			<version>1.2.0-incubating</version>
+		</dependency>
+		<!--dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.3</version>
+		</dependency-->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>com.springsource.org.apache.commons.lang</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>jsr311-api</artifactId>
+			<version>1.1.1</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>org.springframework.osgi</groupId>
@@ -218,7 +235,6 @@
 							javax.servlet;version="[3.0.0, 4.0.0)",
 							javax.servlet.resources;
 							version="[2.4.0, 4.0.0)",
-							<!-- spring DM -->
 							org.springframework.beans.factory.config,
 							org.springframework.osgi.web.context.support,
 							org.springframework.web.context.request,
@@ -231,7 +247,6 @@
 							org.springframework.beans.factory.annotation,
 							org.springframework.context.config,
 							org.springframework.web.util,
-							<!-- servlet -->
 							org.springframework.web.servlet.config;version="[3.0.0, 4.0.0)",
 							org.springframework.web.servlet.view;version="[3.0.0, 4.0.0)",
 							org.springframework.web.servlet.handler;version="[3.0.0, 4.0.0)",
@@ -241,8 +256,6 @@
 							org.springframework.web.servlet.tags;version="[3.0.0,4.0.0)",
 							org.springframework.web.servlet.tags.form;version="[3.0.0,4.0.0)",
 							org.springframework.web.servlet.theme;version="[3.0.0,4.0.0)",
-							
-							<!-- JSTL lib -->
 							org.apache.taglibs.standard; version="[1.2.0,2)",
 							org.apache.taglibs.standard.extra.spath; version="[1.2.0,2)",
 							org.apache.taglibs.standard.functions; version="[1.2.0,2)",
@@ -267,10 +280,10 @@
 							org.apache.taglibs.standard.tei; version="[1.2.0,2)",
 							org.apache.taglibs.standard.tlv; version="[1.2.0,2)",
 							org.osgi.framework,
+							org.apache.commons.lang,
 							org.apache.wink.server.internal.servlet,
 							javax.ws.rs,
 							javax.ws.rs.core,
-							<!-- Form validation -->
 							javax.validation,*;resolution:=optional,**
 						</Import-Package>
 						<Bundle-ClassPath>WEB-INF/classes,.,WEB-INF/lib</Bundle-ClassPath>
@@ -357,6 +370,18 @@
 									<groupId>javax.ws.rs</groupId>
 									<artifactId>jsr311-api</artifactId>
 									<version>1.1.1</version>
+									<type>jar</type>
+								</artifactItem>
+								<!--artifactItem>
+									<groupId>commons-lang</groupId>
+									<artifactId>commons-lang</artifactId>
+									<version>2.3</version>
+									<type>jar</type>
+								</artifactItem-->
+								<artifactItem>
+									<groupId>org.apache.commons</groupId>
+									<artifactId>com.springsource.org.apache.commons.lang</artifactId>
+									<version>2.5.0</version>
 									<type>jar</type>
 								</artifactItem>
 
