@@ -22,59 +22,35 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.context.model;
-
-import org.societies.api.context.model.CtxAttribute;
+package org.societies.android.api.external.context.model;
 
 /**
- * This class defines common {@link CtxAttribute context attribute} types in
- * addition to the ones defined in {@link org.societies.api.context.model.CtxAttributeTypes}.
+ * The constants of this enumerated type specify the origin of a context bond.
+ * More specifically, a {@link CtxBond} can be one of the following types:
+ * <ul>
+ * <li>{@link #MANUALLY_SET}: Denotes a manually set context bond</li>
+ * <li>{@link #DISCOVERED}: Denotes a discovered context bond</li>
+ * <li>{@link #INHERITED}: Denotes an inherited context bond</li>
+ * </ul>
  * 
- * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.7
+ * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas
+ *         Liampotis</a> (ICCS)
+ * @version 0.0.1
  */
-public class CtxAttributeTypes extends
-org.societies.api.context.model.CtxAttributeTypes {
+public enum CtxBondOriginType {
 
+    /**
+     * The enum constant for manually set context bonds.
+     */
+    MANUALLY_SET,
 
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String CAUI_MODEL = "caui_model";
+    /**
+     * The enum constant for discovered context bonds.
+     */
+    DISCOVERED,
 
-	/**
-	 * 
-	 */
-	public static final String CRIST_MODEL = "crist_model";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String D_NET = "dNet";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER_NAME = "parameterName";   
-
-	/**
-	 *
-	 */
-	public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SERVICE_PRIVACY_POLICY_REGISTRY = "servicePrivacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SNAPSHOT_REG = "snapshotReg";
-	
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String UID = "uid";
-
+    /**
+     * The enum constant for inherited context bonds.
+     */
+    INHERITED,
 }

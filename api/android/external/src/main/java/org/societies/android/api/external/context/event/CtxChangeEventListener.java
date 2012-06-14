@@ -22,59 +22,51 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.context.model;
-
-import org.societies.api.context.model.CtxAttribute;
+package org.societies.android.api.external.context.event;
 
 /**
- * This class defines common {@link CtxAttribute context attribute} types in
- * addition to the ones defined in {@link org.societies.api.context.model.CtxAttributeTypes}.
- * 
+ * A listener for receiving {@link CtxChangeEvent CtxChangeEvents}. More
+ * specifically, it defines methods for reacting to the addition, update,
+ * modification or removal of context model objects.
+ *
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.7
+ * @since 0.0.3
  */
-public class CtxAttributeTypes extends
-org.societies.api.context.model.CtxAttributeTypes {
-
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String CAUI_MODEL = "caui_model";
-
-	/**
-	 * 
-	 */
-	public static final String CRIST_MODEL = "crist_model";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String D_NET = "dNet";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER_NAME = "parameterName";   
-
-	/**
-	 *
-	 */
-	public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SERVICE_PRIVACY_POLICY_REGISTRY = "servicePrivacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SNAPSHOT_REG = "snapshotReg";
+public interface CtxChangeEventListener extends CtxEventListener {
 	
 	/**
-	 * @since 0.0.8
+	 * This method is called when a context model object is created.
+	 *  
+	 * @param event
+	 *            a <code>CtxChangeEvent</code> object referencing the context
+	 *            model object that was created.
 	 */
-	public static final String UID = "uid";
-
+	public void onCreation(CtxChangeEvent event);
+	
+	/**
+	 * This method is called when a context model object is updated.
+	 *  
+	 * @param event
+	 *            a <code>CtxChangeEvent</code> object referencing the context
+	 *            model object that was updated.
+	 */
+	public void onUpdate(CtxChangeEvent event);
+	
+	/**
+	 * This method is called when a context model object is modified.
+	 *  
+	 * @param event
+	 *            a <code>CtxChangeEvent</code> object referencing the context
+	 *            model object that was modified.
+	 */
+	public void onModification(CtxChangeEvent event);
+	
+	/**
+	 * This method is called when a context model object is removed.
+	 * 
+	 * @param event
+	 *            a <code>CtxChangeEvent</code> object referencing the context
+	 *            model object that was removed.
+	 */
+	public void onRemoval(CtxChangeEvent event);
 }

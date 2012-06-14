@@ -22,59 +22,63 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.context.model;
+package org.societies.android.api.external.context.model;
 
-import org.societies.api.context.model.CtxAttribute;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
- * This class defines common {@link CtxAttribute context attribute} types in
- * addition to the ones defined in {@link org.societies.api.context.model.CtxAttributeTypes}.
+ * This abstract class is used in order to represent members of a
+ * {@link CommunityCtxEntity} (CIS). A <code>CommunityMemberCtxEntity</code>
+ * can be an individual or a sub-community, hence, there are two concrete
+ * implementations of this class, namely {@link IndividualCtxEntity} and
+ * {@link CommunityCtxEntity}. A CommunityMemberCtxEntity may belong to
+ * multiple communities, simultaneously. This class provides methods for
+ * accessing and modifying these communities.
  * 
+ * @see CtxEntityIdentifier
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.7
+ * @since 0.0.1
  */
-public class CtxAttributeTypes extends
-org.societies.api.context.model.CtxAttributeTypes {
-
+public abstract class CommunityMemberCtxEntity extends CtxEntity {
+	
+	private static final long serialVersionUID = 3614587369237968591L;
+	
+	/** The communities this entity is member of. */
+	private Set<CommunityCtxEntity> communities = new HashSet<CommunityCtxEntity>();
+	
+	CommunityMemberCtxEntity(CtxEntityIdentifier id) {
+		
+		super(id);
+	}
 
 	/**
-	 * @since 0.0.8
-	 */
-	public static final String CAUI_MODEL = "caui_model";
-
-	/**
+	 * Returns a set with the community members.
 	 * 
+	 * @return set CommunityCtxEntity
 	 */
-	public static final String CRIST_MODEL = "crist_model";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String D_NET = "dNet";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER_NAME = "parameterName";   
-
-	/**
-	 *
-	 */
-	public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SERVICE_PRIVACY_POLICY_REGISTRY = "servicePrivacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SNAPSHOT_REG = "snapshotReg";
+	public Set<CommunityCtxEntity> getCommunities() {
+		
+		return new HashSet<CommunityCtxEntity>(this.communities);
+	}
 	
 	/**
-	 * @since 0.0.8
+	 * Add a CommunityCtxEntity to the community
+	 * 
+	 * @param community
 	 */
-	public static final String UID = "uid";
-
+	public void addCommunity(CommunityCtxEntity community) {
+		
+		this.communities.add(community);
+	}
+	
+	/**
+	 * Remove a CommunityCtxEntity from the community.
+	 * 
+	 * @param community
+	 */
+	public void removeCommunity(CommunityCtxEntity community) {
+		
+		this.communities.remove(community);
+	}
 }

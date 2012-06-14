@@ -22,59 +22,25 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.context.model;
-
-import org.societies.api.context.model.CtxAttribute;
+package org.societies.android.api.external.context.model;
 
 /**
- * This class defines common {@link CtxAttribute context attribute} types in
- * addition to the ones defined in {@link org.societies.api.context.model.CtxAttributeTypes}.
+ * This class is used to represent a single participant (CSS) of a
+ * {@link CommunityCtxEntity} (CIS). An <code>IndividualCtxEntity</code> may belong to
+ * zero or more CISs, simultaneously. The individual members of a pervasive community do
+ * not need to be human beings. They can also be organisations, smart space
+ * infrastructures, autonomous or semi-autonomous agents, etc.
  * 
+ * @see CtxEntityIdentifier
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.7
+ * @since 0.0.1
  */
-public class CtxAttributeTypes extends
-org.societies.api.context.model.CtxAttributeTypes {
+public class IndividualCtxEntity extends CommunityMemberCtxEntity {
 
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String CAUI_MODEL = "caui_model";
-
-	/**
-	 * 
-	 */
-	public static final String CRIST_MODEL = "crist_model";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String D_NET = "dNet";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER_NAME = "parameterName";   
-
-	/**
-	 *
-	 */
-	public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SERVICE_PRIVACY_POLICY_REGISTRY = "servicePrivacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SNAPSHOT_REG = "snapshotReg";
+	private static final long serialVersionUID = -1841816618272931692L;
 	
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String UID = "uid";
-
+	public IndividualCtxEntity(CtxEntityIdentifier id) {
+		
+		super(id);
+	}
 }

@@ -22,59 +22,51 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.societies.api.internal.context.model;
-
-import org.societies.api.context.model.CtxAttribute;
+package org.societies.android.api.external.context.model;
 
 /**
- * This class defines common {@link CtxAttribute context attribute} types in
- * addition to the ones defined in {@link org.societies.api.context.model.CtxAttributeTypes}.
+ * The constants of this enumerated type specify the data type of the {@link CtxAttribute}
+ * value. To this end, the following value types have been identified:
+ * <dl>
+ * <dt>{@link #EMPTY}</dt>
+ * <dd>No value set.</dd>
+ * <dt>{@link #STRING}</dt>
+ * <dd>Text value.</dd>
+ * <dt>{@link #INTEGER}</dt>
+ * <dd>Integer value.</dd>
+ * <dt>{@link #DOUBLE}</dt>
+ * <dd>Double-precision floating point numeric value.</dd>
+ * <dt>{@link #BINARY}</dt>
+ * <dd>Binary value, i.e. a byte[].</dd>
+ * </dl>
  * 
  * @author <a href="mailto:nicolas.liampotis@cn.ntua.gr">Nicolas Liampotis</a> (ICCS)
- * @since 0.0.7
+ * @since 0.0.1
  */
-public class CtxAttributeTypes extends
-org.societies.api.context.model.CtxAttributeTypes {
-
+public enum CtxAttributeValueType {
 
 	/**
-	 * @since 0.0.8
+	 * Denotes a {@link CtxAttribute} with no value set
 	 */
-	public static final String CAUI_MODEL = "caui_model";
-
-	/**
-	 * 
-	 */
-	public static final String CRIST_MODEL = "crist_model";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String D_NET = "dNet";
-
-	/**
-	 * 
-	 */
-	public static final String PARAMETER_NAME = "parameterName";   
-
-	/**
-	 *
-	 */
-	public static final String PRIVACY_POLICY_REGISTRY = "privacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SERVICE_PRIVACY_POLICY_REGISTRY = "servicePrivacyPolicyRegistry";
-
-	/**
-	 * @since 0.0.8
-	 */
-	public static final String SNAPSHOT_REG = "snapshotReg";
+	EMPTY,
 	
 	/**
-	 * @since 0.0.8
+	 * Denotes a {@link CtxAttribute} value of type <code>String</code>
 	 */
-	public static final String UID = "uid";
-
+	STRING,
+	
+	/**
+	 * Denotes a {@link CtxAttribute} value is of type <code>Integer</code>
+	 */
+	INTEGER,
+	
+	/**
+	 * Denotes that the {@link CtxAttribute} value is of type <code>Double</code>
+	 */
+	DOUBLE,
+	
+	/**
+	 * Denotes that the {@link CtxAttribute} value is of type <code>byte[]</code>
+	 */
+	BINARY,
 }
