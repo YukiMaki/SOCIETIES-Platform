@@ -230,5 +230,14 @@ public interface ICSSLocalManager {
 	void updateCssFriendRequest(CssRequest request);
 	
  Future<List<CssAdvertisementRecordDetailed>> getCssAdvertisementRecordsFull() ;
+ 
+ 
+ /**
+	 * Returns the current Node Type
+	 * i.e. "CSS_CLOUD", "CSS_RICH" or "CSS_LIGHT"
+	 * 
+	 * @return Future<String>
+	 */
+ Future<String> getthisNodeType();
 
 }

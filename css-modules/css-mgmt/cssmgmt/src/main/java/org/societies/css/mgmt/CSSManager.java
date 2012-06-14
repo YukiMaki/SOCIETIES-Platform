@@ -962,4 +962,11 @@ public class CSSManager implements ICSSLocalManager {
 		return new AsyncResult<List<CssAdvertisementRecordDetailed>>(cssDetailList);
 		
 	}
+	
+	public Future<String> getthisNodeType() {
+		String Type = null;
+		Type = idManager.getThisNetworkNode().getType().toString();
+		
+		return new AsyncResult<String>(Type);
+	}
 }
