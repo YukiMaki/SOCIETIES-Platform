@@ -2,10 +2,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.societies.integration.test.bit</groupId>
-	<artifactId>privacypolicymanagement</artifactId>
-	<name>#1244 Privacy Policy Management Test Suite</name>
+	<artifactId>privacypolicymanagementremote</artifactId>
+	<name>#1266 Privacy Policy Management Remote Test Suite</name>
 	<packaging>bundle</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.0.0-SNAPSHOT</version>
 
 	<developers>
 		<developer>
@@ -50,7 +50,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
-			<version>4.0</version>
+			<version>4.1</version>
 			<scope>compile</scope>
 		</dependency>
 		<!-- Tools -->

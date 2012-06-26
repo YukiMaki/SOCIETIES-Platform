@@ -77,6 +77,7 @@ public class RequestorUtils {
 		}
 		String requestorId = requestor.getRequestorId().getJid();
 		if (requestor instanceof RequestorCis) {
+			System.out.println("[RequestorUtils] Yes, this is a RequestorCis");
 			RequestorCisBean requestorBean = new RequestorCisBean();
 			requestorBean.setRequestorId(requestorId);
 			requestorBean.setCisRequestorId(((RequestorCis)requestor).getCisRequestorId().getJid());

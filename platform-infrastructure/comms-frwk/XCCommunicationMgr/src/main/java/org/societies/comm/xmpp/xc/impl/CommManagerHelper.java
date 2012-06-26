@@ -47,6 +47,7 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLStreamException;
 
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -66,6 +67,7 @@ import org.societies.api.comm.xmpp.interfaces.ICommCallback;
 import org.societies.api.comm.xmpp.interfaces.IFeatureServer;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.InvalidFormatException;
+import org.societies.api.internal.personalisation.model.IOutcome;
 import org.xml.sax.InputSource;
 import org.xmpp.packet.IQ;
 import org.xmpp.packet.IQ.Type;
@@ -382,6 +384,7 @@ public class CommManagerHelper {
 			getMarshaller(payload.getClass().getPackage()).marshal(payload, inxsw);
 
 			ByteArrayInputStream is = new ByteArrayInputStream(os.toByteArray());
+//			LOG.info("##############"+IOUtils.toString(is));
 			Document document = reader.read(is);
 			IQ iq = TinderUtils.createIQ(stanza, type); // ???
 			iq.getElement().add(document.getRootElement());

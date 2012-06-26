@@ -108,48 +108,48 @@ public class Test implements IPrivacyDataManagerListener, IPrivacyPolicyManagerL
 		}
 
 
-		// -- Privacy Data Manager usage
-		try {
-			if (null == privacyDataManager) {
-				throw new Exception("privacyDataManager NULL");
-			}
-			if (null == commManager) {
-				throw new Exception("CommManager NULL");
-			}
-			if (null == commManager.getIdManager()) {
-				throw new Exception("IdManager NULL");
-			}
-			IIdentity requestorId = commManager.getIdManager().fromJid("orange@societies.local");
-			Requestor requestor = new Requestor(requestorId);
-			Action action = new Action(ActionConstants.READ);
-			ResponseItem permission = privacyDataManager.checkPermission(requestor, ownerId, this.symLocAttribute.getId(), action);
-			LOG.info("************* [Test Resullt] Permission checked? "+(null != permission));
-			if (null != permission) {
-				LOG.info(permission.toString());
-			}
-		} catch (Exception e) {
-			LOG.error("************* [Tests PrivacyDataManager] Error Exception: "+e.getMessage()+"\n", e);
-		}
-
-		// -- Privacy Data Manager Remote Usage
-		try {
-			if (null == privacyDataManagerRemote) {
-				throw new Exception("privacyDataManagerRemote NULL");
-			}
-			if (null == commManager) {
-				throw new Exception("CommManager NULL");
-			}
-			if (null == commManager.getIdManager()) {
-				throw new Exception("IdManager NULL");
-			}
-			IIdentity requestorId = commManager.getIdManager().fromJid("orange@societies.local");
-			Requestor requestor = new Requestor(requestorId);
-			Action action = new Action(ActionConstants.READ);
-			privacyDataManagerRemote.checkPermission(requestor, ownerId, this.statusAttribute.getId(), action, this);
-			LOG.info("************* Permission check remote: launched");
-		} catch (Exception e) {
-			LOG.error("************* [Tests PrivacyDataManagerRemote] Error Exception: "+e.getMessage()+"\n", e);
-		}
+//		// -- Privacy Data Manager usage
+//		try {
+//			if (null == privacyDataManager) {
+//				throw new Exception("privacyDataManager NULL");
+//			}
+//			if (null == commManager) {
+//				throw new Exception("CommManager NULL");
+//			}
+//			if (null == commManager.getIdManager()) {
+//				throw new Exception("IdManager NULL");
+//			}
+//			IIdentity requestorId = commManager.getIdManager().fromJid("orange@societies.local");
+//			Requestor requestor = new Requestor(requestorId);
+//			Action action = new Action(ActionConstants.READ);
+//			ResponseItem permission = privacyDataManager.checkPermission(requestor, ownerId, this.symLocAttribute.getId(), action);
+//			LOG.info("************* [Test Resullt] Permission checked? "+(null != permission));
+//			if (null != permission) {
+//				LOG.info(permission.toString());
+//			}
+//		} catch (Exception e) {
+//			LOG.error("************* [Tests PrivacyDataManager] Error Exception: "+e.getMessage()+"\n", e);
+//		}
+//
+//		// -- Privacy Data Manager Remote Usage
+//		try {
+//			if (null == privacyDataManagerRemote) {
+//				throw new Exception("privacyDataManagerRemote NULL");
+//			}
+//			if (null == commManager) {
+//				throw new Exception("CommManager NULL");
+//			}
+//			if (null == commManager.getIdManager()) {
+//				throw new Exception("IdManager NULL");
+//			}
+//			IIdentity requestorId = commManager.getIdManager().fromJid("orange@societies.local");
+//			Requestor requestor = new Requestor(requestorId);
+//			Action action = new Action(ActionConstants.READ);
+//			privacyDataManagerRemote.checkPermission(requestor, ownerId, this.statusAttribute.getId(), action, this);
+//			LOG.info("************* Permission check remote: launched");
+//		} catch (Exception e) {
+//			LOG.error("************* [Tests PrivacyDataManagerRemote] Error Exception: "+e.getMessage()+"\n", e);
+//		}
 
 		// -- Privacy Policy Manager Remote Usage
 		try {

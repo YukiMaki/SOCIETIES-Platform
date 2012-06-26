@@ -63,10 +63,12 @@
 								<exclude>pubsub#errors.xsd</exclude>
 								<exclude>pubsub#owner.xsd</exclude>
 								<exclude>pubsub#event.xsd</exclude>
+								<exclude>**/org.societies.api.schema.identity.xsd</exclude>
 							</schemaExcludes>
 							<args>
 								<arg>-Xcollection-setter-injector</arg>
 							</args>
+							<extension>true</extension>
 						</configuration>
 					</execution>
 				</executions>
