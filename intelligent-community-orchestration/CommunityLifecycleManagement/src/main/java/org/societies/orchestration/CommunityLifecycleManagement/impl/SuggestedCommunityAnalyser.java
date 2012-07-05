@@ -200,11 +200,12 @@ public class SuggestedCommunityAnalyser implements ISuggestedCommunityAnalyser
 		
 		try {
 			List<CtxIdentifier> ctxMetadata = userContextBroker.lookup(CtxModelType.ATTRIBUTE, "hasCLM").get();
-			
-			for (int i = 0; i < ctxMetadata.size(); i++) {
-				CtxAttribute thisMetadata = (CtxAttribute) userContextBroker.retrieve(ctxMetadata.get(i)).get();
-				String thisMetadataValue = thisMetadata.getStringValue();
-				recordedMetadata.put(thisMetadataValue.split("---")[0].split("CIS ID: ")[1], thisMetadataValue.split("---")[1]); 
+			CtxAttribute thisMetadata = (CtxAttribute) userContextBroker.retrieve(ctxMetadata.get(0)).get();
+			String thisMetadataValue = thisMetadata.getStringValue();
+			int metadataCount = thisMetadataValue.split("CIS ID: ").length;
+			for (int i = 0; i < metadataCount; i++) {
+				
+				recordedMetadata.put(thisMetadataValue.split("CIS ID: ")[i].split("---")[0], thisMetadataValue.split("CIS ID: ")[i].split("---")[1]); 
 			}
 		} catch (InterruptedException e) {
 			
