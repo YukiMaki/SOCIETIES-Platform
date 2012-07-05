@@ -1054,9 +1054,12 @@ public class SuggestedCommunityAnalyser implements ISuggestedCommunityAnalyser
 			if ((userContextBroker.lookup(CtxModelType.ATTRIBUTE, "hasCLM")) != null) {
 			    listX = userContextBroker.lookup(CtxModelType.ATTRIBUTE, "hasCLM").get();
 			}
-			if (listX != null)
+			if (listX != null) {
 				if (listX.size() > 0)
 			        x = (CtxAttributeIdentifier)userContextBroker.lookup(CtxModelType.ATTRIBUTE, "hasCLM").get().get(0);
+			}
+			else 
+				userContextBroker.updateAttribute((CtxAttributeIdentifier) userContextBroker.lookup(CtxModelType.ATTRIBUTE, "hasCLM").get().get(0), recordedMetadata.toString());
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -1068,6 +1071,12 @@ public class SuggestedCommunityAnalyser implements ISuggestedCommunityAnalyser
 			LOG.error("Failed user context lookup: ExecutionException");
 			
 		} catch (CtxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			LOG.error("Failed user context lookup: CtxException");
+			
+		}
+		catch (RuntimeException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			LOG.error("Failed user context lookup: CtxException");
