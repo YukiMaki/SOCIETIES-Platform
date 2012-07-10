@@ -1656,4 +1656,13 @@ public class InternalCtxBroker implements ICtxBroker {
 			// do nothing
 		}
 	}
+	
+	public ICtxEventMgr getCtxEventMgr() {
+		return ctxEventMgr;
+	}
+
+	public void setCtxEventMgr(ICtxEventMgr ctxEventMgr) {
+		this.ctxEventMgr = ctxEventMgr;
+	}
+
 }

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +36,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.societies.api.comm.xmpp.interfaces.ICommManager;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.event.CtxChangeEvent;
 import org.societies.api.context.model.CtxAssociation;
@@ -50,17 +55,17 @@ import org.societies.api.context.model.CtxModelObject;
 import org.societies.api.context.model.CtxModelType;
 import org.societies.api.context.model.CtxEntity;
 import org.societies.api.context.model.IndividualCtxEntity;
-import org.societies.api.comm.xmpp.interfaces.ICommManager;
+import org.societies.api.context.model.util.SerialisationHelper;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.IIdentityManager;
-import org.societies.api.context.model.util.SerialisationHelper;
 
 import org.societies.context.api.event.CtxChangeEventTopic;
 import org.societies.context.api.event.CtxEventScope;
 import org.societies.context.api.event.ICtxEventMgr;
 import org.societies.context.api.user.db.IUserCtxDBMgr;
+import org.societies.context.user.db.impl.model.UserCtxAttributeDAO;
+import org.societies.context.user.db.impl.model.UserCtxEntityDAO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 /**
  * Implementation of the {@link IUserCtxDBMgr} interface.
@@ -68,9 +73,9 @@ import org.springframework.stereotype.Service;
  * @author 
  * @since 0.0.1
  */
-@Service("userCtxDBMgr")
 public class UserCtxDBMgr implements IUserCtxDBMgr {
-	
+
+	private SessionFactory sessionFactory;
 	/** The logging facility. */
 	private static final Logger LOG = LoggerFactory.getLogger(UserCtxDBMgr.class);
 	
@@ -82,31 +87,26 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 //	private final Map<CtxIdentifier, CtxModelObject> modelObjects;
 
 	private final IIdentityManager idMgr;
-	
+
 	private final IIdentity privateId;
 	
 	// TODO Remove and instantiate privateId properly so that privateId.toString() can be used instead
 	private final String privateIdtoString = "myFooIIdentity@societies.local";
-	
-	@Autowired(required=true)
+
 	UserCtxDBMgr (ICommManager commMgr) {
 
 		LOG.info(this.getClass() + " instantiated");
 		this.modelObjects =  new ConcurrentHashMap<CtxIdentifier, CtxModelObject>();
-		
+
 		this.idMgr = commMgr.getIdManager();
 		privateId = idMgr.getThisNetworkNode();
-		
-	}
 
-	/*
-	 * Used for JUnit testing only
-	 */
+	}
+	
 	public UserCtxDBMgr() {
-		
 		LOG.info(this.getClass() + " instantiated - fooId");
 		this.modelObjects =  new ConcurrentHashMap<CtxIdentifier, CtxModelObject>();
-		
+
 		// TODO !!!!!! Identity should be instantiated properly
 		this.privateId = null;
 		this.idMgr = null;
@@ -123,7 +123,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			throw new NullPointerException("type can't be null");
 
 		final CtxAssociationIdentifier identifier;
-		
+
 		if (this.idMgr != null) {
 			identifier = new CtxAssociationIdentifier(this.privateId.getBareJid(), 
 					type, CtxModelObjectNumberGenerator.getNextValue());
@@ -132,7 +132,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			identifier = new CtxAssociationIdentifier(this.privateIdtoString, 
 				type, CtxModelObjectNumberGenerator.getNextValue());
 		}
-		
+
 		final CtxAssociation association = new  CtxAssociation(identifier);
 		this.modelObjects.put(association.getId(), association);		
 
@@ -145,16 +145,17 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 					+ "' with scope '" + CtxEventScope.LOCAL + "': "
 					+ "ICtxEventMgr service is not available");
 		}
-		
+
 		return association;
+
 	}
 	
 	/*
-	 * @see org.societies.context.api.user.db.IUserCtxDBMgr#createAttribute(org.societies.api.context.model.CtxEntityIdentifier, java.lang.String)
+	 * (non-Javadoc)
+	 * @see org.societies.context.api.user.db.IUserCtxDBMgr#createAttribute(org.societies.api.context.model.CtxEntityIdentifier, org.societies.api.context.model.CtxAttributeValueType, java.lang.String)
 	 */
 	@Override
-	public CtxAttribute createAttribute(final CtxEntityIdentifier scope,
-			final String type) throws CtxException {
+	public CtxAttribute createAttribute(CtxEntityIdentifier scope, String type) throws CtxException {
 		
 		if (scope == null)
 			throw new NullPointerException("scope can't be null");
@@ -165,13 +166,38 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		
 		if (entity == null)	
 			throw new UserCtxDBMgrException("Scope not found: " + scope);
-		
+
 		CtxAttributeIdentifier attrIdentifier = new CtxAttributeIdentifier(scope, type, CtxModelObjectNumberGenerator.getNextValue());
 		final CtxAttribute attribute = new CtxAttribute(attrIdentifier);
 
 		this.modelObjects.put(attribute.getId(), attribute);
 		entity.addAttribute(attribute);
 		
+		Session session = sessionFactory.openSession();
+//		UserCtxEntityDAO tmpEntity=null;
+		Transaction t = session.beginTransaction();
+
+		try{
+			Date date = new Date();
+			UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
+			attributeDB.setOperatorId(attribute.toString());
+			attributeDB.setType(attribute.getType());
+			attributeDB.setObjectNumber(attribute.getObjectNumber());
+			attributeDB.setLastModified(date);
+
+
+//			session.save(tmpEntity);
+			session.save(attributeDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(attribute.getId()), 
 					new String[] { CtxChangeEventTopic.CREATED }, CtxEventScope.LOCAL);
@@ -192,8 +218,12 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public CtxEntity createEntity(String type) throws CtxException {
 
+		Session session = sessionFactory.openSession();
+//		UserCtxEntityDAO tmpEntity=null;
+		Transaction t = session.beginTransaction();
+
 		final CtxEntityIdentifier identifier;
-		
+
 		if (this.idMgr != null) {
 			identifier = new CtxEntityIdentifier(this.privateId.getBareJid(), 
 					type, CtxModelObjectNumberGenerator.getNextValue());
@@ -206,6 +236,27 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		final CtxEntity entity = new  CtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);		
 
+		try{
+			Date date = new Date();
+//			tmpEntity = new UserCtxEntityDAO(entity.toString(),entity.getType(),entity.getObjectNumber(),date);
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB.setOperatorId(entity.toString());
+			entityDB.setType(entity.getType());
+			entityDB.setObjectNumber(entity.getObjectNumber());
+			entityDB.setLastModified(date);
+
+//			session.save(tmpEntity);
+			session.save(entityDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(entity.getId()), 
 					new String[] { CtxChangeEventTopic.CREATED }, CtxEventScope.LOCAL);
@@ -215,7 +266,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 					+ "' with scope '" + CtxEventScope.LOCAL + "': "
 					+ "ICtxEventMgr service is not available");
 		}
-		
+
 		return entity;
 	}
 	
@@ -226,8 +277,12 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public IndividualCtxEntity createIndividualCtxEntity(String type) throws CtxException {
 
+		Session session = sessionFactory.openSession();
+//		UserCtxEntityDAO tmpEntity=null;
+		Transaction t = session.beginTransaction();
+
 		CtxEntityIdentifier identifier;
-		
+
 		if (this.idMgr != null) {
 			identifier = new CtxEntityIdentifier(this.privateId.getBareJid(),
 					type, CtxModelObjectNumberGenerator.getNextValue());	
@@ -236,9 +291,30 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			identifier = new CtxEntityIdentifier(this.privateIdtoString,
 					type, CtxModelObjectNumberGenerator.getNextValue());			
 		}
-		
+
 		IndividualCtxEntity entity = new IndividualCtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);
+
+		try{
+			Date date = new Date();
+//			tmpEntity = new UserCtxEntityDAO(entity.toString(),entity.getType(),entity.getObjectNumber(),date);
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB.setOperatorId(entity.toString());
+			entityDB.setType(entity.getType());
+			entityDB.setObjectNumber(entity.getObjectNumber());
+			entityDB.setLastModified(date);
+
+//			session.save(tmpEntity);
+			session.save(entityDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
 
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(entity.getId()), 
@@ -256,9 +332,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public List<CtxIdentifier> lookup(CtxModelType modelType, String type) throws CtxException {
 		// TODO Auto-generated method stub
-		
+
 		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
-		
+
 		for (CtxIdentifier identifier : modelObjects.keySet()) {
 			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
 				foundList.add(identifier);
@@ -271,7 +347,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	public List<CtxEntityIdentifier> lookupEntities(String entityType,
 			String attribType, Serializable minAttribValue,
 			Serializable maxAttribValue) throws CtxException {
-				
+
         final List<CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
         for (CtxIdentifier identifier : modelObjects.keySet()) {
             if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
@@ -342,7 +418,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 		if (this.modelObjects.keySet().contains(modelObject.getId())) {
 			this.modelObjects.put(modelObject.getId(), modelObject);
-			
+
 			// TODO CtxChangeEventTopic.MODIFIED should only be used if the model object is actually modified
 			final String[] topics = new String[] { CtxChangeEventTopic.UPDATED, CtxChangeEventTopic.MODIFIED };
 			if (this.ctxEventMgr != null) {
@@ -355,7 +431,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 						+ "': ICtxEventMgr service is not available");
 			}
 		}
-		
+
 		 if (modelObject instanceof CtxAssociation) {
 
 			   CtxEntity ent = null;
@@ -377,7 +453,24 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			    		ent.addAssociation(((CtxAssociation) modelObject).getId());
 			    }
 		}
-			      
+
 		return modelObject;
 	}	
+
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public ICtxEventMgr getCtxEventMgr() {
+		return ctxEventMgr;
+	}
+
+	public void setCtxEventMgr(ICtxEventMgr ctxEventMgr) {
+		this.ctxEventMgr = ctxEventMgr;
+	}
+
 }
