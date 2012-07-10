@@ -23,12 +23,14 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.societies.android.platform.useragent;
+package org.societies.android.platform.useragentContainer;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.societies.android.platform.useragent.UserAgent.LocalBinder;
+import org.societies.android.api.useragent.IAndroidUserAgent;
+import org.societies.android.platform.useragent.LocalBinder;
+import org.societies.android.platform.useragent.UserAgent;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.api.personalisation.model.Action;
@@ -50,7 +52,7 @@ import android.widget.Button;
 public class GUI_monitoring extends Activity implements OnClickListener{
 
 	private static final String LOG_TAG = GUI_monitoring.class.getName();
-	UserAgent uaService = null;
+	IAndroidUserAgent aua = null;
 	boolean connectedToService = false;
 
 	/** Called when the activity is first created. */
@@ -74,7 +76,7 @@ public class GUI_monitoring extends Activity implements OnClickListener{
 	public void onClick(View v){
 		IIdentity identity;
 		try {
-			identity = IdentityManagerImpl.staticfromJid("sarah.societies.org");
+			identity = IdentityManagerImpl.staticfromJid("xcmanager.societies.local");
 
 			ServiceResourceIdentifier serviceId = new ServiceResourceIdentifier();
 			serviceId.setIdentifier(new URI("http://test/useragent/activity"));
@@ -84,12 +86,16 @@ public class GUI_monitoring extends Activity implements OnClickListener{
 
 			if(v.getId() == R.id.sayHello){
 				if(connectedToService){
-					uaService.monitor(identity, new Action(serviceId, serviceType, paramName, "Hello!!"));
+					aua.monitor(identity, new Action(serviceId, serviceType, paramName, "Hello!!"));
+				}else{
+					Log.d(LOG_TAG, "Could not call monitor HELLO method - no connection to UserAgent service");
 				}
 			}else if(v.getId() == R.id.sayGoodbye){
 				if(connectedToService){
-					uaService.monitor(identity, new Action(serviceId, serviceType, paramName, "Goodbye!!"));	
-				}		
+					aua.monitor(identity, new Action(serviceId, serviceType, paramName, "Goodbye!!"));	
+				}else{
+					Log.d(LOG_TAG, "Could not call monitor GOODBYE method - no connection to UserAgent service");
+				}
 			} 
 		}catch (InvalidFormatException e1) {
 			e1.printStackTrace();
@@ -100,15 +106,16 @@ public class GUI_monitoring extends Activity implements OnClickListener{
 
 
 	private void bindToService(){
-		//Create intent to select service to bind to
+		Log.d(LOG_TAG, "Binding to UserAgent service");
 		Intent bindIntent = new Intent(this, UserAgent.class);
-		//bind to service
 		bindService(bindIntent, uaConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	private ServiceConnection uaConnection = new ServiceConnection() {
 		public void onServiceConnected(ComponentName className, IBinder service) {
-			uaService = ((LocalBinder) service).getService();
+			Log.d(LOG_TAG, "onServiceConnected called...connection to UserAgent initiated");
+			UserAgent uaService = ((LocalBinder<UserAgent>) service).getService();
+			aua = uaService.getInterface();
 			connectedToService = true;
 			Log.d(LOG_TAG, "Monitoring GUI connected to User Agent service");
 		}

@@ -25,8 +25,8 @@
 
 package org.societies.android.api.useragent;
 
-import org.societies.api.useragent.monitoring.IUserActionMonitor;
-
-public interface IAndroidUserAgent extends IUserActionMonitor{
+public interface IUALocalBinder {
 	
+	public IAndroidUserAgent getService();
+
 }

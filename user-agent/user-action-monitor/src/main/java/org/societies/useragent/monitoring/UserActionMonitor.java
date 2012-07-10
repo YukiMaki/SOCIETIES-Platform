@@ -25,27 +25,34 @@
 
 package org.societies.useragent.monitoring;
 
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.societies.api.comm.xmpp.interfaces.ICommManager;
 import org.societies.api.identity.IIdentity;
-import org.societies.api.identity.IdentityType;
 import org.societies.api.internal.context.broker.ICtxBroker;
+import org.societies.api.internal.css.management.ICSSLocalManager;
 import org.societies.api.internal.useragent.monitoring.UIMEvent;
 import org.societies.api.osgi.event.EMSException;
 import org.societies.api.osgi.event.EventTypes;
 import org.societies.api.osgi.event.IEventMgr;
 import org.societies.api.osgi.event.InternalEvent;
 import org.societies.api.personalisation.model.IAction;
+import org.societies.api.schema.cssmanagement.CssInterfaceResult;
+import org.societies.api.schema.cssmanagement.CssNode;
+import org.societies.api.schema.cssmanagement.CssRecord;
 import org.societies.api.useragent.monitoring.IUserActionMonitor;
 
 public class UserActionMonitor implements IUserActionMonitor{
 
 	private static Logger LOG = LoggerFactory.getLogger(UserActionMonitor.class);
-	private boolean cloud;
+	private boolean interactable;
 	private ICtxBroker ctxBroker;
 	private IEventMgr eventMgr;
 	private ICommManager commsMgr;
+	private ICSSLocalManager cssMgr;
 	private ContextCommunicator ctxComm;
 	String myDeviceID;
 	IIdentity myCssID;
@@ -62,8 +69,8 @@ public class UserActionMonitor implements IUserActionMonitor{
 		//create new entities and attributes if necessary
 		ctxComm.updateHistory(owner, action);
 
-		//update interactionDevice if NOT on cloud node
-		if(!cloud){  //CHANGE
+		//update UID if this is an interactable device -> Rich with screen
+		if(interactable){  
 			ctxComm.updateUID(owner, myDeviceID);
 		}
 
@@ -79,17 +86,41 @@ public class UserActionMonitor implements IUserActionMonitor{
 
 	public void initialiseUserActionMonitor(){
 		System.out.println("Initialising user action monitor!");
-		
-		//get myDeviceID from comms Mgr
+
+		//get identities from comms Mgr
 		myDeviceID = commsMgr.getIdManager().getThisNetworkNode().getJid();
 		myCssID = commsMgr.getIdManager().getThisNetworkNode();
 
 		ctxComm = new ContextCommunicator(ctxBroker, myCssID);
 
-		//get device type from CSS Manager
-		IdentityType nodeType = commsMgr.getIdManager().getThisNetworkNode().getType();
+		//get interactable information from CSS Manager
+		interactable = setInteractable();
+	}
 
 
+	private boolean setInteractable(){
+		boolean result = false;
+		try {
+			CssInterfaceResult tmp = cssMgr.getCssRecord().get();
+			CssRecord cssRecord = tmp.getProfile();
+			List<CssNode> nodes = cssRecord.getCssNodes();
+			for(CssNode nextNode: nodes){
+				if(nextNode.getIdentity().equals(myDeviceID)){  //FOUND THIS NODE
+					LOG.debug("Found this node in CssRecord - checking if it is an interactable node");
+					if(true/*nextNode.isInteractable()*/){  //CHANGE
+						LOG.debug("This node is interactable");
+						result = true;
+					}else{
+						LOG.debug("This node is NOT interactable");
+					}
+				}
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public void setCtxBroker(ICtxBroker broker){
@@ -102,6 +133,10 @@ public class UserActionMonitor implements IUserActionMonitor{
 
 	public void setCommsMgr(ICommManager commsMgr){
 		this.commsMgr = commsMgr;
+	}
+
+	public void setCssMgr(ICSSLocalManager cssMgr){
+		this.cssMgr = cssMgr;
 	}
 
 }

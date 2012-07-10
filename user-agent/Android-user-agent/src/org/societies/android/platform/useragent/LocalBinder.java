@@ -23,10 +23,23 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.societies.android.api.useragent;
+package org.societies.android.platform.useragent;
 
-import org.societies.api.useragent.monitoring.IUserActionMonitor;
+import java.lang.ref.WeakReference;
 
-public interface IAndroidUserAgent extends IUserActionMonitor{
+import android.os.Binder;
+
+public class LocalBinder<S> extends Binder{
 	
+	 private String TAG = "LocalBinder";
+	    private  WeakReference<S> mService;
+	    
+	    
+	    public LocalBinder(S service){
+	        mService = new WeakReference<S>(service);
+	    }
+	    
+	    public S getService() {
+	        return mService.get();
+	    }
 }

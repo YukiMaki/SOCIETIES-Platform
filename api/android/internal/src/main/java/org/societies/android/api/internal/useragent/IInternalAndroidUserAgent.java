@@ -23,16 +23,10 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.societies.android.platform.useragent;
+package org.societies.android.api.internal.useragent;
 
-import android.app.Activity;
-import android.os.Bundle;
+import org.societies.api.internal.useragent.feedback.IUserFeedback;
 
-public class GUI_feedback extends Activity{
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.feedback);
-	}
+public interface IInternalAndroidUserAgent extends IUserFeedback{
+	
 }

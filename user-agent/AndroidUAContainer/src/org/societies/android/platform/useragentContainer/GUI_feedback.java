@@ -23,18 +23,18 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.societies.android.platform.useragent;
+package org.societies.android.platform.useragentContainer;
 
-import android.app.Service;
-import android.content.Intent;
-import android.os.IBinder;
+import android.app.Activity;
+import android.os.Bundle;
 
-public class UserFeedback extends Service{
+public class GUI_feedback extends Activity{
 
 	@Override
-	public IBinder onBind(Intent arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
 
+		//set layout
+		setContentView(R.layout.feedback);
+	}
 }
