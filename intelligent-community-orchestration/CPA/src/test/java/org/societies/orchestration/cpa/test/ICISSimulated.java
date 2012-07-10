@@ -1,6 +1,7 @@
 package org.societies.orchestration.cpa.test;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
@@ -135,5 +136,7 @@ public class ICISSimulated implements ICisOwned {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
+	public List<String> getUsers(){
+		return this.members;
+	}
 }

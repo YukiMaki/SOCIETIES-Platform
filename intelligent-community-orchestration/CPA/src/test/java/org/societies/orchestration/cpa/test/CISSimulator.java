@@ -25,16 +25,18 @@
 package org.societies.orchestration.cpa.test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
+import org.societies.activity.model.Activity;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
-import org.societies.api.schema.activity.Activity;
 import org.societies.cis.manager.Cis;
 
 public class CISSimulator {
 	private HashMap<String,HashMap<String,Double>> userToUserMap;
 	private int messagesperuserperday;
+	private int users;
 	public CISSimulator(int initUsers, int messagesperuserperday)
 	{
 		this.messagesperuserperday = messagesperuserperday;
@@ -56,6 +58,7 @@ public class CISSimulator {
 					setUserToUserRate((String)keyArr[i],(String)keyArr[i2],Math.random());
 			}
 		}
+		this.users = initUsers;
 	}
 	/*
 	 * 
@@ -69,14 +72,35 @@ public class CISSimulator {
 		userToUserMap.put(user, new HashMap<String,Double>());
 	}
 	public ICisOwned simulate(long days){
-		ICisOwned ret = new Cis();
+		ICISSimulated ret = new ICISSimulated();
 		for(String user : userToUserMap.keySet()){
-//			try {
-//				ret.addMember(user,"member");
-//			} catch (CommunicationException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
+			try {
+				ret.addMember(user,"member");
+			} catch (CommunicationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		//sample every "minute"
+		long daysGone=0;
+		List<String> usersList = ret.getUsers();
+		Activity act = null; String user1, user2;
+		while(daysGone<days){
+			for(int i=0;i<(24*60);i++){
+				for(int u1=0;u1<users;u1++){
+					for(int u2=0;u2<users;u2++){
+						user1=usersList.get(u1);
+						user2=usersList.get(u2);
+						if(Math.random()>this.userToUserMap.get(user1).get(user2)){
+							act = new Activity();
+							act.setActor(user1);
+							act.setTarget(user2); act.setVerb("published");
+							ret.addCisActivity(act, null);
+						}
+					}
+				}
+				
+			}
 		}
 		return ret;
 	}
