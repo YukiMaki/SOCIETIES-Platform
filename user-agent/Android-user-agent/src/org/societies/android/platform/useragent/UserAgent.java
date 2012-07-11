@@ -28,7 +28,6 @@ package org.societies.android.platform.useragent;
 import org.societies.android.api.context.broker.ICtxClientBroker;
 import org.societies.android.api.context.broker.ICtxLocalBinder;
 import org.societies.android.api.useragent.IAndroidUserAgent;
-import org.societies.android.api.useragent.IUALocalBinder;
 import org.societies.api.identity.IIdentity;
 import org.societies.api.identity.InvalidFormatException;
 import org.societies.comm.xmpp.client.impl.ClientCommunicationMgr;
