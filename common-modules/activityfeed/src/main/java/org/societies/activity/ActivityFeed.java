@@ -34,19 +34,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-
-
-import org.apache.shindig.social.core.model.ActivityEntryImpl;
 import org.apache.shindig.social.opensocial.model.ActivityEntry;
 import org.apache.shindig.social.opensocial.model.ActivityObject;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -76,17 +65,13 @@ import org.societies.api.schema.cis.community.ParticipantRole;
 import org.societies.api.schema.cis.community.Who;
 import org.springframework.beans.factory.annotation.Autowired;
 
-//@Entity
-//@Table(name = "org_societies_activity_ActivityFeed")
 public class ActivityFeed implements IActivityFeed, Subscriber {
 	/**
 	 * 
 	 */
 
 	
-//	@Id
 	private String id;
-//	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	private
 	Set<Activity> list;
 	public ActivityFeed()
@@ -206,8 +191,6 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 
 	public void addActivity(IActivity activity) {
 
-		//persist.
-		//Session session = sessionFactory.openSession();//getSessionFactory().openSession();
 		Transaction t = session.beginTransaction();
 		Activity newact = new Activity(activity);
 		newact.setOwnerId(this.id);

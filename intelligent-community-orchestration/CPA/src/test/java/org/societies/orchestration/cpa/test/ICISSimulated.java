@@ -7,6 +7,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 
+import org.societies.activity.ActivityFeed;
 import org.societies.api.activity.IActivity;
 import org.societies.api.activity.IActivityFeed;
 import org.societies.api.cis.management.ICisManagerCallback;
@@ -17,9 +18,10 @@ import org.societies.api.schema.cis.community.Community;
 
 public class ICISSimulated implements ICisOwned {
 	ArrayList<String> members;
-	ArrayList<IActivity> activities;
+	ActivityFeed feed=null;
 	public ICISSimulated() {
-		// TODO Auto-generated constructor stub
+		members = new ArrayList<String>();
+		feed = new ActivityFeed();
 	}
 
 	@Override
@@ -54,7 +56,7 @@ public class ICISSimulated implements ICisOwned {
 
 	@Override
 	public void addCisActivity(IActivity activity, ICisManagerCallback callback) {
-		this.activities.add(activity);
+		this.feed.addCisActivity(activity);
 
 	}
 

@@ -53,9 +53,11 @@ public class CISSimulator {
 		Object[] keyArr = keySet.toArray();
 		int arrsize = keyArr.length;
 		for(int i=0;i<arrsize;i++){
-			for(int i2=0;i2<arrsize/2;i2++){
-				if(i!=i2)
+			for(int i2=0;i2<arrsize;i2++){
+				if(i!=i2){
+					System.out.println("adding connection from "+(String)keyArr[i]+" to "+(String)keyArr[i2]);
 					setUserToUserRate((String)keyArr[i],(String)keyArr[i2],Math.random());
+				}
 			}
 		}
 		this.users = initUsers;
@@ -85,22 +87,25 @@ public class CISSimulator {
 		long daysGone=0;
 		List<String> usersList = ret.getUsers();
 		Activity act = null; String user1, user2;
+		long timecounter = System.currentTimeMillis()-(daysGone*24L*3600L*1000L);
+		long msgCounter = 0;
 		while(daysGone<days){
 			for(int i=0;i<(24*60);i++){
 				for(int u1=0;u1<users;u1++){
 					for(int u2=0;u2<users;u2++){
+						if(u1==u2)
+							continue;
+						System.out.println("msgCounter: "+ (++msgCounter));
 						user1=usersList.get(u1);
 						user2=usersList.get(u2);
 						if(Math.random()>this.userToUserMap.get(user1).get(user2)){
-							act = new Activity();
-							act.setActor(user1);
-							act.setTarget(user2); act.setVerb("published");
-							ret.addCisActivity(act, null);
+							ret.addCisActivity(makeMessage(user1,user2,"message",Long.toString((long)(Math.random()*(24L*3600L*1000L)))),null); //add message to random time of this day given probabilities in the table..
 						}
 					}
 				}
 				
 			}
+			timecounter += (24L*3600L*1000L);
 		}
 		return ret;
 	}
@@ -115,7 +120,7 @@ public class CISSimulator {
 	//test of the test code..
 	public static void main(String[] args){
 		CISSimulator sim = new CISSimulator(10,10);
-		
+		sim.simulate(1);
 		
 		
 	}
