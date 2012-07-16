@@ -53,7 +53,7 @@ import org.societies.api.comm.xmpp.pubsub.Subscriber;
 import org.societies.api.identity.IIdentity;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class PersistedActivityFeed implements IActivityFeed, Subscriber {
+public class PersistedActivityFeed extends ActivityFeed implements IActivityFeed, Subscriber {
 	/**
 	 * 
 	 */

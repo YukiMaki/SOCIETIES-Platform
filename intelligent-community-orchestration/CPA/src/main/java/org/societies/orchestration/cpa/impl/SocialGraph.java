@@ -27,6 +27,10 @@ package org.societies.orchestration.cpa.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
+
+import org.societies.api.activity.IActivity;
+import org.societies.api.cis.management.ICisOwned;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
@@ -123,5 +127,19 @@ public class SocialGraph implements Collection<SocialGraphVertex> {
 			ret.addEdge(edge, edge.getFrom(), edge.getTo());
 		}
 		return ret;
+	}
+	public void fromCis(ICisOwned cis, long lastTime){
+		List<IActivity> actDiff;// = new ArrayList<IActivity>();
+		String lastTimeStr = Long.toString(lastTime);
+		String nowStr = Long.toString(System.currentTimeMillis());
+		actDiff = cis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr);
+		for(IActivity act : actDiff){
+			if(hasVertex(act.getActor()) == null){
+				getVertices().add(new SocialGraphVertex(act.getActor()));
+			}
+			if(hasVertex(act.getTarget()) == null){
+				getVertices().add(new SocialGraphVertex(act.getTarget()));
+			}
+		}
 	}
 }

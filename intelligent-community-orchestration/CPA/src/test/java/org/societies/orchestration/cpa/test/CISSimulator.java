@@ -30,6 +30,7 @@ import java.util.Set;
 
 import org.hibernate.SessionFactory;
 import org.societies.activity.ActivityFeed;
+import org.societies.activity.PersistedActivityFeed;
 import org.societies.activity.model.Activity;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
@@ -44,6 +45,7 @@ public class CISSimulator {
 	private ActivityFeed actFeed;
 	@Autowired
 	private SessionFactory sessionFactory;
+	int maxActs = 2000;
 	public SessionFactory getSessionFactory() {
 		return sessionFactory;
 	}
@@ -119,15 +121,32 @@ public class CISSimulator {
 					for(int u2=0;u2<users;u2++){
 						if(u1==u2)
 							continue;
-						System.out.println("msgCounter: "+ (++msgCounter));
+						System.out.println("msgCounter: "+ (++msgCounter) + " maxActs: "+maxActs);
 						user1=usersList.get(u1);
 						user2=usersList.get(u2);
 						if(Math.random()>this.userToUserMap.get(user1).get(user2)){
 							ret.addCisActivity(makeMessage(user1,user2,"message",Long.toString((long)(Math.random()*(24L*3600L*1000L)))),null); //add message to random time of this day given probabilities in the table..
 						}
+						if(msgCounter > this.maxActs){
+							System.out.println("breaking!");
+							break;
+						}
 					}
+					if(msgCounter > this.maxActs){
+						System.out.println("breaking!");
+						break;
+					}
+					
+				}
+				if(msgCounter > this.maxActs){
+					System.out.println("breaking!");
+					break;
 				}
 				
+			}
+			if(msgCounter > this.maxActs){
+				System.out.println("breaking!");
+				break;
 			}
 			timecounter += (24L*3600L*1000L);
 		}
@@ -149,6 +168,7 @@ public class CISSimulator {
         loader.load(sim, "SimTest-context.xml");
 		sim.getActFeed().setSession(sim.getSessionFactory().openSession());
         sim.simulate(1);
+        sim.maxActs = 2000;
 
 		
 	}

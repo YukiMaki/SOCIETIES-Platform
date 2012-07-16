@@ -72,7 +72,7 @@ public class Activity implements IActivity {
 		this.setObject("");
 		this.setTarget("");
 		this.setVerb("");
-		this.setPublished("");
+		this.setPublished("0");
 	}
 	public Activity(IActivity iact)
 	{
