@@ -17,8 +17,23 @@ import org.societies.api.comm.xmpp.exceptions.CommunicationException;
 import org.societies.api.schema.cis.community.Community;
 
 public class ICISSimulated implements ICisOwned {
-	ArrayList<String> members;
-	ActivityFeed feed=null;
+	private ArrayList<String> members;
+	public ArrayList<String> getMembers() {
+		return members;
+	}
+
+	public void setMembers(ArrayList<String> members) {
+		this.members = members;
+	}
+
+	public ActivityFeed getFeed() {
+		return feed;
+	}
+
+	public void setFeed(ActivityFeed feed) {
+		this.feed = feed;
+	}
+	private ActivityFeed feed=null;
 	public ICISSimulated() {
 		members = new ArrayList<String>();
 		feed = new ActivityFeed();

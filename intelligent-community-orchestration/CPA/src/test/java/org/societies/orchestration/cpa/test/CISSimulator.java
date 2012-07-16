@@ -28,15 +28,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.societies.activity.ActivityFeed;
 import org.societies.activity.model.Activity;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.comm.xmpp.exceptions.CommunicationException;
 import org.societies.cis.manager.Cis;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class CISSimulator {
 	private HashMap<String,HashMap<String,Double>> userToUserMap;
 	private int messagesperuserperday;
 	private int users;
+	@Autowired
+	private ActivityFeed actFeed;
+	@Autowired
+	private SessionFactory sessionFactory;
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
 	public CISSimulator(int initUsers, int messagesperuserperday)
 	{
 		this.messagesperuserperday = messagesperuserperday;
@@ -44,6 +59,14 @@ public class CISSimulator {
 		init(initUsers);
 	}
 	
+	public ActivityFeed getActFeed() {
+		return actFeed;
+	}
+
+	public void setActFeed(ActivityFeed actFeed) {
+		this.actFeed = actFeed;
+	}
+
 	public void init(int initUsers){
 		String base = "user";
 		for(int i = 0;i<initUsers;i++){
@@ -75,6 +98,7 @@ public class CISSimulator {
 	}
 	public ICisOwned simulate(long days){
 		ICISSimulated ret = new ICISSimulated();
+		ret.setFeed(actFeed);
 		for(String user : userToUserMap.keySet()){
 			try {
 				ret.addMember(user,"member");
@@ -120,8 +144,12 @@ public class CISSimulator {
 	//test of the test code..
 	public static void main(String[] args){
 		CISSimulator sim = new CISSimulator(10,10);
-		sim.simulate(1);
 		
+        ApplicationContextLoader loader = new ApplicationContextLoader();
+        loader.load(sim, "SimTest-context.xml");
+		sim.getActFeed().setSession(sim.getSessionFactory().openSession());
+        sim.simulate(1);
+
 		
 	}
 }

@@ -159,6 +159,7 @@ public class Activity implements IActivity {
 	@Override
 	public void setPublished(String published) {
 		this.published = published;
+		this.time = Long.parseLong(published);
 		data.put("published", new ActivityString(published));
 		
 	}
