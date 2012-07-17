@@ -89,6 +89,9 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	public Session getSession() {
 		return session;
 	}
+	public int count(){
+		return list.size();
+	}
 	public void setSession(Session session) {
 		this.session = session;
 	}

@@ -151,7 +151,7 @@ public class ICISSimulated implements ICisOwned {
 	@Override
 	public IActivityFeed getActivityFeed() {
 		// TODO Auto-generated method stub
-		return null;
+		return feed;
 	}
 	public List<String> getUsers(){
 		return this.members;

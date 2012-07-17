@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.societies.api.activity.IActivity;
 import org.societies.api.cis.management.ICisOwned;
+import org.societies.orchestration.cpa.impl.comparison.ActorComparator;
 
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.UndirectedSparseGraph;
@@ -128,11 +129,19 @@ public class SocialGraph implements Collection<SocialGraphVertex> {
 		}
 		return ret;
 	}
-	public void fromCis(ICisOwned cis, long lastTime){
-		List<IActivity> actDiff;// = new ArrayList<IActivity>();
+	public void populateFromCis(List<ICisOwned> cises, long lastTime, ActorComparator actComp){
 		String lastTimeStr = Long.toString(lastTime);
 		String nowStr = Long.toString(System.currentTimeMillis());
-		actDiff = cis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr);
+		List<IActivity> actDiff = new ArrayList<IActivity>();
+		System.out.println("icis.getActivityFeed(): "+cises.get(0).getActivityFeed());
+		for(ICisOwned icis : cises){
+			actDiff.addAll(icis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr)); //getting the diff.
+		}
+		//creating the vertices
+		//this make take a while the first time..
+
+
+		//actDiff = cis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr);
 		for(IActivity act : actDiff){
 			if(hasVertex(act.getActor()) == null){
 				getVertices().add(new SocialGraphVertex(act.getActor()));
@@ -141,5 +150,25 @@ public class SocialGraph implements Collection<SocialGraphVertex> {
 				getVertices().add(new SocialGraphVertex(act.getTarget()));
 			}
 		}
+		//creating the edges..
+		//this aswell !
+		System.out.println("actDiff size:"+actDiff.size()+" getVertices().size():"+getVertices().size());
+		int newEdges=0; int hasEdges=0;
+		SocialGraphEdge edge = null; SocialGraphEdge searchEdge = null;
+		for(SocialGraphVertex vertex1 : getVertices()){
+			for(SocialGraphVertex vertex2 : getVertices()){
+				edge = new SocialGraphEdge(vertex1,vertex2);
+				searchEdge = hasEdge(edge);
+				if(searchEdge == null){
+					newEdges++;
+					edge.setWeight(actComp.compare(vertex1,vertex2,actDiff));
+					getEdges().add(edge);
+				}else{
+					hasEdges++;
+					searchEdge.addToWeight(actComp.compare(vertex1,vertex2,actDiff));
+				}
+			}
+		}
+		System.out.println("newEdges: "+newEdges);
 	}
 }
