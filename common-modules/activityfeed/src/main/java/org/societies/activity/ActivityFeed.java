@@ -198,7 +198,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		Activity newact = new Activity(activity);
 		newact.setOwnerId(this.id);
 		try{
-			//list.add(newact);
+			list.add(newact);
 			session.save(newact);
 			//session.save(this);
 			t.commit();
@@ -243,6 +243,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	
 	synchronized public void startUp(Session session, String id){
 		this.session = session;
+		list = new HashSet<Activity>();
 		LOG.info("starting loading activities from db with ownerId: "+ id );
 		//Session session = sessionFactory.openSession();
 		try{

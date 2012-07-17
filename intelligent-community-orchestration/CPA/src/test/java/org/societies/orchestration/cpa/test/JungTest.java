@@ -9,7 +9,7 @@
 * This file is based on the JUNG project's example
 */
 
-package org.societies.orchestration.cpa.impl;
+package org.societies.orchestration.cpa.test;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -56,8 +56,9 @@ import org.apache.commons.collections15.functors.ConstantTransformer;
 import org.apache.commons.collections15.functors.MapTransformer;
 import org.apache.commons.collections15.map.LazyMap;
 import org.societies.api.cis.management.ICisOwned;
-import org.societies.orchestration.cpa.test.ApplicationContextLoader;
-import org.societies.orchestration.cpa.test.CISSimulator;
+import org.societies.orchestration.cpa.impl.CPACreationPatterns;
+import org.societies.orchestration.cpa.impl.SocialGraphEdge;
+import org.societies.orchestration.cpa.impl.SocialGraphVertex;
 
 import edu.uci.ics.jung.algorithms.cluster.EdgeBetweennessClusterer;
 import edu.uci.ics.jung.algorithms.layout.AggregateLayout;
