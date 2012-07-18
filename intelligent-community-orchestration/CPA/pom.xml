@@ -67,6 +67,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
+			<groupId>org.societies</groupId>
+			<artifactId>activityfeed</artifactId>
+			<version>0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 		    <groupId>org.societies.cis</groupId>
 		    <artifactId>cis-manager</artifactId>
 		    <version>0.1-SNAPSHOT</version>

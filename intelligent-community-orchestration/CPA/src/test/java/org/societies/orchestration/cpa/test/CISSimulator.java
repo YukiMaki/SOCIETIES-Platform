@@ -90,7 +90,7 @@ public class CISSimulator {
 			for(int i2=0;i2<arrsize;i2++){
 				if(i!=i2){
 					System.out.println("adding connection from "+(String)keyArr[i]+" to "+(String)keyArr[i2]);
-					setUserToUserRate((String)keyArr[i],(String)keyArr[i2],Math.random());
+					setUserToUserRate((String)keyArr[i],(String)keyArr[i2],Math.abs(Math.random()-0.31d));
 				}
 			}
 		}
@@ -138,24 +138,20 @@ public class CISSimulator {
 							ret.addCisActivity(makeMessage(user1,user2,"message",Long.toString((long)(Math.random()*(24L*3600L*1000L)))),null); //add message to random time of this day given probabilities in the table..
 						}
 						if(msgCounter > this.maxActs){
-							System.out.println("breaking!");
 							break;
 						}
 					}
 					if(msgCounter > this.maxActs){
-						System.out.println("breaking!");
 						break;
 					}
 					
 				}
 				if(msgCounter > this.maxActs){
-					System.out.println("breaking!");
 					break;
 				}
 				
 			}
 			if(msgCounter > this.maxActs){
-				System.out.println("breaking!");
 				break;
 			}
 			timecounter += (24L*3600L*1000L);
