@@ -52,7 +52,7 @@ import javax.persistence.Transient;
 //import org.societies.cis.mgmt;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.societies.activity.ActivityFeed;
@@ -88,6 +88,7 @@ import org.societies.api.schema.cis.community.AddMemberResponse;
 import org.societies.api.schema.cis.community.CleanUpActivityFeedResponse;
 import org.societies.api.schema.cis.community.DeleteMemberResponse;
 import org.societies.api.schema.cis.community.GetActivitiesResponse;
+import org.societies.api.schema.cis.community.GetInfo;
 import org.societies.api.schema.cis.community.GetInfoResponse;
 import org.societies.api.schema.cis.community.JoinResponse;
 import org.societies.api.schema.cis.community.LeaveResponse;
@@ -336,6 +337,8 @@ public class Cis implements IFeatureServer, ICisOwned {
 		session = sessionFactory.openSession();
 		System.out.println("activityFeed: "+activityFeed);
 		activityFeed.startUp(session,this.getCisId()); // this must be called just after the CisRecord has been set
+		
+		this.persist(this);
 		//activityFeed.getActivities("0 1339689547000");
 
 	}
@@ -1031,7 +1034,7 @@ public class Cis implements IFeatureServer, ICisOwned {
 		c.setCommunityType(this.getCisType());
 		c.setOwnerJid(this.getOwnerId());
 		c.setDescription(this.getDescription());
-		c.setGetInfo("");
+		c.setGetInfo(new GetInfo());
 		
 		Who w = new Who();
 		c.setWho(w);
@@ -1102,6 +1105,8 @@ public class Cis implements IFeatureServer, ICisOwned {
 		Iterator<CisParticipant> it = s.iterator();
 
 		// deleting from DB
+		activityFeed.clear();
+		activityFeed = null;
 		this.deletePersisted(this);
 		
 		// unregistering policy
@@ -1146,12 +1151,12 @@ public class Cis implements IFeatureServer, ICisOwned {
 		
 		
 
-		
-		//session.close();
+		if(session!=null)
+			session.close();
 		//**** end of delete all members and send them a xmpp notification 
 		
 		//cisRecord = null; this cant be called as it will be used for comparisson later. I hope the garbage collector can take care of it...
-		activityFeed = null; // TODO: replace with proper way of destroying it
+		//activityFeed = null; // TODO: replace with proper way of destroying it
 		
 		
 		ret = CISendpoint.UnRegisterCommManager();

@@ -1,7 +1,7 @@
 /**
  * Copyright (c) 2011, SOCIETIES Consortium (WATERFORD INSTITUTE OF TECHNOLOGY (TSSG), HERIOT-WATT UNIVERSITY (HWU), SOLUTA.NET 
  * (SN), GERMAN AEROSPACE CENTRE (Deutsches Zentrum fuer Luft- und Raumfahrt e.V.) (DLR), Zavod za varnostne tehnologije
- * informacijske družbe in elektronsko poslovanje (SETCCE), INSTITUTE OF COMMUNICATION AND COMPUTER SYSTEMS (ICCS), LAKE
+ * informacijske družbe in elektronsko poslovanje (SETCCE), INSTITUTE OF COMMUNICATION AND COMPUTER //SystemS (ICCS), LAKE
  * COMMUNICATIONS (LAKE), INTEL PERFORMANCE LEARNING SOLUTIONS LTD (INTEL), PORTUGAL TELECOM INOVAÇÃO, SA (PTIN), IBM Corp., 
  * INSTITUT TELECOM (ITSUD), AMITEC DIACHYTI EFYIA PLIROFORIKI KAI EPIKINONIES ETERIA PERIORISMENIS EFTHINIS (AMITEC), TELECOM 
  * ITALIA S.p.a.(TI),  TRIALOG (TRIALOG), Stiftelsen SINTEF (SINTEF), NEC EUROPE LTD (NEC))
@@ -274,16 +274,16 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		
 		// Create the attribute's scope		
 		final CommunityCtxEntity communityCtxEnt = internalCtxBroker.createCommunityEntity(cisMockIdentity).get();
-		System.out.println("communityCtxEnt type :" + communityCtxEnt.getType());
+		//System.out.println("communityCtxEnt type :" + communityCtxEnt.getType());
 		// Create the attribute to be tested
 		CtxAttribute commCtxAttributeComm = internalCtxBroker.createAttribute(communityCtxEnt.getId(), CtxAttributeTypes.POLITICAL_VIEWS).get();
 		commCtxAttributeComm.setStringValue("foo");
 		commCtxAttributeComm = (CtxAttribute) internalCtxBroker.update(commCtxAttributeComm).get();
-		System.out.println("commCtxAttributeComm:" + commCtxAttributeComm);
+		//System.out.println("commCtxAttributeComm:" + commCtxAttributeComm);
 		
 		// test lookup and retrieve
 		List<CtxEntityIdentifier> commListResults = internalCtxBroker.lookupEntities("community", CtxAttributeTypes.POLITICAL_VIEWS, "foo", "foo").get();
-		System.out.println(" commListResults size :"+commListResults.size());
+		//System.out.println(" commListResults size :"+commListResults.size());
 	}
 	
 	@Test
@@ -383,7 +383,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 			assertEquals(assocIdentifierList.size(),1);
 			CtxIdentifier retrievedAssocHasServID = assocIdentifierList.get(0);
 			assertEquals(retrievedAssocHasServID.toString(),ctxAssocHasServ.getId().toString());
-			System.out.println("assocID "+ retrievedAssocHasServID.toString());
+			//System.out.println("assocID "+ retrievedAssocHasServID.toString());
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -399,28 +399,57 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 	}
 
 	@Test
-	public void testStoreRetrieveServiceParameters2() throws Exception {
+	public void testStoreRetrieveServiceParameters2() {
 
-		final ServiceResourceIdentifier serviceId1 = new ServiceResourceIdentifier();
-		serviceId1.setIdentifier(new URI("http://testService1"));
-		
-		final IndividualCtxEntity operator = 
-				this.internalCtxBroker.retrieveIndividualEntity(cssMockIdentity).get();
 
-		// create service attribute
-		CtxAttribute service1Attr = this.internalCtxBroker.createAttribute(operator.getId(), "service").get();
-		final byte[] service1Blob = SerialisationHelper.serialise(serviceId1);
-		service1Attr = this.internalCtxBroker.updateAttribute(service1Attr.getId(), service1Blob).get();
+		//	ServiceResourceIdentifier serviceId2 = new ServiceResourceIdentifier();
+		//		serviceId2.setIdentifier(new URI("http://testService2"));
 
-		// retrieve service attribute
-		final List<CtxIdentifier> listAttrs = this.internalCtxBroker.lookup(CtxModelType.ATTRIBUTE, "service").get();
-		assertEquals(1, listAttrs.size());
-		final CtxAttributeIdentifier serviceAttrID = (CtxAttributeIdentifier) listAttrs.get(0);
-		final CtxAttribute ctxAttrRetrieved = (CtxAttribute) this.internalCtxBroker.retrieveAttribute(serviceAttrID, false).get();
+		ServiceResourceIdentifier serviceId1 = new ServiceResourceIdentifier();
+		try {
+			serviceId1.setIdentifier(new URI("http://testService1"));
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		//System.out.println("testStoreRetrieveServiceParameters service created :"+ serviceId1);
 
-		final ServiceResourceIdentifier retrievedServiceId = (ServiceResourceIdentifier) 
-				SerialisationHelper.deserialise(ctxAttrRetrieved.getBinaryValue(), this.getClass().getClassLoader());
-		assertEquals(serviceId1.getIdentifier(), retrievedServiceId.getIdentifier());
+		try {
+		//IndividualCtxEntity operator = (IndividualCtxEntity) this.internalCtxBroker.createIndividualEntity(cssId, ownerType).createIndividualEntity().get();
+		IndividualCtxEntity operator = this.internalCtxBroker.retrieveIndividualEntity(cssMockIdentity).get();
+			//System.out.println("operator "+operator);
+			// create service attribute
+			CtxAttribute service1Attr = this.internalCtxBroker.createAttribute(operator.getId(), "service").get();
+			final byte[] service1Blob = SerialisationHelper.serialise(serviceId1);
+			service1Attr = this.internalCtxBroker.updateAttribute(service1Attr.getId(), service1Blob).get();
+
+			// retrieve service attribute
+			List<CtxIdentifier> listAttrs = this.internalCtxBroker.lookup(CtxModelType.ATTRIBUTE, "service").get();
+			CtxAttributeIdentifier serviceAttrID = (CtxAttributeIdentifier) listAttrs.get(0);
+			CtxAttribute ctxAttrRetrieved = (CtxAttribute) this.internalCtxBroker.retrieveAttribute(serviceAttrID, false).get();
+
+			ServiceResourceIdentifier ctxAttrRetrievedValue = (ServiceResourceIdentifier) SerialisationHelper.deserialise(ctxAttrRetrieved.getBinaryValue(), this.getClass().getClassLoader());
+			assertEquals(ctxAttrRetrievedValue.getServiceInstanceIdentifier(),serviceId1.getServiceInstanceIdentifier());
+			//System.out.println("testStoreRetrieveServiceParameters service retrieved :"+ ctxAttrRetrievedValue);
+
+
+		} catch (CtxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+
 	}
 
 
@@ -428,7 +457,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
-	@Ignore
+	
 	@Test
 	public void testStoreRetrieveServiceParameters() {
 
@@ -442,30 +471,38 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		}
 
 		try {
-			IndividualCtxEntity operator = this.internalCtxBroker.retrieveCssOperator().get();
 
+			final IndividualCtxEntity operator = 
+					internalCtxBroker.retrieveIndividualEntity(cssMockIdentity).get();
+			
 			CtxEntity serviceEnt = this.internalCtxBroker.createEntity(CtxEntityTypes.SERVICE).get();
 
-			CtxAssociation usesServiceAssoc = this.internalCtxBroker.createAssociation(CtxAssociationTypes.USES_SERVICE).get();
+			CtxAssociation usesServiceAssoc = this.internalCtxBroker.createAssociation(CtxAssociationTypes.USES_SERVICES).get();
 			usesServiceAssoc.addChildEntity(operator.getId());
 			usesServiceAssoc.addChildEntity(serviceEnt.getId());
-
+			this.internalCtxBroker.update(operator);
+			this.internalCtxBroker.update(usesServiceAssoc);
+			
 			CtxEntity parServiceEnt = this.internalCtxBroker.createEntity(CtxEntityTypes.SERVICE_PARAMETER).get();
 			CtxAttribute parNameAttr = this.internalCtxBroker.createAttribute(parServiceEnt.getId(), CtxAttributeTypes.PARAMETER_NAME).get();
+			parNameAttr.setStringValue("Volume");
 			CtxAttribute parValueAttr = this.internalCtxBroker.createAttribute(parServiceEnt.getId(), CtxAttributeTypes.LAST_ACTION).get();
 
-			CtxAssociation hasParametersServiceAssoc = this.internalCtxBroker.createAssociation(CtxAssociationTypes.HAS_PARAMETER).get();
+			CtxAssociation hasParametersServiceAssoc = this.internalCtxBroker.createAssociation(CtxAssociationTypes.HAS_PARAMETERS).get();
 			hasParametersServiceAssoc.addChildEntity(serviceEnt.getId());
 			hasParametersServiceAssoc.addChildEntity(parServiceEnt.getId());
-
+			this.internalCtxBroker.update(parServiceEnt);
+			this.internalCtxBroker.update(hasParametersServiceAssoc);
 
 			//find a SERVICE_PARAMETER entity with a specific PARAMETER_NAME attribute under a SERVICE entity
 			// e.g. PARAMETER_NAME attribute has value "Volume"
 
 			CtxEntity serviceParamEntityResult = null;
 			//returns all services assigned to user
-			Set<CtxAssociationIdentifier> operatorServicesAssocs = operator.getAssociations(CtxAssociationTypes.USES_SERVICE);
-
+			Set<CtxAssociationIdentifier> operatorServicesAssocs = operator.getAssociations(CtxAssociationTypes.USES_SERVICES);
+			System.out.println("************ ");
+			System.out.println("************ operatorServicesAssocs "+operatorServicesAssocs.size());
+			
 			CtxAssociation assocUseServices = null;
 
 			for(CtxAssociationIdentifier assocId: operatorServicesAssocs){
@@ -478,7 +515,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 			for(CtxEntityIdentifier serviceEntID : servicesSet){
 				CtxEntity serviceEntity = (CtxEntity) this.internalCtxBroker.retrieve(serviceEntID).get();
 
-				Set<CtxAssociationIdentifier> hasParamAssocSet = serviceEntity.getAssociations(CtxAssociationTypes.HAS_PARAMETER);
+				Set<CtxAssociationIdentifier> hasParamAssocSet = serviceEntity.getAssociations(CtxAssociationTypes.HAS_PARAMETERS);
 				CtxAssociation assocHasParam = null;
 				for(CtxAssociationIdentifier hasParamAssocID : hasParamAssocSet){
 					assocHasParam = (CtxAssociation) this.internalCtxBroker.retrieve(hasParamAssocID).get();
@@ -514,7 +551,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 	@Test
 	public void testRetrieveEntitiesAssociationString() {
 		try {
-			System.out.println("testRetrieveEntitiesAssociationString");
+			//System.out.println("testRetrieveEntitiesAssociationString");
 
 			CtxEntity person = this.internalCtxBroker.createEntity("Person").get();
 			CtxEntity serviceEnt = this.internalCtxBroker.createEntity("ServiceID").get();
@@ -549,12 +586,12 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 					assertEquals(assocID,hasServiceAssoc.getId());
 				}
 
-				//	System.out.println("Association1 set " + assocIDSet);
-				//	System.out.println("Association1 set " + assocIDSet.size());
+				//	//System.out.println("Association1 set " + assocIDSet);
+				//	//System.out.println("Association1 set " + assocIDSet.size());
 
 				Set<CtxAssociationIdentifier> assocIDSet2 = retrievedEnt.getAssociations("hasService");
-				//		System.out.println("assocIDSet2 size "+assocIDSet2.size());
-				//		System.out.println("assocIDSet2 "+assocIDSet2);
+				//		//System.out.println("assocIDSet2 size "+assocIDSet2.size());
+				//		//System.out.println("assocIDSet2 "+assocIDSet2);
 
 				for(CtxAssociationIdentifier assocID : assocIDSet2 ){
 					//System.out.println("Association2 set " + assocID);
@@ -564,7 +601,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 				if(hasServiceRetrieved != null && hasServiceAssoc != null){
 					assertEquals(hasServiceRetrieved,hasServiceAssoc);
-					//if(hasServiceRetrieved.equals(hasServiceAssoc))System.out.println("CtxAssociation Retrieved matches created CtxAssociation");	
+					//if(hasServiceRetrieved.equals(hasServiceAssoc))//System.out.println("CtxAssociation Retrieved matches created CtxAssociation");	
 				}
 
 				//System.out.println("hasServiceRetrieved "+ hasServiceRetrieved);
@@ -573,16 +610,16 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 					serviceRetrieved = (CtxEntity) this.internalCtxBroker.retrieve(ctxAssocEntityId).get();		
 					//System.out.println("ctxAssocEntityId "+ ctxAssocEntityId);
 				}
-				System.out.println("^^^^^^^^^^^^^^^^ serviceRetrieved "+ serviceRetrieved.getId());
-				System.out.println("^^^^^^^^^^^^^^^^ serviceEnt "+ serviceEnt.getId());
+				//System.out.println("^^^^^^^^^^^^^^^^ serviceRetrieved "+ serviceRetrieved.getId());
+				//System.out.println("^^^^^^^^^^^^^^^^ serviceEnt "+ serviceEnt.getId());
 				assertEquals(serviceRetrieved,serviceEnt);
-				//if(serviceRetrieved.equals(serviceEnt)) System.out.println("CtxAssociation Retrieved matches created CtxAssociation");
+				//if(serviceRetrieved.equals(serviceEnt)) //System.out.println("CtxAssociation Retrieved matches created CtxAssociation");
 
 				for(CtxAttribute ctxAttributeRetrived : serviceRetrieved.getAttributes("parameterName1") ){
-					//	System.out.println("ctxAttributeRetrived "+ ctxAttributeRetrived);
+					//	//System.out.println("ctxAttributeRetrived "+ ctxAttributeRetrived);
 					ctxServiceAttrRetrieved = ctxAttributeRetrived;
 				}
-				//if(ctxServiceAttrRetrieved.equals(serviceAttr)) System.out.println("ctxServiceAttrRetrieved Retrieved matches created serviceAttr");
+				//if(ctxServiceAttrRetrieved.equals(serviceAttr)) //System.out.println("ctxServiceAttrRetrieved Retrieved matches created serviceAttr");
 				assertEquals(ctxServiceAttrRetrieved,serviceAttr);
 			}
 		} catch (InterruptedException e) {
@@ -761,11 +798,20 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#remove(org.societies.api.context.model.CtxIdentifier)}.
+	 * @throws CtxException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	@Ignore
 	@Test
-	public void testRemoveCtxIdentifier() {
-		fail("Not yet implemented");
+	public void testRemoveCtxIdentifier() throws CtxException, InterruptedException, ExecutionException {
+		
+		final CtxEntity ctxEntity;
+
+		final Future<CtxEntity> futureCtxEntity = internalCtxBroker.createEntity("entType");
+		ctxEntity = futureCtxEntity.get();
+		final Future<CtxModelObject> removed = internalCtxBroker.remove(ctxEntity.getId());
+		assertNotNull(removed);
+		//assertTrue(ctxEntity.getType().equalsIgnoreCase("entType"));
 	}
 
 	/**
@@ -780,11 +826,20 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#retrieve(org.societies.api.context.model.CtxIdentifier)}.
+	 * @throws CtxException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	@Ignore
 	@Test
-	public void testRetrieveCtxIdentifier() {
-		fail("Not yet implemented");
+	public void testRetrieveCtxIdentifier() throws CtxException, InterruptedException, ExecutionException {
+		
+		final CtxEntity ctxEntity;
+
+		final Future<CtxEntity> futureCtxEntity = internalCtxBroker.createEntity("entType");
+		ctxEntity = futureCtxEntity.get();
+		final Future<CtxModelObject> retrieved = internalCtxBroker.retrieve(ctxEntity.getId());
+		assertNotNull(retrieved);
+		//assertTrue(ctxEntity.getType().equalsIgnoreCase("entType"));
 	}
 
 	/**
@@ -888,7 +943,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		final CtxAttribute emptyAttribute;
 		CtxAttribute initialisedAttribute;
 		final CtxEntity scope;
-		System.out.println("testRetrieveHistoryCtxAttributeIdentifierDateDate");
+		//System.out.println("testRetrieveHistoryCtxAttributeIdentifierDateDate");
 
 		// Create the attribute's scope
 		Future<CtxEntity> futureEntity;
@@ -926,8 +981,8 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 			List<CtxHistoryAttribute> history = internalCtxBroker.retrieveHistory(initialisedAttribute.getId(), null, null).get();
 
 			for(CtxHistoryAttribute hocAttr: history){
-				System.out.println(history.size());
-				System.out.println("history List id:"+hocAttr.getId()+" getLastMod:"+hocAttr.getLastModified() +" hocAttr value:"+hocAttr.getIntegerValue());		
+				//System.out.println(history.size());
+				//System.out.println("history List id:"+hocAttr.getId()+" getLastMod:"+hocAttr.getLastModified() +" hocAttr value:"+hocAttr.getIntegerValue());		
 			}
 
 
@@ -978,11 +1033,34 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#update(org.societies.api.context.model.CtxModelObject)}.
+	 * @throws CtxException 
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
 	 */
-	@Ignore
 	@Test
-	public void testUpdateByCtxEntity() {
-		fail("Not yet implemented");
+	public void testUpdateByCtxEntity() throws CtxException, InterruptedException, ExecutionException {
+		
+		final CtxEntity entity;
+		final CtxAttribute attribute;
+		
+		// Create the entity to be tested
+		Future<CtxEntity> futureEntity = internalCtxBroker.createEntity("entType");
+		entity = futureEntity.get();
+		
+		// Create the attribute to be tested
+		Future<CtxAttribute> futureCtxAttribute = internalCtxBroker.createAttribute(entity.getId(), "attrType");
+		attribute = futureCtxAttribute.get();
+
+		// Set the attribute's initial value
+		attribute.setIntegerValue(100);
+		attribute.setHistoryRecorded(true);
+
+		// Verify the initial attribute value
+		assertEquals(new Integer(100), attribute.getIntegerValue());
+		
+		Future<CtxModelObject> updatedEntity = internalCtxBroker.update(entity);
+		assertNotNull(updatedEntity);
+		
 	}
 
 	/**
@@ -1044,11 +1122,37 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#update(org.societies.api.context.model.CtxModelObject)}.
+	 * @throws ExecutionException 
+	 * @throws InterruptedException 
+	 * @throws CtxException 
 	 */
-	@Ignore
 	@Test
-	public void testUpdateByCtxAssociation() {
-		fail("Not yet implemented");
+	public void testUpdateByCtxAssociation() throws InterruptedException, ExecutionException, CtxException {
+		
+		final CtxAssociation emptyAssociation;
+		final CtxEntity scope;
+		final CtxEntity parent;
+
+		// Create the Association's scope
+		Future<CtxEntity> futureEntity = internalCtxBroker.createEntity("entType");
+		scope = futureEntity.get();
+		Future<CtxEntity> futureEntity2 = internalCtxBroker.createEntity("entType_II");
+		parent = futureEntity2.get();
+		
+		// Create the Association to be tested
+		Future<CtxAssociation> futureCtxAssociation = internalCtxBroker.createAssociation("assocType");
+		emptyAssociation = futureCtxAssociation.get();
+
+		// Set the Association's initial value
+		emptyAssociation.setParentEntity(scope.getId());
+		assertNotNull(emptyAssociation);
+		assertEquals(scope.getId(), emptyAssociation.getParentEntity());
+		// Update the attribute value
+		emptyAssociation.setParentEntity(parent.getId());
+		assertNotNull(emptyAssociation);
+		assertEquals(parent.getId(), emptyAssociation.getParentEntity());
+		
+		
 	}
 
 	/**
@@ -1139,8 +1243,8 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		List<CtxAttributeIdentifier> listOfEscortingAttributeIds = new ArrayList<CtxAttributeIdentifier>();
 		listOfEscortingAttributeIds.add(escortingAttribute1.getId());
 		listOfEscortingAttributeIds.add(escortingAttribute2.getId());
-		System.out.println("primary: "+ primaryAttribute.getId());
-		System.out.println("escorting tuple list: "+ listOfEscortingAttributeIds);
+		//System.out.println("primary: "+ primaryAttribute.getId());
+		//System.out.println("escorting tuple list: "+ listOfEscortingAttributeIds);
 
 		//System.out.println("primary attr last update: "+primaryAttribute.getQuality().getLastUpdated());
 
@@ -1172,7 +1276,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		CtxAttribute escortingAttribute1;
 		CtxAttribute escortingAttribute2;
 		CtxAttribute escortingAttribute3;
-		System.out.println("********* testUpdateHistoryTuples");
+		//System.out.println("********* testUpdateHistoryTuples");
 		try {
 			scope = (CtxEntity)internalCtxBroker.createEntity("entType").get();
 			// Create the attribute to be tested
@@ -1198,17 +1302,17 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 			internalCtxBroker.update(primaryAttribute);
 
 			List<CtxAttributeIdentifier> tuplesBeforeUpdate = internalCtxBroker.getHistoryTuples(primaryAttribute.getId(), null).get();
-			System.out.println("********* tuplesBeforeUpdate "+tuplesBeforeUpdate +" size "+tuplesBeforeUpdate.size());
+			//System.out.println("********* tuplesBeforeUpdate "+tuplesBeforeUpdate +" size "+tuplesBeforeUpdate.size());
 			assertEquals(3,tuplesBeforeUpdate.size());
 
 			escortingAttribute3 = (CtxAttribute)internalCtxBroker.createAttribute(scope.getId(), "escortingAttribute3").get();
 			listOfEscortingAttributeIds.add(escortingAttribute3.getId());
-			System.out.println("listOfEscortingAttributeIds "+listOfEscortingAttributeIds.size());
+			//System.out.println("listOfEscortingAttributeIds "+listOfEscortingAttributeIds.size());
 
 			internalCtxBroker.updateHistoryTuples(primaryAttribute.getId(),listOfEscortingAttributeIds);
 			List<CtxAttributeIdentifier> tuplesAfterUpdate = internalCtxBroker.getHistoryTuples(primaryAttribute.getId(), null).get();
 			assertEquals(4,tuplesAfterUpdate.size());
-			System.out.println("********* tuplesAfterUpdate "+tuplesAfterUpdate +" size "+tuplesAfterUpdate.size());
+			//System.out.println("********* tuplesAfterUpdate "+tuplesAfterUpdate +" size "+tuplesAfterUpdate.size());
 
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
@@ -1267,7 +1371,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 			Set<CtxAttribute> atrrSet1 = ent1.getAttributes("blobValue");
 			for(CtxAttribute attr: atrrSet1){
 				final MockBlobClass retrievedBlob = (MockBlobClass) SerialisationHelper.deserialise(attr.getBinaryValue(), this.getClass().getClassLoader());
-				//	System.out.println("retrievedBlob.getSeed() "+retrievedBlob.getSeed());
+				//	//System.out.println("retrievedBlob.getSeed() "+retrievedBlob.getSeed());
 				assertEquals(retrievedBlob.getSeed(),125);
 			}
 
@@ -1307,7 +1411,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 	public void testHistoryTupleDataRetrievalByType() throws CtxException, InterruptedException, ExecutionException {
 
 
-		System.out.println("testHistoryTupleDataRetrievalByType");
+		//System.out.println("testHistoryTupleDataRetrievalByType");
 		final CtxEntity scope1;
 		final CtxEntity scope2;
 		CtxAttribute primaryAttribute1;
@@ -1414,7 +1518,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		primaryAttribute2 =  internalCtxBroker.updateAttribute(primaryAttribute2.getId(),(Serializable)"forthValue").get();
 
 		Map<CtxHistoryAttribute, List<CtxHistoryAttribute>> tupleResults = internalCtxBroker.retrieveHistoryTuples("primaryAttribute", listOfEscortingAttributeIds, null, null).get();
-		System.out.println("testHistoryTupleDataRetrievalByType tupleResults "+ tupleResults);
+		//System.out.println("testHistoryTupleDataRetrievalByType tupleResults "+ tupleResults);
 
 	}
 
@@ -1422,7 +1526,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 	public void testHistoryMultipleSizeTupleDataRetrieval() throws CtxException, InterruptedException, ExecutionException {
 
 
-		System.out.println("testHistoryMultipleSizeTupleDataRetrieval");
+		//System.out.println("testHistoryMultipleSizeTupleDataRetrieval");
 		final CtxEntity scope;
 		CtxAttribute primaryAttribute;
 		CtxAttribute escortingAttribute1;
@@ -1472,12 +1576,12 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 
 		Map<CtxHistoryAttribute, List<CtxHistoryAttribute>> tupleResults = internalCtxBroker.retrieveHistoryTuples(primaryAttribute.getId(), listOfEscortingAttributeIds, null, null).get();
 
-		System.out.println("**** " +tupleResults);
+		//System.out.println("**** " +tupleResults);
 		
 		assertEquals(4,tupleResults.size());
 
 		printHocTuplesDB(tupleResults);
-		System.out.println("add new attribute in an existing tuple");
+		//System.out.println("add new attribute in an existing tuple");
 
 		CtxAttribute escortingAttribute3 = (CtxAttribute) internalCtxBroker.createAttribute(scope.getId(),"escortingAttribute3").get();
 		//escortingAttribute3.setHistoryRecorded(true);
@@ -1498,7 +1602,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		primaryAttribute =  internalCtxBroker.updateAttribute(primaryAttribute.getId(),(Serializable)"sixthValue").get();
 
 		Map<CtxHistoryAttribute, List<CtxHistoryAttribute>> updatedTupleResults = internalCtxBroker.retrieveHistoryTuples(primaryAttribute.getId(), listOfEscortingAttributeIds, null, null).get();
-		System.out.println("updatedTupleResults "+updatedTupleResults);
+		//System.out.println("updatedTupleResults "+updatedTupleResults);
 		assertEquals(4,tupleResults.size());
 		//printHocTuplesDB(updatedTupleResults);
 		//TODO : add more test for attribute values of type binary
@@ -1560,7 +1664,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 		Map<CtxHistoryAttribute, List<CtxHistoryAttribute>> tupleResults = internalCtxBroker.retrieveHistoryTuples(primaryAttribute.getId(), listOfEscortingAttributeIds, null, null).get();
 
 		assertEquals(4,tupleResults.size());
-		System.out.println("tupleResults: "+tupleResults);
+		//System.out.println("tupleResults: "+tupleResults);
 		printHocTuplesDB(tupleResults);
 
 		//TODO : add more test for attribute values of type binary
@@ -1619,7 +1723,7 @@ public class InternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringCont
 				escValueTotal = escValueTotal+" "+escValue; 
 				//System.out.println("escValue: "+escValue);
 			}
-			System.out.println(i+ " primaryValue: "+primaryValue+ " escValues: "+escValueTotal);
+			//System.out.println(i+ " primaryValue: "+primaryValue+ " escValues: "+escValueTotal);
 			i++;
 		}
 	}

@@ -71,7 +71,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	 */
 	
 //	@Id
-	private Long id = 0L;
+	private String id;
 //	@OneToMany(cascade=CascadeType.ALL, fetch = FetchType.EAGER)
 	private
 	Set<Activity> list;
@@ -79,7 +79,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	{
 		list = new HashSet<Activity>();
 	}
-	public ActivityFeed(Long id){
+	public ActivityFeed(String id){
 		this.id = id;
 		list = new HashSet<Activity>();// from Thomas
 	}
@@ -219,7 +219,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		int ret = 0;
 		String forever = "0 "+Long.toString(System.currentTimeMillis());
 		List<IActivity> toBeDeleted = getActivities(criteria,forever);
-		Session session = sessionFactory.openSession();
+		//Session session = sessionFactory.openSession();
 		Transaction t = session.beginTransaction();
 		try{
 			for(IActivity act : toBeDeleted){
@@ -242,6 +242,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	}
 	
 	synchronized public void startUp(Session session, String id){
+		this.session = session;
 		LOG.info("starting loading activities from db with ownerId: "+ id );
 		//Session session = sessionFactory.openSession();
 		try{
@@ -266,11 +267,11 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		}
 	}
 
-	public Long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 
@@ -305,8 +306,12 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	}
 	@Override
 	public boolean deleteActivity(IActivity activity) {
-		// x
-		return false;
+		if(!list.contains(activity))
+			return false;
+		boolean ret = list.remove(activity);
+		Transaction t = session.beginTransaction();
+		session.delete(activity);
+		return ret;
 	}
 	@Override
 	synchronized public long importActivtyEntries(List<?> activityEntries) {
@@ -361,7 +366,9 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	}
 	public void clear(){
 		for(Activity act : list){
+			Transaction t = session.beginTransaction();
 			session.delete(act);
+			t.commit();
 		}
 		list.clear();
 	}
