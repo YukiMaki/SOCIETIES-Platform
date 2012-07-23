@@ -30,23 +30,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.JoinTable;
-
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
@@ -58,56 +51,48 @@ import org.hibernate.annotations.MapKey;
  *
  */
 @Entity
-@Table(name = "entities")
-public class UserCtxEntityDAO implements Serializable {
+@Table(name = "associations")
+public class UserCtxAssociationDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String entityId;
+	private Set<String> associationSetId = new HashSet<String>(0);
+
+	private String associationId;
 	private Date timestamp;
-//	private UserCtxAttributeDAO scope;
-	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
-	private Set<String> entitySetId = new HashSet<String>(0);
+//	private String operatorId;
+//	private String type;
+//	private long objectNumber;
+	private String parentEntityId;
+	private boolean dynamic;
 	private Set<String> map;
-	private UserCtxEntityIdentifierDAO ctxIdentifier;
-
-	/** 
-	 * @param entityId
-	 * @param timestamp
-	 */
-	public UserCtxEntityDAO(String entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
-
-//		super();
-		
-		this.entityId = entityId;
-		this.ctxIdentifier = ctxIdentifier;
-		this.timestamp = timestamp;
-	}
+	private UserCtxAssociationIdentifierDAO ctxIdentifier;
 	
-	public UserCtxEntityDAO(String entityId, Set<UserCtxAttributeDAO> attrScope) {
+	/**
+	 * @param associationId
+	 * @param timestamp 
+	 * @param parentEntityId 
+	 * @param dynamic 
+	 * @param ctxIdentifier
+	 *
+	 */
+	public UserCtxAssociationDAO(Date timestamp, String parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
 
-//		super();
-		
-		this.entityId = entityId;
-		this.attrScope = attrScope;
+		super();
+
+		this.timestamp = timestamp;
+		this.parentEntityId = parentEntityId;
+		this.dynamic = dynamic;
+		this.ctxIdentifier = ctxIdentifier;
+
 	}
 
 	/**
 	 * 
 	 */
-	public UserCtxEntityDAO() {
-//		super();
+	public UserCtxAssociationDAO() {
+		super();
 		// TODO Auto-generated constructor stub
-	}
-
-	@Id
-	@Column(name="entity_id", unique = true, nullable = false)
-	public String getEntityId() {
-		return entityId;
-	}
-
-	public void setEntityId(String entityId) {
-		this.entityId = entityId;
 	}
 
 	@Column(name = "timestamp")
@@ -118,32 +103,59 @@ public class UserCtxEntityDAO implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")
-	public Set<UserCtxAttributeDAO> getAttrScope() {
-		return this.attrScope;
+	@Column(name = "parent_entity_id")
+	public String getParentEntityId() {
+		return parentEntityId;
 	}
- 
-	public void setAttrScope(Set<UserCtxAttributeDAO> attrScope) {
-		this.attrScope = attrScope;
+	public void setParentEntityId(String parentEntityId) {
+		this.parentEntityId = parentEntityId;
 	}
-		
+
+	@Column(name = "dynamic")
+	public boolean getDynamic() {
+		return dynamic;
+	}
+	public void setDynamic(boolean dynamic) {
+		this.dynamic = dynamic;
+	}
+
+	@Id
+	@Column(name="association_id")
+	public String getAssociationId() {
+		return associationId;
+	}
+
+	public void setAssociationId(String associationId) {
+		this.associationId = associationId;
+	}
+
+	@Embedded
+	public UserCtxAssociationIdentifierDAO getCtxIdentifier() {
+		return this.ctxIdentifier;
+	}
+	public void setCtxIdentifier(UserCtxAssociationIdentifierDAO ctxIdentifier) {
+		this.ctxIdentifier = ctxIdentifier;
+	}
+/*	
+	@ElementCollection
+	@CollectionTable(name="assoc_entities", joinColumns=@JoinColumn(name="association_id"))
+	@Column(name="entity_id")
+	public Set<String> getAssocEntities() { 
+		return associationSetId; 
+	} 
+	public void setAssocEntities(Set<String> associationSetId) {
+		this.associationSetId = associationSetId;
+	}
+*/
 	@CollectionOfElements
 	@JoinTable(name="assoc_entities",
-	  joinColumns = @JoinColumn(name="association_id"))
-	@MapKey(columns={@Column(name="entity_id")})
-	@Column(name="entity_id")
+	  joinColumns = @JoinColumn(name="entity_id"))
+	@MapKey(columns={@Column(name="association_id")})
+	@Column(name="association_id")
 	public Set<String> getMap() {
 	  return this.map;
 	}
 	public void setMap(Set<String> map) {
 		  this.map = map;
-	}
-	
-	@Embedded
-	public UserCtxEntityIdentifierDAO getCtxIdentifier() {
-		return ctxIdentifier;
-	}
-	public void setCtxIdentifier (UserCtxEntityIdentifierDAO ctxIdentifier) {
-		this.ctxIdentifier = ctxIdentifier;
 	}
 }

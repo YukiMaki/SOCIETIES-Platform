@@ -26,30 +26,18 @@ package org.societies.context.user.db.impl.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.JoinTable;
-
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import javax.persistence.JoinColumn;
-import javax.persistence.UniqueConstraint;
 
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Parameter;
 
 /**
  * Describe your class here...
@@ -58,56 +46,62 @@ import org.hibernate.annotations.MapKey;
  *
  */
 @Entity
-@Table(name = "entities")
-public class UserCtxEntityDAO implements Serializable {
+@Table(name = "qoc")
+public class UserCtxQualityDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String entityId;
+	private String attributeId;
 	private Date timestamp;
-//	private UserCtxAttributeDAO scope;
-	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
-	private Set<String> entitySetId = new HashSet<String>(0);
-	private Set<String> map;
-	private UserCtxEntityIdentifierDAO ctxIdentifier;
-
-	/** 
-	 * @param entityId
-	 * @param timestamp
-	 */
-	public UserCtxEntityDAO(String entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
-
-//		super();
-		
-		this.entityId = entityId;
-		this.ctxIdentifier = ctxIdentifier;
-		this.timestamp = timestamp;
-	}
+	private String origin;
+	private Double precision;
+	private Double updateFrequency;
 	
-	public UserCtxEntityDAO(String entityId, Set<UserCtxAttributeDAO> attrScope) {
+	private UserCtxAttributeDAO attribute;
 
-//		super();
-		
-		this.entityId = entityId;
-		this.attrScope = attrScope;
+	/**
+	 * @param timestamp
+	 * @param origin
+	 * @param precision
+	 * @param updateFrequency
+	 */
+	public UserCtxQualityDAO(Date timestamp, String origin, Double precision, Double updateFrequency) {
+		super();
+
+		this.timestamp = timestamp;
+		this.origin = origin;
+		this.precision = precision;
+		this.updateFrequency = updateFrequency;
 	}
 
 	/**
 	 * 
 	 */
-	public UserCtxEntityDAO() {
-//		super();
+	public UserCtxQualityDAO() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	@Id
-	@Column(name="entity_id", unique = true, nullable = false)
-	public String getEntityId() {
-		return entityId;
+	@OneToOne(mappedBy="quality", optional=false, fetch=FetchType.LAZY)
+	   public UserCtxAttributeDAO getAttribute() {
+		return this.attribute;
 	}
 
-	public void setEntityId(String entityId) {
-		this.entityId = entityId;
+	public void setAttribute(UserCtxAttributeDAO attribute) {
+		this.attribute = attribute;
+	}
+
+	@Id
+	@GeneratedValue(generator="foreign")
+	@GenericGenerator(name="foreign", strategy="foreign", parameters={
+			@Parameter(name="property", value="attribute")
+	})
+	public String getAttributeId() {
+		return attributeId;
+	}
+
+	public void setAttributeId(String attributeId) {
+		this.attributeId = attributeId;
 	}
 
 	@Column(name = "timestamp")
@@ -118,32 +112,28 @@ public class UserCtxEntityDAO implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")
-	public Set<UserCtxAttributeDAO> getAttrScope() {
-		return this.attrScope;
+	@Column(name = "origin")
+	public String getOrigin() {
+		return origin;
 	}
- 
-	public void setAttrScope(Set<UserCtxAttributeDAO> attrScope) {
-		this.attrScope = attrScope;
+	public void setOrigin(String origin) {
+		this.origin = origin;
 	}
-		
-	@CollectionOfElements
-	@JoinTable(name="assoc_entities",
-	  joinColumns = @JoinColumn(name="association_id"))
-	@MapKey(columns={@Column(name="entity_id")})
-	@Column(name="entity_id")
-	public Set<String> getMap() {
-	  return this.map;
+
+	@Column(name = "precision_")
+	public Double getPrecision() {
+		return precision;
 	}
-	public void setMap(Set<String> map) {
-		  this.map = map;
+	public void setPrecision(Double precision) {
+		this.precision = precision;
 	}
-	
-	@Embedded
-	public UserCtxEntityIdentifierDAO getCtxIdentifier() {
-		return ctxIdentifier;
+
+	@Column(name = "update_frequency")
+	public Double getUpdateFrequency() {
+		return updateFrequency;
 	}
-	public void setCtxIdentifier (UserCtxEntityIdentifierDAO ctxIdentifier) {
-		this.ctxIdentifier = ctxIdentifier;
+	public void setUpdateFrequency(Double updateFrequency) {
+		this.updateFrequency = updateFrequency;
 	}
+
 }

@@ -24,14 +24,27 @@
  */
 package org.societies.context.user.db.impl.model;
 
+import static javax.persistence.GenerationType.IDENTITY;
+
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.AssociationOverrides;
+import javax.persistence.AssociationOverride;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
+import javax.persistence.Embedded;
+import javax.persistence.Transient;
 
 /**
  * Describe your class here...
@@ -41,70 +54,195 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "attributes")
+@AssociationOverrides({
+@AssociationOverride(name = "ctxIdentifier.type", joinColumns = @JoinColumn(name = "type")),
+@AssociationOverride(name = "ctxIdentifier.objectNumber", joinColumns = @JoinColumn(name = "object_number"))
+        })
 public class UserCtxAttributeDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String operatorId;
-	private String type;
-	private long objectNumber;
-	private Date lastModified;
+	private String attributeId;
+	private Date timestamp;
+//	private UserCtxEntityDAO scope;
+//	private String type;
+//	private long objectNumber;
+	private UserCtxAttributeIdentifierDAO ctxIdentifier;
+	private String valueStr;
+	private Integer valueInt;
+	private Double valueDbl;
+	private byte[] valueBlob;
+	private boolean history;
+	private String sourceId;
+	private String valueType;
+	private String valueMetric;
 
+	private UserCtxAssociationDAO quality;
+	
 	/**
-	 
-	 * @param attributeId
-	 * @param type
-	 * @param objectNumber
-	 * @param lastModified
+	 * @param attributeId 
+	 * @param timestamp 
+	 * @param scope 
+	 * @param valueStr 
+	 * @param valueInt 
+	 * @param valueDbl
+	 * @param valueBlob 
+	 * @param history 
+	 * @param sourceId 
+	 * @param valueType 
+	 * @param valueMetric 
 	 */
-	public UserCtxAttributeDAO(String operatorId, String type, long objectNumber, Date lastModified) {
-		super();
+	public UserCtxAttributeDAO(String attributeId, Date timestamp, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
 
-		this.operatorId = operatorId;
-		this.type = type;
-		this.objectNumber = objectNumber;
-		this.lastModified = lastModified;		
+//		super();
+
+		this.attributeId = attributeId;
+//		this.scope = scope;
+		this.timestamp = timestamp;
+		this.ctxIdentifier = ctxIdentifier;
+		this.valueStr = valueStr;
+		this.valueInt = valueInt;
+		this.valueDbl = valueDbl;
+		this.valueBlob = valueBlob;
+		this.history = history;
+		this.sourceId = sourceId;
+		this.valueType = valueType;
+		this.valueMetric = valueMetric;
 	}
+/*
+	public UserCtxAttributeDAO(String attributeId, UserCtxEntityDAO scope) {		
 
+//		super();
+
+		this.attributeId = attributeId;
+		this.scope = scope;
+	}
+*/
 	/**
 	 * 
 	 */
 	public UserCtxAttributeDAO() {
-		super();
+//		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	@Column(name = "type")
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	@Column(name = "objectNumber")
-	public long getObjectNumber() {
-		return objectNumber;
-	}
-	public void setObjectNumber(long objectNumber) {
-		this.objectNumber = objectNumber;
+	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
+	@PrimaryKeyJoinColumn
+	public UserCtxAssociationDAO getQuality() {
+		return this.quality;
 	}
 
-	@Column(name = "lastModified")
-	public Date getLastModified() {
-		return lastModified;
-	}
-	public void setLastModified(Date lastModified) {
-		this.lastModified = lastModified;
+	public void setQuality(UserCtxAssociationDAO quality) {
+		this.quality = quality;
 	}
 
 	@Id
-	@Column(name="attributeId")
-	public String getOperatorId() {
-		return operatorId;
+	@Column(name="attribute_id")
+	public String getAttributeId() {
+		return attributeId;
 	}
 
-	public void setOperatorId(String operatorId) {
-		this.operatorId = operatorId;
+	public void setAttributeId(String attributeId) {
+		this.attributeId = attributeId;
 	}
 
+	@Column(name = "timestamp")
+	public Date getTimestamp() {
+		return timestamp;
+	}
+	public void setTimestamp(Date timestamp) {
+		this.timestamp = timestamp;
+	}
+/*
+	@Column(name = "scope")
+	public String getScope() {
+		return scope;
+	}
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
+*/
+
+	@Column(name = "value_str")
+	public String getValueStr() {
+		return valueStr;
+	}
+	public void setValueStr(String valueStr) {
+		this.valueStr = valueStr;
+	}
+
+	@Column(name = "value_int")
+	public Integer getValueInt() {
+		return valueInt;
+	}
+	public void setValueInt(Integer valueInt) {
+		this.valueInt = valueInt;
+	}
+
+	@Column(name = "value_dbl")
+	public Double getValueDbl() {
+		return valueDbl;
+	}
+	public void setValueDbl(Double valueDbl) {
+		this.valueDbl = valueDbl;
+	}
+
+	@Column(name = "value_blob")
+	public byte[] getValueBlob() {
+		return valueBlob;
+	}
+	public void setValueBlob(byte[] valueBlob) {
+		this.valueBlob = valueBlob;
+	}
+
+	@Column(name = "history")
+	public boolean getHistory() {
+		return history;
+	}
+	public void setHistory(boolean history) {
+		this.history = history;
+	}
+
+	@Column(name = "source_id")
+	public String getSourceId() {
+		return sourceId;
+	}
+	public void setSourceId(String sourceId) {
+		this.sourceId = sourceId;
+	}
+
+	@Column(name = "value_type")
+	public String getValueType() {
+		return valueType;
+	}
+	public void setValueType(String valueType) {
+		this.valueType = valueType;
+	}
+
+	@Column(name = "value_metric")
+	public String getValueMetric() {
+		return valueMetric;
+	}
+	public void setValueMetric(String valueMetric) {
+		this.valueMetric = valueMetric;
+	}	
+	
+	@Embedded
+	public UserCtxAttributeIdentifierDAO getCtxIdentifier() {
+		return ctxIdentifier;
+	}
+	public void setCtxIdentifier (UserCtxAttributeIdentifierDAO ctxIdentifier) {
+		this.ctxIdentifier = ctxIdentifier;
+	}
+		
+/*	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "scope", nullable = false)
+	public UserCtxEntityDAO getScope() {
+		return this.scope;
+	}
+	public void setScope(UserCtxEntityDAO scope) {
+		this.scope = scope;
+	}
+	*/
+	
 }

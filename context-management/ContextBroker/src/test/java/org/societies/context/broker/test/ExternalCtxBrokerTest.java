@@ -65,6 +65,9 @@ import org.societies.context.broker.impl.InternalCtxBroker;
 import org.societies.context.broker.test.util.MockBlobClass;
 import org.societies.context.user.db.impl.UserCtxDBMgr;
 import org.societies.context.userHistory.impl.UserContextHistoryManagement;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 /**
  * Describe your class here...
@@ -72,7 +75,8 @@ import org.societies.context.userHistory.impl.UserContextHistoryManagement;
  * @author 
  *
  */
-public class ExternalCtxBrokerTest {
+@ContextConfiguration(locations = { "../../../../../META-INF/InternalCtxBrokerTest-context.xml" })
+public class ExternalCtxBrokerTest extends AbstractTransactionalJUnit4SpringContextTests {
 
 	private static final String OWNER_IDENTITY_STRING = "myFooIIdentity@societies.local";
 	private static final String NETWORK_NODE_STRING = "myFooIIdentity@societies.local/node";
@@ -90,6 +94,9 @@ public class ExternalCtxBrokerTest {
 	private static IIdentity cisMockIdentity = mock(IIdentity.class);
 	
 	private static ICtxAccessController mockCtxAccessController = mock(ICtxAccessController.class);
+
+	@Autowired
+	private UserCtxDBMgr userDB;
 
 	/**
 	 * @throws java.lang.Exception
@@ -126,7 +133,7 @@ public class ExternalCtxBrokerTest {
 
 		InternalCtxBroker internalCtxBroker = new InternalCtxBroker();
 
-		internalCtxBroker.setUserCtxDBMgr(new UserCtxDBMgr());
+		internalCtxBroker.setUserCtxDBMgr(userDB);
 		internalCtxBroker.setUserCtxHistoryMgr(new UserContextHistoryManagement());
 		internalCtxBroker.setIdentityMgr(mockIdentityMgr);
 		internalCtxBroker.createIndividualEntity(mockIdentityLocal, CtxEntityTypes.PERSON); // TODO remove?

@@ -63,8 +63,13 @@ import org.societies.context.api.event.CtxChangeEventTopic;
 import org.societies.context.api.event.CtxEventScope;
 import org.societies.context.api.event.ICtxEventMgr;
 import org.societies.context.api.user.db.IUserCtxDBMgr;
+import org.societies.context.user.db.impl.model.UserCtxAssociationDAO;
+//import org.societies.context.user.db.impl.model.UserCtxAssociationEntitiesDAO;
+import org.societies.context.user.db.impl.model.UserCtxAssociationIdentifierDAO;
 import org.societies.context.user.db.impl.model.UserCtxAttributeDAO;
+import org.societies.context.user.db.impl.model.UserCtxAttributeIdentifierDAO;
 import org.societies.context.user.db.impl.model.UserCtxEntityDAO;
+import org.societies.context.user.db.impl.model.UserCtxEntityIdentifierDAO;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -136,6 +141,50 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		final CtxAssociation association = new  CtxAssociation(identifier);
 		this.modelObjects.put(association.getId(), association);		
 
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try{
+			Date date = new Date();
+			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
+			UserCtxAssociationIdentifierDAO associationIdentDB = new UserCtxAssociationIdentifierDAO();
+			
+			associationIdentDB.setOperatorId(identifier.getOperatorId());
+			associationIdentDB.setOwnerId(identifier.getOwnerId());
+			associationIdentDB.setObjectNumber(identifier.getObjectNumber());
+			associationIdentDB.setType(identifier.getType());
+			
+			associationDB.setAssociationId(association.getId().toString());
+			associationDB.setTimestamp(association.getLastModified());
+			
+//			associationDB.setOperatorId(association.getOwnerId());
+//			associationDB.setType(association.getType());
+//			associationDB.setObjectNumber(association.getObjectNumber());
+			if (association.getParentEntity() != null) {
+				associationDB.setParentEntityId(association.getParentEntity().toString());
+			}
+//			associationDB.setDynamic(association.)
+
+//			session.save(tmpEntity);
+			associationDB.setCtxIdentifier(associationIdentDB);
+			session.save(associationDB);
+			
+/*			UserCtxAssociationEntitiesDAO assocEntitiesDB = new UserCtxAssociationEntitiesDAO();
+			assocEntitiesDB.setAssociationId(association.getId().toString());
+			assocEntitiesDB.setEntityId(association.getChildEntities().toString());
+			
+			session.save(assocEntitiesDB);
+	*/		
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(association.getId()), 
 					new String[] { CtxChangeEventTopic.CREATED }, CtxEventScope.LOCAL);
@@ -178,15 +227,34 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		Transaction t = session.beginTransaction();
 
 		try{
+			
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, entity.getId().toString());
+			
 			Date date = new Date();
 			UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
-			attributeDB.setOperatorId(attribute.toString());
-			attributeDB.setType(attribute.getType());
-			attributeDB.setObjectNumber(attribute.getObjectNumber());
-			attributeDB.setLastModified(date);
+			UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+			attributeDB.setAttributeId(attribute.getId().toString());
+			attributeDB.setTimestamp(attribute.getLastModified());
+//			attributeDB.setScope(attribute.getScope());
+//			attributeDB.setType(attribute.getType());
+			attrIdentDB.setType(attribute.getType());
+//			attributeDB.setObjectNumber(attribute.getObjectNumber());
+			attrIdentDB.setObjectNumber(attrIdentifier.getObjectNumber());
+			attributeDB.setValueStr(attribute.getStringValue());
+			attributeDB.setValueInt(attribute.getIntegerValue());
+			attributeDB.setValueDbl(attribute.getDoubleValue());
+			attributeDB.setValueBlob(attribute.getBinaryValue());
+			attributeDB.setHistory(attribute.isHistoryRecorded());
+			attributeDB.setSourceId(attribute.getSourceId());
+			attributeDB.setValueType(attribute.getValueType().toString());
+			attributeDB.setValueMetric(attribute.getValueMetric());
+			
+//			attributeDB.setScope(entityDB);
+			attrIdentDB.setScope(entityDB);
+			attributeDB.setCtxIdentifier(attrIdentDB);
+			entityDB.getAttrScope().add(attributeDB);
 
-
-//			session.save(tmpEntity);
 			session.save(attributeDB);
 			t.commit();
 		}
@@ -240,11 +308,17 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			Date date = new Date();
 //			tmpEntity = new UserCtxEntityDAO(entity.toString(),entity.getType(),entity.getObjectNumber(),date);
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
-			entityDB.setOperatorId(entity.toString());
-			entityDB.setType(entity.getType());
-			entityDB.setObjectNumber(entity.getObjectNumber());
-			entityDB.setLastModified(date);
+			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+			entityDB.setEntityId(entity.getId().toString());
+			entityDB.setTimestamp(entity.getLastModified());
+			entIdentDB.setOperatorId(entity.getOwnerId());
+			entIdentDB.setType(entity.getType());
+			entIdentDB.setObjectNumber(entity.getObjectNumber());
+//			entityDB.setOperatorId(entity.getOwnerId());
+//			entityDB.setType(entity.getType());
+//			entityDB.setObjectNumber(entity.getObjectNumber());
 
+			entityDB.setCtxIdentifier(entIdentDB);
 //			session.save(tmpEntity);
 			session.save(entityDB);
 			t.commit();
@@ -299,11 +373,17 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			Date date = new Date();
 //			tmpEntity = new UserCtxEntityDAO(entity.toString(),entity.getType(),entity.getObjectNumber(),date);
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
-			entityDB.setOperatorId(entity.toString());
-			entityDB.setType(entity.getType());
-			entityDB.setObjectNumber(entity.getObjectNumber());
-			entityDB.setLastModified(date);
+			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+			entityDB.setEntityId(entity.getId().toString());
+			entityDB.setTimestamp(entity.getLastModified());
+			entIdentDB.setOperatorId(entity.getOwnerId());
+			entIdentDB.setType(entity.getType());
+			entIdentDB.setObjectNumber(entity.getObjectNumber());
+//			entityDB.setOperatorId(entity.getOwnerId());
+//			entityDB.setType(entity.getType());
+//			entityDB.setObjectNumber(entity.getObjectNumber());
 
+			entityDB.setCtxIdentifier(entIdentDB);
 //			session.save(tmpEntity);
 			session.save(entityDB);
 			t.commit();

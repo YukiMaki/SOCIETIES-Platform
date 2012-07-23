@@ -79,7 +79,7 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 	CtxModelObject modObj;
 	List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
 	
-   @Test
+	@Test
  	public void testCreateIndividualCtxEntity() throws CtxException{
 		System.out.println("---- testCreateIndividualCtxEntity");
 		indEntity = userDB.createIndividualCtxEntity("person");
@@ -88,7 +88,7 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 		assertEquals("person", indEntity.getType());
 	}
 
-   @Test
+	@Test
  	public void testCreateCtxAssociation() throws CtxException{
 		System.out.println("---- testCreateCtxAssociation");
 		association = userDB.createAssociation("IsRelatedWith");
@@ -96,7 +96,7 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 		assertEquals("IsRelatedWith", association.getType());
 	}
 
-   @Test
+	@Test
  	public void testAssociations() throws CtxException{
 		System.out.println("---- testAssociations");
 
@@ -128,8 +128,8 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 		assertTrue(association.getChildEntities().isEmpty());
 	}
 
-   @Test
-   public void testRetrieveAssociation() throws CtxException{
+	@Test
+	public void testRetrieveAssociation() throws CtxException{
 	   System.out.println("---- testRetrieveAssociation");
 	   ////////////////
 	   association = userDB.createAssociation("IsRelatedWith");
@@ -139,9 +139,9 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 	   association = (CtxAssociation) modObj;
 
 	   assertNotNull(association);
-   }
+	}
 
-   @Test
+	@Test
 	public void testCreateAttribute() throws CtxException{
 	   System.out.println("---- testCreateAttribute");
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -152,8 +152,8 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 	   assertEquals("name", attribute.getType());
    }
 
-   @Test
-   public void testRetrieveAttribute() throws CtxException{
+	@Test
+	public void testRetrieveAttribute() throws CtxException{
 	   System.out.println("---- testRetrieveAttribute");
 	   ////////////////
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -164,10 +164,10 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 
 	   assertNotNull(attribute);
 	   //attribute = (CtxAttribute) callback.getCtxModelObject();
-   }
+	}
 
-   @Test
-   public void testUpdateAttribute() throws CtxException{
+	@Test
+	public void testUpdateAttribute() throws CtxException{
 	   System.out.println("---- testUpdateAttribute");
 
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -188,8 +188,8 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 //	   assertEquals(5,attribute.getIntegerValue());
 	}
    
-   @Test
-   public void testLookup() throws CtxException{
+	@Test
+	public void testLookup() throws CtxException{
 	   System.out.println("---- testLookup");
 
        List<CtxIdentifier> ids;
@@ -259,8 +259,8 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        
 	}
 
-   @Test
-   public void testLookupEntitiesByAttrType() throws CtxException {
+	@Test
+	public void testLookupEntitiesByAttrType() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -296,10 +296,10 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("PERSON", entityId.getType());
 
-   }
+	}
    
-   @Test
-   public void testLookupEntitiesIntegers() throws CtxException {
+	@Test
+	public void testLookupEntitiesIntegers() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -332,10 +332,10 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
    	   
-   @Test
-   public void testLookupEntitiesBLOBS() throws CtxException {
+	@Test
+	public void testLookupEntitiesBLOBS() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -371,6 +371,6 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
 	   
 }

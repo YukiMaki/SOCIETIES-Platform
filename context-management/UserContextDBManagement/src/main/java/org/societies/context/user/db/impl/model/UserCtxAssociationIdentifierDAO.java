@@ -30,23 +30,16 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.JoinTable;
-
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
@@ -57,93 +50,70 @@ import org.hibernate.annotations.MapKey;
  * @author Pavlos Kosmidis
  *
  */
-@Entity
-@Table(name = "entities")
-public class UserCtxEntityDAO implements Serializable {
+@Embeddable
+public class UserCtxAssociationIdentifierDAO implements Serializable {
 
-	private static final long serialVersionUID = 1L;
-
-	private String entityId;
-	private Date timestamp;
-//	private UserCtxAttributeDAO scope;
-	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
-	private Set<String> entitySetId = new HashSet<String>(0);
-	private Set<String> map;
-	private UserCtxEntityIdentifierDAO ctxIdentifier;
-
-	/** 
-	 * @param entityId
-	 * @param timestamp
-	 */
-	public UserCtxEntityDAO(String entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
-
-//		super();
-		
-		this.entityId = entityId;
-		this.ctxIdentifier = ctxIdentifier;
-		this.timestamp = timestamp;
-	}
+	private String operatorId;
+	private String type;
+	private long objectNumber;
+	private String ownerId;
 	
-	public UserCtxEntityDAO(String entityId, Set<UserCtxAttributeDAO> attrScope) {
+	/**
+	 * @param operatorId
+	 * @param type
+	 * @param objectNumber
+	 * @param ownerId
+	 *
+	 */
+	public UserCtxAssociationIdentifierDAO(String operatorId, String type, long objectNumber, String ownerId) {
 
-//		super();
-		
-		this.entityId = entityId;
-		this.attrScope = attrScope;
+		super();
+
+		this.operatorId = operatorId;
+		this.type = type;
+		this.objectNumber = objectNumber;
+		this.ownerId = ownerId;
+
 	}
 
 	/**
 	 * 
 	 */
-	public UserCtxEntityDAO() {
-//		super();
+	public UserCtxAssociationIdentifierDAO() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	@Id
-	@Column(name="entity_id", unique = true, nullable = false)
-	public String getEntityId() {
-		return entityId;
+	@Column(name = "operator_id")
+	public String getOperatorId() {
+		return operatorId;
+	}
+	public void setOperatorId(String operatorId) {
+		this.operatorId = operatorId;
 	}
 
-	public void setEntityId(String entityId) {
-		this.entityId = entityId;
+	@Column(name = "type")
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	@Column(name = "timestamp")
-	public Date getTimestamp() {
-		return timestamp;
+	@Column(name = "objectNumber")
+	public long getObjectNumber() {
+		return objectNumber;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setObjectNumber(long objectNumber) {
+		this.objectNumber = objectNumber;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")
-	public Set<UserCtxAttributeDAO> getAttrScope() {
-		return this.attrScope;
+	@Column(name = "owner_id")
+	public String getOwnerId() {
+		return ownerId;
 	}
- 
-	public void setAttrScope(Set<UserCtxAttributeDAO> attrScope) {
-		this.attrScope = attrScope;
-	}
-		
-	@CollectionOfElements
-	@JoinTable(name="assoc_entities",
-	  joinColumns = @JoinColumn(name="association_id"))
-	@MapKey(columns={@Column(name="entity_id")})
-	@Column(name="entity_id")
-	public Set<String> getMap() {
-	  return this.map;
-	}
-	public void setMap(Set<String> map) {
-		  this.map = map;
+	public void setOwnerId(String ownerId) {
+		this.ownerId = ownerId;
 	}
 	
-	@Embedded
-	public UserCtxEntityIdentifierDAO getCtxIdentifier() {
-		return ctxIdentifier;
-	}
-	public void setCtxIdentifier (UserCtxEntityIdentifierDAO ctxIdentifier) {
-		this.ctxIdentifier = ctxIdentifier;
-	}
 }

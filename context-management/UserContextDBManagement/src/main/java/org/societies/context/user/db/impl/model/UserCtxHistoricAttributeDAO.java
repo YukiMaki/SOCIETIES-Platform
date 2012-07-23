@@ -26,30 +26,12 @@ package org.societies.context.user.db.impl.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.JoinTable;
-
-import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.JoinColumn;
-import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
 
 /**
  * Describe your class here...
@@ -58,56 +40,54 @@ import org.hibernate.annotations.MapKey;
  *
  */
 @Entity
-@Table(name = "entities")
-public class UserCtxEntityDAO implements Serializable {
+@Table(name = "history")
+public class UserCtxHistoricAttributeDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String entityId;
+	private long hocId;
+	private String attributeId;
 	private Date timestamp;
-//	private UserCtxAttributeDAO scope;
-	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
-	private Set<String> entitySetId = new HashSet<String>(0);
-	private Set<String> map;
-	private UserCtxEntityIdentifierDAO ctxIdentifier;
+	private String valueStr;
+	private Integer valueInt;
+	private Double valueDbl;
+	private byte[] valueBlob;
 
-	/** 
-	 * @param entityId
+	/**
+	 * @param hocId
+	 * @param attributeId
 	 * @param timestamp
+	 * @param valueStr
+	 * @param valueInt
+	 * @param valueDbl
+	 * @param valueBlob
 	 */
-	public UserCtxEntityDAO(String entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
+	public UserCtxHistoricAttributeDAO(long hocId, String attributeId, Date timestamp, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob) {
+		super();
 
-//		super();
-		
-		this.entityId = entityId;
-		this.ctxIdentifier = ctxIdentifier;
+		this.hocId = hocId;
+		this.attributeId = attributeId;
 		this.timestamp = timestamp;
-	}
-	
-	public UserCtxEntityDAO(String entityId, Set<UserCtxAttributeDAO> attrScope) {
-
-//		super();
-		
-		this.entityId = entityId;
-		this.attrScope = attrScope;
+		this.valueStr = valueStr;
+		this.valueInt = valueInt;
+		this.valueDbl = valueDbl;
+		this.valueBlob = valueBlob;
 	}
 
 	/**
 	 * 
 	 */
-	public UserCtxEntityDAO() {
-//		super();
+	public UserCtxHistoricAttributeDAO() {
+		super();
 		// TODO Auto-generated constructor stub
 	}
-
-	@Id
-	@Column(name="entity_id", unique = true, nullable = false)
-	public String getEntityId() {
-		return entityId;
+	
+	@Column(name = "attribute_id")
+	public String getAttributeId() {
+		return attributeId;
 	}
-
-	public void setEntityId(String entityId) {
-		this.entityId = entityId;
+	public void setAttributeId(String attributeId) {
+		this.attributeId = attributeId;
 	}
 
 	@Column(name = "timestamp")
@@ -118,32 +98,46 @@ public class UserCtxEntityDAO implements Serializable {
 		this.timestamp = timestamp;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")
-	public Set<UserCtxAttributeDAO> getAttrScope() {
-		return this.attrScope;
+	@Column(name = "value_str")
+	public String getValueStr() {
+		return valueStr;
 	}
- 
-	public void setAttrScope(Set<UserCtxAttributeDAO> attrScope) {
-		this.attrScope = attrScope;
-	}
-		
-	@CollectionOfElements
-	@JoinTable(name="assoc_entities",
-	  joinColumns = @JoinColumn(name="association_id"))
-	@MapKey(columns={@Column(name="entity_id")})
-	@Column(name="entity_id")
-	public Set<String> getMap() {
-	  return this.map;
-	}
-	public void setMap(Set<String> map) {
-		  this.map = map;
+	public void setValueStr(String valueStr) {
+		this.valueStr = valueStr;
 	}
 	
-	@Embedded
-	public UserCtxEntityIdentifierDAO getCtxIdentifier() {
-		return ctxIdentifier;
+	@Column(name = "value_int")
+	public Integer getValueInt() {
+		return valueInt;
 	}
-	public void setCtxIdentifier (UserCtxEntityIdentifierDAO ctxIdentifier) {
-		this.ctxIdentifier = ctxIdentifier;
+	public void setValueInt(Integer valueInt) {
+		this.valueInt = valueInt;
 	}
+
+	@Column(name = "value_dbl")
+	public Double getValueDbl() {
+		return valueDbl;
+	}
+	public void setValueDbl(Double valueDbl) {
+		this.valueDbl = valueDbl;
+	}
+	
+	@Column(name = "value_blob")
+	public byte[] getValueBlob() {
+		return valueBlob;
+	}
+	public void setValueBlob(byte[] valueBlob) {
+		this.valueBlob = valueBlob;
+	}
+	
+	@Id
+	@Column(name="hoc_id")
+	public long getHocId() {
+		return hocId;
+	}
+
+	public void setHocId(long hocId) {
+		this.hocId = hocId;
+	}
+	
 }
