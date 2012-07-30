@@ -18,40 +18,60 @@
 		<equinox.ver>3.2.2</equinox.ver>
 	</properties>
 	<dependencies>
+
 		<dependency>
-			<groupId>org.igniterealtime</groupId>
-			<artifactId>whack</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.igniterealtime.smack</groupId>
-			<artifactId>smack</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.igniterealtime.smack</groupId>
-			<artifactId>smackx</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.igniterealtime.smack</groupId>
-			<artifactId>smackx-debug</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.osgi</groupId>
-			<artifactId>org.osgi.core</artifactId>
-			<version>4.2.0</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>${slf4j.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>provided</scope>
 		</dependency>
+
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>provided</scope>
+			<groupId>org.simpleframework</groupId>
+			<artifactId>simple-xml</artifactId>
+			<version>2.6.4</version>
 		</dependency>
-	</dependencies>
+
+		<dependency>
+			<groupId>javax.persistence</groupId>
+			<artifactId>com.springsource.javax.persistence</artifactId>
+			<version>2.0.0</version>
+		</dependency>
+
+
+		
+
+		<!-- TODO Check if we really want socieites stuff here too! -->
+		<dependency>
+			<groupId>org.societies.maven.converters</groupId>
+			<artifactId>SimpleXMLConverters</artifactId>
+			<version>0.1</version>
+		</dependency>
+
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.9</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.apache.derby</groupId>
+			<artifactId>com.springsource.org.apache.derby</artifactId>
+			<version>10.5.1000001.764942</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.hsqldb</groupId>
+			<artifactId>com.springsource.org.hsqldb</artifactId>
+			<version>1.8.0.10</version>
+		</dependency>
+		
+		</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -76,25 +96,26 @@
 				<extensions>true</extensions>
 				<configuration>
 					<instructions>
-					<!-- 
-						<Bundle-Activator>org.societies.comm.common.CommonLibraryActivator</Bundle-Activator>
-						<Import-Package>
-							org.osgi.framework,
-							!com.sun.*,
-							!org.gjt.*,!org.jaxen.*,!org.mortbay.*,
-							!org.relaxng.*,
-							org.slf4j*;version="1.5.8",
-							*
-						</Import-Package>
-						-->
-						<Export-Package>
-							*
-						</Export-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-						<Embed-Transitive>true</Embed-Transitive>
+						<!-- <Bundle-Activator>org.societies.comm.common.CommonLibraryActivator</Bundle-Activator> 
+							<Import-Package> org.osgi.framework, !com.sun.*, !org.gjt.*,!org.jaxen.*,!org.mortbay.*, 
+							!org.relaxng.*, org.slf4j*;version="1.5.8", * </Import-Package> -->
+						<!-- <Import-Package>*;resolution:=optional</Import-Package> -->
+						<!-- <Export-Package>com.mysql.jdbc.Driver</Export-Package> <_exportcontents> 
+							* </_exportcontents> <Embed-Dependency>*;scope=compile|runtime</Embed-Dependency> 
+							<Embed-Transitive>false</Embed-Transitive> -->
+						<_exportcontents>*</_exportcontents>
+						<Import-Package>*;resolution:=optional</Import-Package>
+						<Embed-Dependency>*;scope=compile;inline=false</Embed-Dependency>
+						<!-- <_exportcontents>*</_exportcontents> -->
 					</instructions>
 				</configuration>
 			</plugin>
+
+
+
+
+
+
 		</plugins>
 	</build>
 </project>

@@ -138,7 +138,7 @@
 							javax.persistence.*,
 							javax.persistence.spi.*,
 							net.sf.cglib.*,
-							org.apcahe.commons.dbcp.*
+							org.apache.commons.dbcp.*
 						</Export-Package>
 						<Import-Package>*;resolution:=optional</Import-Package>
 						<_nouses>true</_nouses>						

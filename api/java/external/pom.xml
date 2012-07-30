@@ -37,6 +37,7 @@
 			<groupId>org.societies.api.schema</groupId>
 			<artifactId>societies-api-schema</artifactId>
 			<version>${release.version}</version>
+			
 		</dependency>
 		<!-- Tools -->
 		<!-- Needed for OSGI (Internal) Event -->
@@ -47,28 +48,32 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- Needed for Societies-specific annotations -->
+		
+		<!-- TODO : Embedding this (societies-annotations) in external api for now, as always needed for external schema,
+		so makes sense to embedded it here since we are embedding external schema -->
 		<dependency>
 			<groupId>org.societies.utilities</groupId>
 			<artifactId>societies-annotations</artifactId>
 			<version>${release.version}</version>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.simpleframework</groupId>
 			<artifactId>simple-xml</artifactId>
 			<version>2.6.4</version>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 		    <groupId>org.societies.maven.converters</groupId>
 		    <artifactId>SimpleXMLConverters</artifactId>
 		    <version>0.1</version>
-		    <scope>compile</scope>
+		    <scope>provided</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -88,9 +93,9 @@
 							*
 						</_exportcontents>
 						<Import-Package>
-    						<!--!javax.microedition.io,-->*
+    						<!--!javax.microedition.io,-->*;resolution:=optional
     					</Import-Package>
-						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
+						<Embed-Dependency>*</Embed-Dependency>
 						<!-- ;scope=compile|runtime -->
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>

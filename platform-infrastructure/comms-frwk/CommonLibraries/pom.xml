@@ -31,23 +31,12 @@
     				<instructions>
     					<Bundle-Activator>org.societies.comm.common.CommonLibraryActivator</Bundle-Activator>
     					<Import-Package>
-    						org.osgi.framework,
-    						!com.sun.*,	
-    						!org.gjt.*,!org.jaxen.*,!org.mortbay.*,
-    						!org.relaxng.*,
-    						org.slf4j*;version="1.5.8",
-    						*
+    						*;resolution:=optional
     					</Import-Package>
     					<Export-Package>
-		           			org.xmpp.component,	           					           		
-		           			org.xmpp.packet,
-		           			org.xmpp.util,		           			
-		           			org.jivesoftware.whack.*,
-		           			org.jivesoftware.smack.*,
-		           			org.dom4j.*
 		           		</Export-Package>
 		           		<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
-						<Embed-Transitive>true</Embed-Transitive>
+						<Embed-Transitive>false</Embed-Transitive>
 		         	</instructions>
 	       		</configuration>
 			</plugin>

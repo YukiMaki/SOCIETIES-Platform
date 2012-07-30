@@ -57,34 +57,37 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- logging -->
-		<dependency>
+	<!-- 	<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>runtime</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-api</artifactId>
 			<version>${slf4j.version}</version>
-			<scope>compile</scope>
-		</dependency>
+			<scope>provided</scope>
+		</dependency> -->
 
 		<!-- databases -->
-		<dependency>
+	<!-- <dependency>
 			<groupId>org.apache.derby</groupId>
 			<artifactId>com.springsource.org.apache.derby</artifactId>
 			<version>10.5.1000001.764942</version>
-		</dependency>
-		<dependency>
+			<scope>provided</scope>
+		</dependency> -->
+	<!-- <dependency>
 			<groupId>org.hsqldb</groupId>
 			<artifactId>com.springsource.org.hsqldb</artifactId>
 			<version>1.8.0.10</version>
 		</dependency>
-		<dependency>
+	-->
+ 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.9</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- apache commons -->
@@ -92,7 +95,10 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.dbcp</artifactId>
 			<version>1.2.2.osgi</version>
+			<scope>provided</scope>
 		</dependency>
+		
+		<!-- 
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.pool</artifactId>
@@ -102,7 +108,7 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>com.springsource.org.apache.commons.collections</artifactId>
 			<version>3.2.1</version>
-		</dependency>
+		</dependency> -->
 	</dependencies>
 	<build>
 		<plugins>
@@ -113,8 +119,10 @@
 				<configuration>
 					<instructions>
 						<Embed-Dependency>*;scope=compile|runtime;inline=false</Embed-Dependency>
-						<Embed-Transitive>true</Embed-Transitive>
-						<Import-Package>*;resolution:=optional</Import-Package>
+						<Embed-Transitive>false</Embed-Transitive>
+						<Import-Package>com.mysql.jdbc;resolution:=optional,
+						org.apache.derby.jdbc;resolution:=optional,
+									*;resolution:=optional</Import-Package>
 					</instructions>
 				</configuration>
 			</plugin>

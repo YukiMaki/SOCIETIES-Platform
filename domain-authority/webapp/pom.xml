@@ -273,36 +273,6 @@
 				</configuration>
 			</plugin>
 			<plugin>
-				<artifactId>maven-dependency-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>copy-installed</id>
-						<phase>install</phase>
-						<goals>
-							<goal>copy</goal>
-						</goals>
-						<configuration>
-							<artifactItems>
-								<artifactItem>
-									<groupId>javax.validation</groupId>
-									<artifactId>com.springsource.javax.validation</artifactId>
-									<version>1.0.0.GA</version>
-									<type>jar</type>
-								</artifactItem>
-								<artifactItem>
-									<groupId>org.springframework.osgi</groupId>
-									<artifactId>org.springframework.osgi.web</artifactId>
-									<version>1.2.1</version>
-									<type>jar</type>
-								</artifactItem>
-
-							</artifactItems>
-							<outputDirectory>${spring.osgi.deploy.dir}</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-dependency-plugin</artifactId>
 				<configuration>
