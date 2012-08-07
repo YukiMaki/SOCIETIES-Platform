@@ -25,7 +25,7 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package main.java.org.societies.orchestration.CISDataCollector;
+package org.societies.orchestration.CISDataCollector;
 
 import org.societies.api.context.CtxException;
 import org.societies.api.context.event.CtxChangeEvent;
