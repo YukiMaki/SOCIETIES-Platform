@@ -49,6 +49,7 @@ import org.societies.api.activity.IActivity;
 import org.societies.api.internal.sns.ISocialConnector;
 import org.societies.platform.socialdata.SocialData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
@@ -64,6 +65,8 @@ public class ActivityFeedTest extends
 AbstractTransactionalJUnit4SpringContextTests {
 	private static Logger LOG = LoggerFactory
 			.getLogger(ActivityFeedTest.class);
+
+    @Qualifier(value = "test")
 	@Autowired
 	private ActivityFeed actFeed;
 	private SessionFactory sessionFactory=null;
@@ -225,7 +228,7 @@ AbstractTransactionalJUnit4SpringContextTests {
 		}
 		
 		data.updateSocialData();
-		actFeed.importActivtyEntries(data.getSocialActivity());
+		actFeed.importActivityEntries(data.getSocialActivity());
 		LOG.info("testing importing from facebook, raw activities: " + mockedSocialConnector.getUserActivities());
 		LOG.info("testing importing from facebook, activities: " + data.getSocialActivity().size() );
 		

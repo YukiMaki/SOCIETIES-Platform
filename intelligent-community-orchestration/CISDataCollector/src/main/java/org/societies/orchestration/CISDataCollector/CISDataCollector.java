@@ -33,7 +33,7 @@ import org.societies.api.context.event.CtxChangeEventListener;
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.identity.IIdentity;
-import org.societies.context.api.event.CtxChangeEventTopic;
+import org.societies.api.context.event.CtxChangeEventTopic;
 import org.societies.context.api.event.ICtxEventMgr;
 
 

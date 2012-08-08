@@ -70,9 +70,9 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	 * 
 	 */
 
-	
-	private String id;
-	private
+
+    protected String id;
+    protected
 	Set<Activity> list;
 	public ActivityFeed()
 	{
@@ -83,9 +83,9 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		list = new HashSet<Activity>();// from Thomas
 	}
 	@Autowired 
-	private SessionFactory sessionFactory;
-	private static Logger LOG = LoggerFactory.getLogger(ActivityFeed.class);
-	private Session session;
+	protected SessionFactory sessionFactory;
+    protected static Logger LOG = LoggerFactory.getLogger(ActivityFeed.class);
+    protected Session session;
 	public Session getSession() {
 		return session;
 	}
@@ -102,7 +102,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		ArrayList<IActivity> ret = new ArrayList<IActivity>();
 		String times[] = timePeriod.split(" ",2);
 		if(times.length < 2){
-			LOG.error("timeperiod string was malformed: "+timePeriod);
+			LOG.error("time period string was malformed: "+timePeriod);
 			return ret;
 		}
 		long fromTime = 0;long toTime = 0;
@@ -110,10 +110,10 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 			fromTime = Long.parseLong(times[0]);
 			toTime = Long.parseLong(times[1]);
 		}catch(Exception e){
-			LOG.error("timeperiod string was malformed, could not parse long");
+			LOG.error("time period string was malformed, could not parse long");
 			return ret;
 		}
-		LOG.info("timeperiod: "+fromTime+" - " + toTime);
+		LOG.info("time period: "+fromTime+" - " + toTime);
 		if(list != null){
 			LOG.info(" list size: "+list.size());
 			for(Activity act : list){
@@ -208,9 +208,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 			LOG.warn("Saving activity failed, rolling back");
 			e.printStackTrace();
 		}finally{
-			
-//			if(session!=null)
-//				session.close();
+
 		}		
 	}
 
@@ -315,7 +313,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 		return ret;
 	}
 	@Override
-	synchronized public long importActivtyEntries(List<?> activityEntries) {
+	synchronized public long importActivityEntries(List<?> activityEntries) {
 		long ret = 0;
 		if(activityEntries.size() == 0){
 			LOG.error("list is empty, exiting");
@@ -380,7 +378,7 @@ public class ActivityFeed implements IActivityFeed, Subscriber {
 	 *  
 	 *  
 	 * @param iActivityList list with iactivities (IActivity) objects
-	 * @param empty but already created list (we will fill it up) that will receive the marshalled objects 
+	 * @param marshalledActivList but already created list (we will fill it up) that will receive the marshalled objects
 	 * 
 	 */
 	
