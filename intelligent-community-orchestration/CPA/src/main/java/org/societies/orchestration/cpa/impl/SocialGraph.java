@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.societies.api.activity.IActivity;
+import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.orchestration.cpa.impl.comparison.ActorComparator;
 
@@ -135,7 +136,9 @@ public class SocialGraph implements Collection<SocialGraphVertex> {
 		List<IActivity> actDiff = new ArrayList<IActivity>();
 		System.out.println("icis.getActivityFeed(): "+cises.get(0).getActivityFeed());
 		for(ICisOwned icis : cises){
-			actDiff.addAll(icis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr)); //getting the diff.
+            IActivityFeedCallback c = new ActivityFeedCallback();
+            icis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr,null)
+			actDiff.addAll(); //getting the diff.
 		}
 		//creating the vertices
 		//this make take a while the first time..

@@ -52,17 +52,10 @@ import org.societies.api.activity.IActivityFeed;
 import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.comm.xmpp.pubsub.Subscriber;
 import org.societies.api.identity.IIdentity;
-import org.societies.api.schema.activityfeed.Activityfeed;
 import org.societies.api.schema.activityfeed.AddActivityResponse;
 import org.societies.api.schema.activityfeed.CleanUpActivityFeedResponse;
 import org.societies.api.schema.activityfeed.DeleteActivityResponse;
-import org.societies.api.schema.activityfeed.GetActivities;
 import org.societies.api.schema.activityfeed.GetActivitiesResponse;
-import org.societies.api.schema.cis.community.Community;
-import org.societies.api.schema.cis.community.GetInfo;
-import org.societies.api.schema.cis.community.Participant;
-import org.societies.api.schema.cis.community.ParticipantRole;
-import org.societies.api.schema.cis.community.Who;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class ActivityFeed implements IActivityFeed, Subscriber {
