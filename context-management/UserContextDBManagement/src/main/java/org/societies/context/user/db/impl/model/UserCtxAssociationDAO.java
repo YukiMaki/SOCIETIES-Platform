@@ -26,23 +26,27 @@ package org.societies.context.user.db.impl.model;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxAssociationIdentifier;
+import org.societies.api.context.model.CtxEntityIdentifier;
+import org.societies.api.context.model.CtxIdentifier;
+import org.societies.context.user.db.impl.model.hibernate.CtxAssociationIdentifierType;
+import org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierType;
 
 /**
  * Describe your class here...
@@ -50,23 +54,25 @@ import org.hibernate.annotations.MapKey;
  * @author Pavlos Kosmidis
  *
  */
+@NamedQueries({
+	@NamedQuery(
+	name = "getCtxAssociationIdsByType",
+	query = "select association.associationId from UserCtxAssociationDAO as association where association.ctxIdentifier.type = :type"
+	)
+})
+
 @Entity
 @Table(name = "associations")
 public class UserCtxAssociationDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private Set<String> associationSetId = new HashSet<String>(0);
-
-	private String associationId;
+	private CtxIdentifier associationId;
 	private Date timestamp;
-//	private String operatorId;
-//	private String type;
-//	private long objectNumber;
-	private String parentEntityId;
+	private CtxIdentifier parentEntityId;
 	private boolean dynamic;
-	private Set<String> map;
 	private UserCtxAssociationIdentifierDAO ctxIdentifier;
+	private Set<CtxEntityIdentifier> map;
 	
 	/**
 	 * @param associationId
@@ -76,10 +82,11 @@ public class UserCtxAssociationDAO implements Serializable {
 	 * @param ctxIdentifier
 	 *
 	 */
-	public UserCtxAssociationDAO(Date timestamp, String parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
+	public UserCtxAssociationDAO(CtxIdentifier associationId, Date timestamp, CtxIdentifier parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
 
 		super();
 
+		this.associationId = associationId;
 		this.timestamp = timestamp;
 		this.parentEntityId = parentEntityId;
 		this.dynamic = dynamic;
@@ -104,10 +111,11 @@ public class UserCtxAssociationDAO implements Serializable {
 	}
 
 	@Column(name = "parent_entity_id")
-	public String getParentEntityId() {
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierType")
+	public CtxIdentifier getParentEntityId() {
 		return parentEntityId;
 	}
-	public void setParentEntityId(String parentEntityId) {
+	public void setParentEntityId(CtxIdentifier parentEntityId) {
 		this.parentEntityId = parentEntityId;
 	}
 
@@ -121,11 +129,12 @@ public class UserCtxAssociationDAO implements Serializable {
 
 	@Id
 	@Column(name="association_id")
-	public String getAssociationId() {
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAssociationIdentifierType")
+	public CtxIdentifier getAssociationId() {
 		return associationId;
 	}
 
-	public void setAssociationId(String associationId) {
+	public void setAssociationId(CtxIdentifier associationId) {
 		this.associationId = associationId;
 	}
 
@@ -136,26 +145,16 @@ public class UserCtxAssociationDAO implements Serializable {
 	public void setCtxIdentifier(UserCtxAssociationIdentifierDAO ctxIdentifier) {
 		this.ctxIdentifier = ctxIdentifier;
 	}
-/*	
-	@ElementCollection
-	@CollectionTable(name="assoc_entities", joinColumns=@JoinColumn(name="association_id"))
-	@Column(name="entity_id")
-	public Set<String> getAssocEntities() { 
-		return associationSetId; 
-	} 
-	public void setAssocEntities(Set<String> associationSetId) {
-		this.associationSetId = associationSetId;
-	}
-*/
-	@CollectionOfElements
+
+	@CollectionOfElements (targetElement = CtxEntityIdentifierType.class)
 	@JoinTable(name="assoc_entities",
 	  joinColumns = @JoinColumn(name="entity_id"))
-	@MapKey(columns={@Column(name="association_id")})
+	@MapKey(columns={@Column(name="association_id")}, targetElement = CtxAssociationIdentifierType.class)
 	@Column(name="association_id")
-	public Set<String> getMap() {
+	public Set<CtxEntityIdentifier> getMap() {
 	  return this.map;
 	}
-	public void setMap(Set<String> map) {
+	public void setMap(Set<CtxEntityIdentifier> map) {
 		  this.map = map;
 	}
 }

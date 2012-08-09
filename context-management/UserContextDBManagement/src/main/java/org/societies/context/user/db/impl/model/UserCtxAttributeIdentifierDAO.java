@@ -24,22 +24,14 @@
  */
 package org.societies.context.user.db.impl.model;
 
-import static javax.persistence.GenerationType.IDENTITY;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  * Describe your class here...
@@ -57,6 +49,7 @@ public class UserCtxAttributeIdentifierDAO implements Serializable {
 	private UserCtxEntityDAO scope;
 
 	/**
+	 * @param scope
 	 * @param type
 	 * @param objectNumber
 	 */

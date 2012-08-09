@@ -25,31 +25,9 @@
 package org.societies.context.user.db.impl.model;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
 import javax.persistence.Column;
-import javax.persistence.ElementCollection;
 import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.JoinTable;
-
-import static javax.persistence.GenerationType.IDENTITY;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.JoinColumn;
-import javax.persistence.UniqueConstraint;
-
-import org.hibernate.annotations.CollectionOfElements;
-import org.hibernate.annotations.MapKey;
 
 /**
  * Describe your class here...

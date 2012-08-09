@@ -29,9 +29,14 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxIdentifier;
 
 /**
  * Describe your class here...
@@ -46,7 +51,7 @@ public class UserCtxHistoricAttributeDAO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private long hocId;
-	private String attributeId;
+	private CtxIdentifier attributeId;
 	private Date timestamp;
 	private String valueStr;
 	private Integer valueInt;
@@ -62,7 +67,7 @@ public class UserCtxHistoricAttributeDAO implements Serializable {
 	 * @param valueDbl
 	 * @param valueBlob
 	 */
-	public UserCtxHistoricAttributeDAO(long hocId, String attributeId, Date timestamp, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob) {
+	public UserCtxHistoricAttributeDAO(long hocId, CtxIdentifier attributeId, Date timestamp, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob) {
 		super();
 
 		this.hocId = hocId;
@@ -83,14 +88,17 @@ public class UserCtxHistoricAttributeDAO implements Serializable {
 	}
 	
 	@Column(name = "attribute_id")
-	public String getAttributeId() {
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAttributeIdentifierType")
+	public CtxIdentifier getAttributeId() {
 		return attributeId;
 	}
-	public void setAttributeId(String attributeId) {
+	public void setAttributeId(CtxIdentifier attributeId) {
 		this.attributeId = attributeId;
 	}
 
 	@Column(name = "timestamp")
+	@Temporal(value=TemporalType.TIMESTAMP)
+	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
 	public Date getTimestamp() {
 		return timestamp;
 	}

@@ -24,8 +24,6 @@
  */
 package org.societies.context.user.db.impl.model;
 
-import static javax.persistence.GenerationType.IDENTITY;
-
 import java.io.Serializable;
 import java.util.Date;
 
@@ -33,18 +31,23 @@ import javax.persistence.AssociationOverrides;
 import javax.persistence.AssociationOverride;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.Lob;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Embedded;
-import javax.persistence.Transient;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
+import org.hibernate.annotations.GenerationTime;
+import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxIdentifier;
 
 /**
  * Describe your class here...
@@ -52,6 +55,12 @@ import javax.persistence.Transient;
  * @author Pavlos Kosmidis
  *
  */
+@NamedQueries({
+	@NamedQuery(
+	name = "getCtxAttributeIdsByType",
+	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.ctxIdentifier.type = :type"
+	)
+})
 @Entity
 @Table(name = "attributes")
 @AssociationOverrides({
@@ -62,11 +71,8 @@ public class UserCtxAttributeDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String attributeId;
+	private CtxIdentifier attributeId;
 	private Date timestamp;
-//	private UserCtxEntityDAO scope;
-//	private String type;
-//	private long objectNumber;
 	private UserCtxAttributeIdentifierDAO ctxIdentifier;
 	private String valueStr;
 	private Integer valueInt;
@@ -77,12 +83,11 @@ public class UserCtxAttributeDAO implements Serializable {
 	private String valueType;
 	private String valueMetric;
 
-	private UserCtxAssociationDAO quality;
+	private UserCtxQualityDAO quality;
 	
 	/**
 	 * @param attributeId 
 	 * @param timestamp 
-	 * @param scope 
 	 * @param valueStr 
 	 * @param valueInt 
 	 * @param valueDbl
@@ -92,12 +97,11 @@ public class UserCtxAttributeDAO implements Serializable {
 	 * @param valueType 
 	 * @param valueMetric 
 	 */
-	public UserCtxAttributeDAO(String attributeId, Date timestamp, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
+	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date timestamp, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
 
 //		super();
 
 		this.attributeId = attributeId;
-//		this.scope = scope;
 		this.timestamp = timestamp;
 		this.ctxIdentifier = ctxIdentifier;
 		this.valueStr = valueStr;
@@ -109,15 +113,7 @@ public class UserCtxAttributeDAO implements Serializable {
 		this.valueType = valueType;
 		this.valueMetric = valueMetric;
 	}
-/*
-	public UserCtxAttributeDAO(String attributeId, UserCtxEntityDAO scope) {		
 
-//		super();
-
-		this.attributeId = attributeId;
-		this.scope = scope;
-	}
-*/
 	/**
 	 * 
 	 */
@@ -128,40 +124,35 @@ public class UserCtxAttributeDAO implements Serializable {
 
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
-	public UserCtxAssociationDAO getQuality() {
+	public UserCtxQualityDAO getQuality() {
 		return this.quality;
 	}
 
-	public void setQuality(UserCtxAssociationDAO quality) {
+	public void setQuality(UserCtxQualityDAO quality) {
 		this.quality = quality;
 	}
 
 	@Id
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAttributeIdentifierType")
 	@Column(name="attribute_id")
-	public String getAttributeId() {
+	public CtxIdentifier getAttributeId() {
 		return attributeId;
 	}
 
-	public void setAttributeId(String attributeId) {
+	public void setAttributeId(CtxIdentifier attributeId) {
 		this.attributeId = attributeId;
 	}
 
+	/*GenerationTime can be either INSERT or ALWAYS*/
 	@Column(name = "timestamp")
+	@Temporal(value=TemporalType.TIMESTAMP)
+	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
 	public Date getTimestamp() {
 		return timestamp;
 	}
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
-/*
-	@Column(name = "scope")
-	public String getScope() {
-		return scope;
-	}
-	public void setScope(String scope) {
-		this.scope = scope;
-	}
-*/
 
 	@Column(name = "value_str")
 	public String getValueStr() {
@@ -234,15 +225,5 @@ public class UserCtxAttributeDAO implements Serializable {
 	public void setCtxIdentifier (UserCtxAttributeIdentifierDAO ctxIdentifier) {
 		this.ctxIdentifier = ctxIdentifier;
 	}
-		
-/*	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "scope", nullable = false)
-	public UserCtxEntityDAO getScope() {
-		return this.scope;
-	}
-	public void setScope(UserCtxEntityDAO scope) {
-		this.scope = scope;
-	}
-	*/
-	
+			
 }

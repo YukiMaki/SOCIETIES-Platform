@@ -36,9 +36,18 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.JoinTable;
+import javax.persistence.MapKeyEnumerated;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -49,7 +58,12 @@ import javax.persistence.JoinColumn;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.CollectionOfElements;
+import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.MapKey;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+import org.societies.api.context.model.CtxEntityIdentifier;
+import org.societies.api.context.model.CtxIdentifier;
 
 /**
  * Describe your class here...
@@ -57,17 +71,57 @@ import org.hibernate.annotations.MapKey;
  * @author Pavlos Kosmidis
  *
  */
+@NamedQueries({
+	@NamedQuery(
+	name = "getCtxEntityIdsByType",
+	query = "select entity.id from UserCtxEntityDAO as entity where entity.ctxIdentifier.type = :type"
+	),
+	@NamedQuery(
+	name = "getCtxEntityIdsByAttrType",
+	query = "select distinct entity.ctxIdentifier from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType " +
+			"and attribute.ctxIdentifier.type = :attrType"
+	),
+/*	@NamedQuery(
+	name = "getCtxEntityIdsByAttrStringValue",
+	query = "select distinct entity.ctxIdentifier from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType" +
+			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.valueStr = :minAttribValue "
+	),*/
+	@NamedQuery(
+	name = "getCtxEntityIdsByAttrIntegerValue",
+	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType " +
+			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.valueInt between :minAttribValue and :maxAttribValue"
+	),
+	@NamedQuery(
+	name = "getCtxEntityIdsByAttrBlobValue",
+	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType " +
+			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.valueBlob between :minAttribValue and :maxAttribValue"
+	),
+	@NamedQuery(
+	name = "getCtxEntityIdsByAttrDoubleValue",
+	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType " +
+			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.valueDbl between :minAttribValue and :maxAttribValue"
+	)
+})
 @Entity
 @Table(name = "entities")
 public class UserCtxEntityDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String entityId;
+	@Enumerated(EnumType.STRING)
+	private CtxIdentifier entityId;
+
 	private Date timestamp;
-//	private UserCtxAttributeDAO scope;
 	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
-	private Set<String> entitySetId = new HashSet<String>(0);
 	private Set<String> map;
 	private UserCtxEntityIdentifierDAO ctxIdentifier;
 
@@ -75,7 +129,7 @@ public class UserCtxEntityDAO implements Serializable {
 	 * @param entityId
 	 * @param timestamp
 	 */
-	public UserCtxEntityDAO(String entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
+	public UserCtxEntityDAO(CtxIdentifier entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
 
 //		super();
 		
@@ -84,7 +138,7 @@ public class UserCtxEntityDAO implements Serializable {
 		this.timestamp = timestamp;
 	}
 	
-	public UserCtxEntityDAO(String entityId, Set<UserCtxAttributeDAO> attrScope) {
+	public UserCtxEntityDAO(CtxIdentifier entityId, Set<UserCtxAttributeDAO> attrScope) {
 
 //		super();
 		
@@ -102,15 +156,18 @@ public class UserCtxEntityDAO implements Serializable {
 
 	@Id
 	@Column(name="entity_id", unique = true, nullable = false)
-	public String getEntityId() {
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierType")
+	public CtxIdentifier getEntityId() {
 		return entityId;
 	}
 
-	public void setEntityId(String entityId) {
+	public void setEntityId(CtxIdentifier entityId) {
 		this.entityId = entityId;
 	}
 
 	@Column(name = "timestamp")
+	@Temporal(value=TemporalType.TIMESTAMP)
+	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
 	public Date getTimestamp() {
 		return timestamp;
 	}

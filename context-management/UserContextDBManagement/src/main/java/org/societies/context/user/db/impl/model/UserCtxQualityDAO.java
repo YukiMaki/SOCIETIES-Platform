@@ -38,6 +38,8 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxIdentifier;
 
 /**
  * Describe your class here...
@@ -51,7 +53,7 @@ public class UserCtxQualityDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private String attributeId;
+	private CtxIdentifier attributeId;
 	private Date timestamp;
 	private String origin;
 	private Double precision;
@@ -92,15 +94,16 @@ public class UserCtxQualityDAO implements Serializable {
 	}
 
 	@Id
+	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAttributeIdentifierType")
 	@GeneratedValue(generator="foreign")
 	@GenericGenerator(name="foreign", strategy="foreign", parameters={
 			@Parameter(name="property", value="attribute")
 	})
-	public String getAttributeId() {
+	public CtxIdentifier getAttributeId() {
 		return attributeId;
 	}
 
-	public void setAttributeId(String attributeId) {
+	public void setAttributeId(CtxIdentifier attributeId) {
 		this.attributeId = attributeId;
 	}
 

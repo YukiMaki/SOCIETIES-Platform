@@ -214,9 +214,16 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        //
        
        ids =userDB.lookup(CtxModelType.ENTITY, "FooBar");
+       System.out.println("after lookup - " + ids);
+       System.out.println("thelo to - " + entId1);
+       System.out.println("ti diafora exei - ? " + ids.contains(entId1));
+       System.out.println("ola - " + ids.containsAll(ids));
+       System.out.println("an kano get - " + ids.get(0));
+       CtxIdentifier ident = ids.get(0);
+       assertTrue(ident instanceof CtxIdentifier);
        assertTrue(ids.contains(entId1));
        assertEquals(1, ids.size());
-              
+
        ids = userDB.lookup(CtxModelType.ENTITY, "Foo");
        assertTrue(ids.contains(entId2));
        assertEquals(1, ids.size());
@@ -259,48 +266,53 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        
 	}
 
+	@Ignore
 	@Test
 	public void testLookupEntitiesByAttrType() throws CtxException {
-       List<CtxEntityIdentifier> identifiers;
-       CtxEntity entity, entity2;
-       CtxAttribute attribute2;
-       CtxEntityIdentifier entityId;
+		System.out.println("---- testLookupByAttrType");
 
-       entity = userDB.createEntity("PERSON");
-       attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "NAME");
-       entity2 = userDB.createEntity("PERSON");
-       attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "NAME");
+		List<CtxEntityIdentifier> identifiers;
+		CtxEntity entity, entity2;
+		CtxAttribute attribute2;
+		CtxEntityIdentifier entityId;
+
+		entity = userDB.createEntity("PERSON");
+		attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "NAME");
+		entity2 = userDB.createEntity("PERSON");
+		attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "NAME");
        
-       // lookup by name attribute
-       System.out.println("Paul".compareTo("Lora"));
-       System.out.println("Paul".compareTo("Steven"));
+		// lookup by name attribute
+		System.out.println("Paul".compareTo("Lora"));
+		System.out.println("Paul".compareTo("Steven"));
        
-       identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
-       assertEquals(0, identifiers.size());
-       attribute.setStringValue("Paul");
-       attribute.setValueType(CtxAttributeValueType.STRING);
-       userDB.update(attribute);
-       attribute2.setStringValue("Ester");
-       attribute2.setValueType(CtxAttributeValueType.STRING);
-       userDB.update(attribute2);
-      //update with DB
-       identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
-       System.out.println(identifiers);
-       System.out.println(identifiers.get(0));
-//       System.out.println(identifiers.get(1));
+		identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
+		assertEquals(0, identifiers.size());
+		attribute.setStringValue("Paul");
+		attribute.setValueType(CtxAttributeValueType.STRING);
+		userDB.update(attribute);
+		attribute2.setStringValue("Ester");
+		attribute2.setValueType(CtxAttributeValueType.STRING);
+		userDB.update(attribute2);
+		//update with DB
+		identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
+		System.out.println(identifiers);
+		System.out.println(identifiers.get(0));
+		//       System.out.println(identifiers.get(1));
        
-       assertEquals(1, identifiers.size());
+		assertEquals(1, identifiers.size());
        
-       assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
-       entityId = (CtxEntityIdentifier) identifiers.get(0);
-       assertEquals(CtxModelType.ENTITY, entityId.getModelType());
-       assertEquals("PERSON", entityId.getType());
+		assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
+		entityId = (CtxEntityIdentifier) identifiers.get(0);
+		assertEquals(CtxModelType.ENTITY, entityId.getModelType());
+		assertEquals("PERSON", entityId.getType());
 
 	}
    
 	@Test
 	public void testLookupEntitiesIntegers() throws CtxException {
-       List<CtxEntityIdentifier> identifiers;
+	   System.out.println("---- testLookupEntitiesIntegers");
+
+	   List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
        CtxEntityIdentifier entityId;
@@ -321,21 +333,21 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        userDB.update(attribute2);
       //update with DB
        identifiers = userDB.lookupEntities("NUMBER", "BOOKS", 1, 10);
-       System.out.println(identifiers);
-//       System.out.println(identifiers.get(0));
-//       System.out.println(identifiers.get(1));
        
        assertEquals(1, identifiers.size());
        
        assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
-       entityId = (CtxEntityIdentifier) identifiers.get(0);
-       assertEquals(CtxModelType.ENTITY, entityId.getModelType());
-       assertEquals("NUMBER", entityId.getType());
+       CtxEntityIdentifier ent = identifiers.get(0);
+       assertEquals(CtxModelType.ENTITY, ent.getModelType());
+       assertEquals("NUMBER", ent.getType());
 
 	}
    	   
+	@Ignore
 	@Test
 	public void testLookupEntitiesBLOBS() throws CtxException {
+	   System.out.println("---- testLookupEntitiesBLOBS");
+
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -357,6 +369,9 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        assertEquals(0, identifiers.size());
        attribute.setBinaryValue(byteArray);
        attribute.setValueType(CtxAttributeValueType.BINARY);
+       System.out.println("the binary value is - " + attribute.getBinaryValue());
+       System.out.println("and the input is - " + byteArray);
+       
        userDB.update(attribute);
       //update with DB
        identifiers = userDB.lookupEntities("NUMBER", "BOOKS", byteArray, byteArray2);
