@@ -130,16 +130,8 @@ public class SocialGraph implements Collection<SocialGraphVertex> {
 		}
 		return ret;
 	}
-	public void populateFromCis(List<ICisOwned> cises, long lastTime, ActorComparator actComp){
-		String lastTimeStr = Long.toString(lastTime);
-		String nowStr = Long.toString(System.currentTimeMillis());
-		List<IActivity> actDiff = new ArrayList<IActivity>();
-		System.out.println("icis.getActivityFeed(): "+cises.get(0).getActivityFeed());
-		for(ICisOwned icis : cises){
-            IActivityFeedCallback c = new ActivityFeedCallback();
-            icis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr,null)
-			actDiff.addAll(); //getting the diff.
-		}
+	public void populateFromNewData(List<IActivity> actDiff , long lastTime, ActorComparator actComp){
+
 		//creating the vertices
 		//this make take a while the first time..
 

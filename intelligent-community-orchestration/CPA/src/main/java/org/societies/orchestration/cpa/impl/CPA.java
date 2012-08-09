@@ -27,6 +27,8 @@ package org.societies.orchestration.cpa.impl;
 
 import java.util.Date;
 import java.util.List;
+
+import org.societies.api.activity.IActivityFeedCallback;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.orchestration.api.ICisProposal;
 import org.societies.api.identity.IIdentity;
@@ -76,8 +78,21 @@ public class CPA
 		new SleepThread().start();
 		
 	}
-	
-	class SleepThread extends Thread {
+
+//    @Override
+//    public void receiveResult(Activityfeed activityFeedObject) {
+//        String lastTimeStr = Long.toString(lastTime);
+//        String nowStr = Long.toString(System.currentTimeMillis());
+//        = new ArrayList<IActivity>();
+//        System.out.println("icis.getActivityFeed(): "+cises.get(0).getActivityFeed());
+//        for(ICisOwned icis : cises){
+//            IActivityFeedCallback c = new ActivityFeedCallback();
+//            icis.getActivityFeed().getActivities(lastTimeStr+" "+nowStr,null)
+//            actDiff.addAll(); //getting the diff.
+//        }
+//    }
+
+    class SleepThread extends Thread {
 		
 		public void run() {
 			while (true) {

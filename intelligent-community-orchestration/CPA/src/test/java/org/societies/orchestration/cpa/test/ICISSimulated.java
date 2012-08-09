@@ -1,6 +1,7 @@
 package org.societies.orchestration.cpa.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
@@ -10,6 +11,7 @@ import java.util.concurrent.FutureTask;
 import org.societies.activity.ActivityFeed;
 import org.societies.api.activity.IActivity;
 import org.societies.api.activity.IActivityFeed;
+import org.societies.api.cis.attributes.MembershipCriteria;
 import org.societies.api.cis.management.ICisManagerCallback;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.cis.management.ICisParticipant;
@@ -51,7 +53,11 @@ public class ICISSimulated implements ICisOwned {
 		return "name";
 	}
 
-	@Override
+    @Override
+    public void getMembershipCriteria(ICisManagerCallback callback) {
+    }
+
+    @Override
 	public void getInfo(ICisManagerCallback callback) {
 		// TODO Auto-generated method stub
 
@@ -69,23 +75,18 @@ public class ICISSimulated implements ICisOwned {
 
 	}
 
-	@Override
-	public void addCisActivity(IActivity activity, ICisManagerCallback callback) {
-		this.feed.addCisActivity(activity);
+//	@Override
+//	public void addActivity(IActivity activity, ICisManagerCallback callback) {
+//		this.feed.addActivity(activity);
+//
+//	}
+//
+//	@Override
+//	public void getActivities(String timePeriod, ICisManagerCallback callback) {
+//		//nope
+//
+//	}
 
-	}
-
-	@Override
-	public void getActivities(String timePeriod, ICisManagerCallback callback) {
-		//nope
-
-	}
-
-	@Override
-	public Future<IActivityFeed> getCisActivityFeed() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Future<Set<ICisParticipant>> getMemberList() {
@@ -130,11 +131,6 @@ public class ICISSimulated implements ICisOwned {
 		return null;
 	}
 
-	@Override
-	public int getMembershipCriteria() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
 
 	@Override
 	public String getDescription() {
@@ -148,7 +144,22 @@ public class ICISSimulated implements ICisOwned {
 
 	}
 
-	@Override
+    @Override
+    public boolean checkQualification(HashMap<String, String> qualification) {
+        return false;
+    }
+
+    @Override
+    public boolean addCriteria(String contextAtribute, MembershipCriteria m) {
+        return false;
+    }
+
+    @Override
+    public boolean removeCriteria(String contextAtribute, MembershipCriteria m) {
+        return false;
+    }
+
+    @Override
 	public IActivityFeed getActivityFeed() {
 		// TODO Auto-generated method stub
 		return feed;

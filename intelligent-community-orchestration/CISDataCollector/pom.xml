@@ -143,7 +143,12 @@
       <artifactId>intelligent-community-orchestration-api</artifactId>
       <version>${version.ico}</version>
       <scope>provided</scope>
-    </dependency>    
+    </dependency>
+      <dependency>
+          <groupId>org.societies.context-management</groupId>
+          <artifactId>context-mgmt-api</artifactId>
+          <version>0.1-SNAPSHOT</version>
+      </dependency>
   </dependencies>
 
   <build>

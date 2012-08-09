@@ -135,7 +135,7 @@ public class CISSimulator {
 						user2=usersList.get(u2);
 						if(Math.random()>this.userToUserMap.get(user1).get(user2)){
 							System.out.println("msgCounter: "+ (++msgCounter) + " maxActs: "+maxActs+" count: "+((ActivityFeed)ret.getFeed()).count());
-							ret.addCisActivity(makeMessage(user1,user2,"message",Long.toString((long)(Math.random()*(24L*3600L*1000L)))),null); //add message to random time of this day given probabilities in the table..
+							ret.getActivityFeed().addActivity(makeMessage(user1,user2,"message",Long.toString((long)(Math.random()*(24L*3600L*1000L)))),null); //add message to random time of this day given probabilities in the table..
 						}
 						if(msgCounter > this.maxActs){
 							break;

@@ -81,7 +81,7 @@ public class CPACreationPatterns
 
 		actComp = new SimpleCounter();
 		//1. make a graph of interactions, the weight on the links indicates level of interaction, 0 is none. 
-		graph.populateFromCis(cises, lastTime, actComp);
+		graph.populateFromNewData(actDiff, lastTime, actComp);
 		//2. segment the graph nodes according to weights. suggest
 		
 		//TADA, the social graph should be created, phew
