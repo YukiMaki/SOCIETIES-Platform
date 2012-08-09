@@ -27,28 +27,41 @@
 
 package org.societies.orchestration.CISDataCollector;
 
+import org.societies.api.comm.xmpp.exceptions.CommunicationException;
+import org.societies.api.comm.xmpp.exceptions.XMPPError;
+import org.societies.api.comm.xmpp.interfaces.ICommManager;
+import org.societies.api.comm.xmpp.pubsub.PubsubClient;
+import org.societies.api.comm.xmpp.pubsub.Subscriber;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.event.CtxChangeEvent;
 import org.societies.api.context.event.CtxChangeEventListener;
 import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.identity.IIdentity;
+import org.societies.api.identity.InvalidFormatException;
+import org.societies.api.schema.activity.Activity;
 import org.societies.context.api.event.CtxChangeEventTopic;
 import org.societies.context.api.event.ICtxEventMgr;
 
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import javax.xml.bind.JAXBException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
  * Community Intelligence Orchestration 
  * modified from CtxEventExample
  */
-public class CISDataCollector {
+public class CISDataCollector implements Subscriber {
 	
 	private ICtxEventMgr ctxEventMgr;
 	private IIdentity userId;
-	
+    private ICommManager iCommMgr;
+    private PubsubClient pubsubClient;
+    private static Logger LOG = LoggerFactory
+            .getLogger(CISDataCollector.class);
 	public CISDataCollector(IIdentity userEntity, ICtxEventMgr ctxEventMgr) {
 		this.userId = userEntity;
 		this.ctxEventMgr = ctxEventMgr;
@@ -84,8 +97,46 @@ public class CISDataCollector {
 		//
 		// republish event onwards to domain Authority
 	}
-	
-	private class MyCtxChangeEventListener implements CtxChangeEventListener {
+    /*
+     * This method will connect the data collector to the CIS pubsub for activity feed updates.
+     * @param hostingJID this is the JID of the CIS/CSSManager that is hosting the pubsub service.
+     * @param pubsubId this id is per default the same ID as the CIS id, e.g. "cis-4795c379-cd6b-4c4f-b160-af1eb767e786.thomas.local"
+     */
+    public void connectToPubSub(String hostingJID, String pubSubId){
+        List<String> packageList = new ArrayList<String>();
+        packageList.add("org.societies.api.schema.activity");
+        try {
+            pubsubClient.addJaxbPackages(packageList);
+        } catch (JAXBException e) {
+            LOG.warn("Jaxb exception when trying to add packages to pubsub");
+            e.printStackTrace();
+        }
+
+
+        try {
+            this.pubsubClient.subscriberSubscribe(iCommMgr.getIdManager().fromJid(hostingJID), pubSubId, this);
+        } catch (XMPPError e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (CommunicationException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvalidFormatException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+    @Override
+    public void pubsubEvent(IIdentity pubsubService, String node, String itemId, Object item) {
+        if(item.getClass().equals(org.societies.api.schema.activity.Activity.class)){
+            Activity a = (Activity)item;
+            LOG.info("pubsubevent with acitvity " + a.getActor() + " " +a.getVerb()+ " " +a.getTarget());
+        }else{
+            LOG.info("something weird came on the pubsub");
+        }
+    }
+
+    private class MyCtxChangeEventListener implements CtxChangeEventListener {
 
 		/* (non-Javadoc)
 		 * @see org.societies.api.context.event.CtxChangeEventListener#onCreation(org.societies.api.context.event.CtxChangeEvent)
