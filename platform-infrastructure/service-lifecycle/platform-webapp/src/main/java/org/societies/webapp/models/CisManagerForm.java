@@ -27,6 +27,7 @@ package org.societies.webapp.models;
 import java.util.List;
 
 import org.societies.api.schema.cis.community.Criteria;
+import org.springframework.util.AutoPopulatingList;
 
 
 
@@ -51,7 +52,7 @@ public class CisManagerForm {
 	private String operator;
 	private String value;
 
-	private List<Criteria> critList;
+	private List<Criteria> critList  = new AutoPopulatingList<Criteria>(Criteria.class);
 	public List<Criteria> getCritList() {
 		return critList;
 	}

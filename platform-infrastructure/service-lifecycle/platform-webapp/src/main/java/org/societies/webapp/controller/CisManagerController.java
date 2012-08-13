@@ -88,7 +88,7 @@ public class CisManagerController {
 		this.cisManager = cisManager;
 	}
 
-	private List<Criteria> critList = new AutoPopulatingList<Criteria>(Criteria.class);
+	private List<Criteria> critList;// = new AutoPopulatingList<Criteria>(Criteria.class);
 	
 	// store the interfaces of remote and local CISs
 	//private ArrayList<ICis> remoteCISs;
@@ -197,6 +197,9 @@ public class CisManagerController {
 						cisForm.getCisName(),
 						cisForm.getCisType(),cisCriteria,""
 						); // for some strange reason null instead of cisCriteria did not work
+				
+				critList = cisForm.getCritList();
+				
 				if(critList.size()>0){
 					res = "1";
 					for (Criteria c : critList) {
