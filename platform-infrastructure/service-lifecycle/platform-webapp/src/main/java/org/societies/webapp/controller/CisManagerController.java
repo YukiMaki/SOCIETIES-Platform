@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.societies.webapp.models.CisManagerForm;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.AutoPopulatingList;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -87,6 +88,8 @@ public class CisManagerController {
 		this.cisManager = cisManager;
 	}
 
+	private List<Criteria> critList = new AutoPopulatingList<Criteria>(Criteria.class);
+	
 	// store the interfaces of remote and local CISs
 	//private ArrayList<ICis> remoteCISs;
 	//private ArrayList<ICisOwned> localCISs;
@@ -194,8 +197,17 @@ public class CisManagerController {
 						cisForm.getCisName(),
 						cisForm.getCisType(),cisCriteria,""
 						); // for some strange reason null instead of cisCriteria did not work
-
-				res = "Successfully created CIS: " + cisResult.get().getCisId();
+				if(critList.size()>0){
+					res = "1";
+					for (Criteria c : critList) {
+						if(c.getAttrib()!=null ) res+="A"+c.getAttrib().charAt(0);
+						if(c.getOperator()!=null ) res+="O"+c.getOperator().charAt(0);
+						if(c.getValue1()!=null ) res+="V"+c.getValue1().charAt(0);
+						res+=";";
+					}
+				}
+				
+				res += "Successfully created CIS: " + cisResult.get().getCisId();
 				//localCISs.add(cisResult.get());
 
 			} else if (method.equalsIgnoreCase("GetCisList")) {

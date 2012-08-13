@@ -24,6 +24,12 @@
  */
 package org.societies.webapp.models;
 
+import java.util.List;
+
+import org.societies.api.schema.cis.community.Criteria;
+
+
+
 /**
  * Describe your class here...
  *
@@ -45,6 +51,16 @@ public class CisManagerForm {
 	private String operator;
 	private String value;
 
+	private List<Criteria> critList;
+	public List<Criteria> getCritList() {
+		return critList;
+	}
+
+	public void setCritList(List<Criteria> critList) {
+		this.critList = critList;
+	}
+	
+	
 	/*private crit[] critList;
 	
 	public class crit{
@@ -74,6 +90,8 @@ public class CisManagerForm {
 	}*/
 	
 	
+
+
 	public CisManagerForm(){
 		//critList = new crit[10];
 	}
