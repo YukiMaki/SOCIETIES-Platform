@@ -544,7 +544,7 @@ public class Cis implements IFeatureServer, ICisOwned {
 		
 		
 		activityFeed.startUp(session,this.getCisId()); // this must be called just after the CisRecord has been set
-		activityFeed.getActivities("0 1339689547000");
+		//activityFeed.getActivities("0 1339689547000");
 	}
 	
 
