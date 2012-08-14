@@ -46,17 +46,17 @@ $(document).ready(function(){
  var i = 0;
 
  document.getElementById('subBut').onclick = function() {
-	 var j = 0;
+	 var j = 1;
 	 
 	 
 	 $("#existingCriteria tr").each(function(i, v){
 		     $(this).children('td').each(function(ii, vv){
 		         var str = $(this).text();
 				 var splitted = str.split(" "); // splitted[0] = atr, [1] = op, [2] = val
-				 
-				 $('<input/>', {type: "hidden", path: " ${critList["+j+"].attrib}", value : splitted[0]  }).appendTo("form[name='cisManagerForm']");
-				 $('<input/>', {type: "hidden", path: " ${critList["+j+"].operator}", value : splitted[1]  }).appendTo("form[name='cisManagerForm']");
-				 $('<input/>', {type: "hidden", path: " ${critList["+j+"].value1}", value : splitted[2]  }).appendTo("form[name='cisManagerForm']");
+				 				 
+				 $('<input/>', {type: "hidden", path: "critList["+j+"].attrib", value : splitted[0]  }).appendTo("form[name='cisManagerForm']");
+				 $('<input/>', {type: "hidden", path: "critList["+j+"].operator", value : splitted[1]  }).appendTo("form[name='cisManagerForm']");
+				 $('<input/>', {type: "hidden", path: "critList["+j+"].value1", value : splitted[2]  }).appendTo("form[name='cisManagerForm']");
 				 
 				 //${critList[j].attrib} = splitted[0];
 				 //${critList[j].operator} = splitted[1];

@@ -95,6 +95,11 @@ public class CisManagerForm {
 
 	public CisManagerForm(){
 		//critList = new crit[10];
+		Criteria c = new Criteria();
+		c.setAttrib("test");
+		c.setOperator("test");
+		c.setValue1("test");
+		critList.add(c);
 	}
 	
 	public String getAttribute() {

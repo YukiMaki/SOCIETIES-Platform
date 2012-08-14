@@ -45,6 +45,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.AutoPopulatingList;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -70,6 +72,11 @@ import java.security.InvalidParameterException;
 @Controller
 public class CisManagerController {
 
+    @InitBinder
+    public void setDataBinder(WebDataBinder dataBinder) {
+        dataBinder.setAutoGrowNestedPaths(false);
+    }
+	
 	/**
 	 * OSGI service get auto injected
 	 */
@@ -193,11 +200,6 @@ public class CisManagerController {
 					res += " excepation of invalid param " + cisForm.getAttribute() + ", " + cisForm.getOperator()+ ", " + cisForm.getValue();
 				}
 				
-				Future<ICisOwned> cisResult = this.getCisManager().createCis(
-						cisForm.getCisName(),
-						cisForm.getCisType(),cisCriteria,""
-						); // for some strange reason null instead of cisCriteria did not work
-				
 				critList = cisForm.getCritList();
 				
 				if(critList.size()>0){
@@ -210,6 +212,13 @@ public class CisManagerController {
 					}
 				}
 				
+				
+				Future<ICisOwned> cisResult = this.getCisManager().createCis(
+						cisForm.getCisName(),
+						cisForm.getCisType(),cisCriteria,""
+						); // for some strange reason null instead of cisCriteria did not work
+				
+
 				res += "Successfully created CIS: " + cisResult.get().getCisId();
 				//localCISs.add(cisResult.get());
 
