@@ -520,7 +520,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
         try {
 
-/*        	 if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+        	 if (minAttribValue instanceof String && maxAttribValue instanceof String) {
              	Query query = session.getNamedQuery("getCtxEntityIdsByAttrStringValue");
             	query.setParameter("entType", entityType, Hibernate.STRING);
                 query.setParameter("attrType", attribType, Hibernate.STRING);
@@ -528,7 +528,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
                 query.setParameter("maxAttribValue", (String) maxAttribValue, Hibernate.STRING);
                 
                 foundList = (List<CtxEntityIdentifier>) query.list();
-             } else*/ if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+                System.out.println("the list is - " + foundList);
+             } else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
               	Query query = session.getNamedQuery("getCtxEntityIdsByAttrIntegerValue");
              	query.setParameter("entType", entityType, Hibernate.STRING);
              	query.setParameter("attrType", attribType, Hibernate.STRING);
@@ -551,17 +552,27 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
                 System.out.println("the list is - " + foundList);
 
              } else { // if (attribValue instanceof Serializable)
-                 byte[] minValueBytes = SerializationHelper.serialize(minAttribValue);
-                 byte[] maxValueBytes = SerializationHelper.serialize(maxAttribValue);
-          	 
-                 Query query = session.getNamedQuery("getCtxEntityIdsByAttrDoubleValue"); 
-                 query.setParameter("entType", entityType, Hibernate.STRING);
-            	 query.setParameter("attrType", attribType, Hibernate.STRING);
-            	 query.setParameter("minAttribValue", (byte[]) minAttribValue, Hibernate.BINARY);
-            	 query.setParameter("maxAttribValue", (byte[]) maxAttribValue, Hibernate.BINARY);
             	 
-            	 foundList = (List<CtxEntityIdentifier>) query.list();
-            	 System.out.println("the list is - " + foundList);
+            	 byte[] minValueBytes;
+            	 byte[] maxValueBytes;
+            	 try {
+            		 minValueBytes = SerialisationHelper.serialise(minAttribValue);
+            		 maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
+            		 if (Arrays.equals(minValueBytes, maxValueBytes)) {
+                         Query query = session.getNamedQuery("getCtxEntityIdsByAttrBlobValue"); 
+                         query.setParameter("entType", entityType, Hibernate.STRING);
+                    	 query.setParameter("attrType", attribType, Hibernate.STRING);
+                    	 query.setParameter("minAttribValue", (byte[]) minAttribValue, Hibernate.BINARY);
+//                    	 query.setParameter("maxAttribValue", (byte[]) maxAttribValue, Hibernate.BINARY);
+                    	 
+                       	 foundList = (List<CtxEntityIdentifier>) query.list();
+                    	 System.out.println("the list is - " + foundList);
+            		 }
+            	 } catch (IOException e) {
+            			 // TODO Auto-generated catch block
+            			 e.printStackTrace();
+            	 }
+            	 
             }
 
 /*        	Query query = session.getNamedQuery("getCtxEntityByAttrType");

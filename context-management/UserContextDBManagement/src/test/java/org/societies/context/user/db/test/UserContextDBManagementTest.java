@@ -266,7 +266,6 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
        
 	}
 
-	@Ignore
 	@Test
 	public void testLookupEntitiesByAttrType() throws CtxException {
 		System.out.println("---- testLookupByAttrType");
@@ -295,7 +294,7 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 		userDB.update(attribute2);
 		//update with DB
 		identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
-		System.out.println(identifiers);
+		System.out.println("in the identifiers: " + identifiers);
 		System.out.println(identifiers.get(0));
 		//       System.out.println(identifiers.get(1));
        
@@ -343,7 +342,6 @@ public class UserContextDBManagementTest extends AbstractTransactionalJUnit4Spri
 
 	}
    	   
-	@Ignore
 	@Test
 	public void testLookupEntitiesBLOBS() throws CtxException {
 	   System.out.println("---- testLookupEntitiesBLOBS");

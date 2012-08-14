@@ -82,13 +82,13 @@ import org.societies.api.context.model.CtxIdentifier;
 			"where entity.ctxIdentifier.type = :entType " +
 			"and attribute.ctxIdentifier.type = :attrType"
 	),
-/*	@NamedQuery(
+	@NamedQuery(
 	name = "getCtxEntityIdsByAttrStringValue",
-	query = "select distinct entity.ctxIdentifier from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
-			"where entity.ctxIdentifier.type = :entType" +
+	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
+			"where entity.ctxIdentifier.type = :entType " +
 			"and attribute.ctxIdentifier.type = :attrType " +
-			"and attribute.valueStr = :minAttribValue "
-	),*/
+			"and attribute.valueStr between :minAttribValue and :maxAttribValue"
+	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrIntegerValue",
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
@@ -101,7 +101,7 @@ import org.societies.api.context.model.CtxIdentifier;
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
 			"and attribute.ctxIdentifier.type = :attrType " +
-			"and attribute.valueBlob between :minAttribValue and :maxAttribValue"
+			"and attribute.valueBlob = :minAttribValue"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrDoubleValue",
