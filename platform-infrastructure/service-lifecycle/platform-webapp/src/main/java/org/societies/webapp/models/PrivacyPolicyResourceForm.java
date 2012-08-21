@@ -119,6 +119,13 @@ public class PrivacyPolicyResourceForm {
 	public void setActions(List<PrivacyActionForm> actions) {
 		this.actions = actions;
 	}
+	public void addAction(PrivacyActionForm action) {
+		if (null == actions) {
+			actions = new ArrayList<PrivacyActionForm>();
+		}
+		this.actions.add(action);
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
