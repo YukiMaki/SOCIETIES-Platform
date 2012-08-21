@@ -29,10 +29,7 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.model.CtxAttribute;
@@ -49,6 +46,9 @@ import org.societies.api.context.model.CtxModelObject;
 import org.societies.api.internal.context.model.CtxEntityTypes;
 import org.societies.api.internal.context.model.CtxAttributeTypes;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
+
 import org.societies.context.user.db.impl.CtxModelObjectNumberGenerator;
 import org.societies.context.user.db.impl.UserCtxDBMgr;
 
@@ -58,7 +58,10 @@ import org.societies.context.user.db.impl.UserCtxDBMgr;
  * @author
  * 
  */
-public class UserContextDBManagementTest {
+
+
+@ContextConfiguration(locations = { "../../../../../../META-INF/UserCtxDBMgrTest-context.xml" })
+public class UserContextDBManagementTest extends AbstractTransactionalJUnit4SpringContextTests {
 
     private static final String ENT_TYPE_1 = "entType1";
     private static final String ENT_TYPE_2 = "entType2";
@@ -67,6 +70,7 @@ public class UserContextDBManagementTest {
     private static final String ATTR_TYPE_2 = "attrType2";
     private static final String ATTR_TYPE_3 = "attrType3";
 
+	@Autowired
 	private UserCtxDBMgr userDB;
 	CtxEntity entity;	
 	IndividualCtxEntity indEntity;
@@ -74,38 +78,8 @@ public class UserContextDBManagementTest {
 	CtxAssociation association;
 	CtxModelObject modObj;
 	List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@Before
-	public void setUp() throws Exception {
-		userDB = new UserCtxDBMgr();
-	}
-
-	/**
-	 * @throws java.lang.Exception
-	 */
-	@After
-	public void tearDown() throws Exception {
-		userDB = null;
-	}
 	
-   @Test
+	@Test
  	public void testCreateIndividualCtxEntity() throws CtxException{
 		System.out.println("---- testCreateIndividualCtxEntity");
 		indEntity = userDB.createIndividualCtxEntity("person");
@@ -114,7 +88,7 @@ public class UserContextDBManagementTest {
 		assertEquals("person", indEntity.getType());
 	}
 
-   @Test
+	@Test
  	public void testCreateCtxAssociation() throws CtxException{
 		System.out.println("---- testCreateCtxAssociation");
 		association = userDB.createAssociation("IsRelatedWith");
@@ -122,7 +96,7 @@ public class UserContextDBManagementTest {
 		assertEquals("IsRelatedWith", association.getType());
 	}
 
-   @Test
+	@Test
  	public void testAssociations() throws CtxException{
 		System.out.println("---- testAssociations");
 
@@ -154,20 +128,20 @@ public class UserContextDBManagementTest {
 		assertTrue(association.getChildEntities().isEmpty());
 	}
 
-   @Test
-   public void testRetrieveAssociation() throws CtxException{
+	@Test
+	public void testRetrieveAssociation() throws CtxException{
 	   System.out.println("---- testRetrieveAssociation");
 	   ////////////////
 	   association = userDB.createAssociation("IsRelatedWith");
 
-	   
+
 	   modObj = userDB.retrieve(association.getId());
 	   association = (CtxAssociation) modObj;
 
 	   assertNotNull(association);
-   }
+	}
 
-   @Test
+	@Test
 	public void testCreateAttribute() throws CtxException{
 	   System.out.println("---- testCreateAttribute");
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -176,11 +150,10 @@ public class UserContextDBManagementTest {
 
 	   assertNotNull(attribute);
 	   assertEquals("name", attribute.getType());
-
    }
-   
-   @Test
-   public void testRetrieveAttribute() throws CtxException{
+
+	@Test
+	public void testRetrieveAttribute() throws CtxException{
 	   System.out.println("---- testRetrieveAttribute");
 	   ////////////////
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -190,10 +163,11 @@ public class UserContextDBManagementTest {
 	   attribute = (CtxAttribute) modObj;
 
 	   assertNotNull(attribute);
-   }
+	   //attribute = (CtxAttribute) callback.getCtxModelObject();
+	}
 
-   @Test
-   public void testUpdateAttribute() throws CtxException{
+	@Test
+	public void testUpdateAttribute() throws CtxException{
 	   System.out.println("---- testUpdateAttribute");
 
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -214,10 +188,10 @@ public class UserContextDBManagementTest {
 //	   assertEquals(5,attribute.getIntegerValue());
 	}
    
-   @Test
-   public void testLookup() throws CtxException{
+	@Test
+	public void testLookup() throws CtxException{
 	   System.out.println("---- testLookup");
-	   
+
        List<CtxIdentifier> ids;
        
        // Create test entities.
@@ -230,7 +204,7 @@ public class UserContextDBManagementTest {
        final CtxAttributeIdentifier attrId2 = userDB.createAttribute(entId1, "Foo").getId();
        final CtxAttributeIdentifier attrId3 = userDB.createAttribute(entId1, "Bar").getId();
        
-       // Create test attributes.
+       // Create test associations.
        final CtxAssociationIdentifier assocId1 = userDB.createAssociation("FooBar").getId();
        final CtxAssociationIdentifier assocId2 = userDB.createAssociation("Foo").getId();
        final CtxAssociationIdentifier assocId3 = userDB.createAssociation("Bar").getId();
@@ -284,9 +258,9 @@ public class UserContextDBManagementTest {
        assertEquals(1, ids.size());
        
 	}
-   
-   @Test
-   public void testLookupEntitiesByAttrType() throws CtxException {
+
+	@Test
+	public void testLookupEntitiesByAttrType() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -322,10 +296,10 @@ public class UserContextDBManagementTest {
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("PERSON", entityId.getType());
 
-   }
+	}
    
-   @Test
-   public void testLookupEntitiesIntegers() throws CtxException {
+	@Test
+	public void testLookupEntitiesIntegers() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -358,10 +332,10 @@ public class UserContextDBManagementTest {
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
    	   
-   @Test
-   public void testLookupEntitiesBLOBS() throws CtxException {
+	@Test
+	public void testLookupEntitiesBLOBS() throws CtxException {
        List<CtxEntityIdentifier> identifiers;
        CtxEntity entity, entity2;
        CtxAttribute attribute2;
@@ -397,5 +371,6 @@ public class UserContextDBManagementTest {
        assertEquals(CtxModelType.ENTITY, entityId.getModelType());
        assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
+	   
 }

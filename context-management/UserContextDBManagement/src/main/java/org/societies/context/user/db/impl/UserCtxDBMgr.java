@@ -26,6 +26,7 @@ package org.societies.context.user.db.impl;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+
+import org.hibernate.Hibernate;
+import org.hibernate.Query;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.util.SerializationHelper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,15 +70,25 @@ import org.societies.context.api.user.db.IUserCtxDBMgr;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.societies.context.user.db.impl.model.UserCtxAssociationDAO;
+//import org.societies.context.user.db.impl.model.UserCtxAssociationEntitiesDAO;
+import org.societies.context.user.db.impl.model.UserCtxAssociationIdentifierDAO;
+import org.societies.context.user.db.impl.model.UserCtxAttributeDAO;
+import org.societies.context.user.db.impl.model.UserCtxAttributeIdentifierDAO;
+import org.societies.context.user.db.impl.model.UserCtxEntityDAO;
+import org.societies.context.user.db.impl.model.UserCtxEntityIdentifierDAO;
+import org.societies.context.user.db.impl.model.UserCtxModelObjectNumberDAO;
+
+
 /**
  * Implementation of the {@link IUserCtxDBMgr} interface.
  * 
  * @author 
  * @since 0.0.1
  */
-@Service("userCtxDBMgr")
 public class UserCtxDBMgr implements IUserCtxDBMgr {
-	
+
+	private SessionFactory sessionFactory;
 	/** The logging facility. */
 	private static final Logger LOG = LoggerFactory.getLogger(UserCtxDBMgr.class);
 	
@@ -88,7 +106,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	// TODO Remove and instantiate privateId properly so that privateId.toString() can be used instead
 	private final String privateIdtoString = "myFooIIdentity@societies.local";
 	
-	@Autowired(required=true)
 	UserCtxDBMgr (ICommManager commMgr) {
 
 		LOG.info(this.getClass() + " instantiated");
@@ -123,18 +140,61 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			throw new NullPointerException("type can't be null");
 
 		final CtxAssociationIdentifier identifier;
-		
+		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
+
 		if (this.idMgr != null) {
 			identifier = new CtxAssociationIdentifier(this.privateId.getBareJid(), 
-					type, CtxModelObjectNumberGenerator.getNextValue());
+					type, modelObjectNumber);
 		}
 		else {
 			identifier = new CtxAssociationIdentifier(this.privateIdtoString, 
-				type, CtxModelObjectNumberGenerator.getNextValue());
+				type, modelObjectNumber);
 		}
-		
+
 		final CtxAssociation association = new  CtxAssociation(identifier);
 		this.modelObjects.put(association.getId(), association);		
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try{
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
+			Date date = new Date();
+			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
+
+			associationDB.setAssociationId(association.getId());
+			associationDB.setTimestamp(association.getLastModified());
+
+			if (association.getParentEntity() != null) {
+				associationDB.setParentEntityId(association.getParentEntity());
+			}
+			//TODO specify dynamic
+//			associationDB.setDynamic(association.get)
+//			session.save(tmpEntity);
+			if (!association.childEntities.isEmpty())
+				associationDB.setMap(association.childEntities);
+			
+			//setting identifier
+			UserCtxAssociationIdentifierDAO associationIdentDB = new UserCtxAssociationIdentifierDAO();
+			associationIdentDB.setOperatorId(identifier.getOperatorId());
+			associationIdentDB.setOwnerId(identifier.getOwnerId());
+			associationIdentDB.setObjectNumber(identifier.getObjectNumber());
+			associationIdentDB.setType(identifier.getType());
+			associationDB.setCtxIdentifier(associationIdentDB);			
+
+			session.save(associationDB);
+			
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
 
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(association.getId()), 
@@ -156,21 +216,71 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	public CtxAttribute createAttribute(final CtxEntityIdentifier scope,
 			final String type) throws CtxException {
 		
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
 		if (scope == null)
 			throw new NullPointerException("scope can't be null");
 		if (type == null)
 			throw new NullPointerException("type can't be null");
 
-		final CtxEntity entity = (CtxEntity) modelObjects.get(scope);
+		//Retrieve entity by scope
+//		final CtxEntity entity = (CtxEntity) modelObjects.get(scope);
+//		final CtxEntity entity = (CtxEntity) session.get(UserCtxEntityDAO.class, scope);
 		
-		if (entity == null)	
-			throw new UserCtxDBMgrException("Scope not found: " + scope);
+//		if (entity == null)	
+//			throw new UserCtxDBMgrException("Scope not found: " + scope);
+
+		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
 		
-		CtxAttributeIdentifier attrIdentifier = new CtxAttributeIdentifier(scope, type, CtxModelObjectNumberGenerator.getNextValue());
+		CtxAttributeIdentifier attrIdentifier = new CtxAttributeIdentifier(scope, type, modelObjectNumber);
 		final CtxAttribute attribute = new CtxAttribute(attrIdentifier);
 
 		this.modelObjects.put(attribute.getId(), attribute);
-		entity.addAttribute(attribute);
+//		entity.addAttribute(attribute);
+
+		try{
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
+			
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, scope);
+			
+			Date date = new Date();
+			UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
+			attributeDB.setAttributeId(attribute.getId());
+			//TODO change to timestamp
+//			attributeDB.setTimestamp(attribute.getLastModified());
+			attributeDB.setTimestamp(date);
+			attributeDB.setValueStr(attribute.getStringValue());
+			attributeDB.setValueInt(attribute.getIntegerValue());
+			attributeDB.setValueDbl(attribute.getDoubleValue());
+			attributeDB.setValueBlob(attribute.getBinaryValue());
+			attributeDB.setHistory(attribute.isHistoryRecorded());
+			attributeDB.setSourceId(attribute.getSourceId());
+			attributeDB.setValueType(attribute.getValueType().toString());
+			attributeDB.setValueMetric(attribute.getValueMetric());
+			
+			//setting identifier
+			UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+			attrIdentDB.setType(attribute.getType());
+			attrIdentDB.setObjectNumber(attrIdentifier.getObjectNumber());
+			attrIdentDB.setScope(entityDB);
+			attributeDB.setCtxIdentifier(attrIdentDB);
+			entityDB.getAttrScope().add(attributeDB);
+
+			session.save(attributeDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
 		
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(attribute.getId()), 
@@ -192,19 +302,61 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public CtxEntity createEntity(String type) throws CtxException {
 
+//		Session session = sessionFactory.openSession();
+//		Transaction t = session.beginTransaction();
+
 		final CtxEntityIdentifier identifier;
+		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
 		
 		if (this.idMgr != null) {
 			identifier = new CtxEntityIdentifier(this.privateId.getBareJid(), 
-					type, CtxModelObjectNumberGenerator.getNextValue());
+					type, modelObjectNumber);
 		}
 		else {
 			identifier = new CtxEntityIdentifier(this.privateIdtoString, 
-					type, CtxModelObjectNumberGenerator.getNextValue());
+					type, modelObjectNumber);
 		}
 
 		final CtxEntity entity = new  CtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);		
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try{
+
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
+	
+			Date date = new Date();
+
+			//Prepare CtxEntityDAO
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB.setEntityId(entity.getId());
+			//TODO change to timestamp
+//			entityDB.setTimestamp(entity.getLastModified());
+			entityDB.setTimestamp(date);
+			
+			//setting identifier
+			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+			entIdentDB.setOperatorId(entity.getOwnerId());
+			entIdentDB.setType(entity.getType());
+			entIdentDB.setObjectNumber(entity.getObjectNumber());
+
+			entityDB.setCtxIdentifier(entIdentDB);
+
+			session.save(entityDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+	
 
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(entity.getId()), 
@@ -226,19 +378,57 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public IndividualCtxEntity createIndividualCtxEntity(String type) throws CtxException {
 
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
 		CtxEntityIdentifier identifier;
-		
+		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
+
 		if (this.idMgr != null) {
 			identifier = new CtxEntityIdentifier(this.privateId.getBareJid(),
-					type, CtxModelObjectNumberGenerator.getNextValue());	
+					type, modelObjectNumber);	
 		}
 		else {
 			identifier = new CtxEntityIdentifier(this.privateIdtoString,
-					type, CtxModelObjectNumberGenerator.getNextValue());			
+					type, modelObjectNumber);			
 		}
-		
+
 		IndividualCtxEntity entity = new IndividualCtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);
+
+		try{
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
+			
+			Date date = new Date();
+
+			//Prepare CtxEntityDAO
+			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+			entityDB.setEntityId(entity.getId());
+			//TODO change to timestamp
+//			entityDB.setTimestamp(entity.getLastModified());
+			entityDB.setTimestamp(date);
+			
+			//setting identifier
+			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+			entIdentDB.setOperatorId(entity.getOwnerId());
+			entIdentDB.setType(entity.getType());
+			entIdentDB.setObjectNumber(entity.getObjectNumber());
+
+			entityDB.setCtxIdentifier(entIdentDB);
+
+			session.save(entityDB);
+			t.commit();
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
 
 		if (this.ctxEventMgr != null) {
 			this.ctxEventMgr.post(new CtxChangeEvent(entity.getId()), 
@@ -256,15 +446,73 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public List<CtxIdentifier> lookup(CtxModelType modelType, String type) throws CtxException {
 		// TODO Auto-generated method stub
+
+		if (modelType == null) {
+			throw new NullPointerException("modelType can't be null");
+		}
+		if (type == null) {
+			throw new NullPointerException("type can't be null");
+		}
 		
-		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		//final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+//		List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		List<? extends CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
 		
-		for (CtxIdentifier identifier : modelObjects.keySet()) {
+//        final boolean isWildcardType = type.contains("%");
+
+/*		for (CtxIdentifier identifier : modelObjects.keySet()) {
 			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
 				foundList.add(identifier);
 			}		
 		}
-		return foundList;
+		System.out.println("the list is - " + foundList);
+	*/	
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+        try {
+            // Start a unit of work
+            if (modelType.equals(CtxModelType.ENTITY)) {
+
+            	Query query = session.getNamedQuery("getCtxEntityIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = (List<CtxIdentifier>) query.list();
+            	System.out.println("test - " + foundList.get(0));
+            	CtxIdentifier testIdent = foundList.get(0);
+            	System.out.println("the list is - " + foundList);
+            	
+            } else if (modelType.equals(CtxModelType.ATTRIBUTE)) {
+
+            	Query query = session.getNamedQuery("getCtxAttributeIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = query.list();
+            	System.out.println("the list is - " + foundList);
+            	
+            } else if (modelType.equals(CtxModelType.ASSOCIATION)) {
+
+            	Query query = session.getNamedQuery("getCtxAssociationIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = query.list();
+				System.out.println("the list is - " + foundList);
+				
+            } else {
+ 
+                throw new IllegalArgumentException(
+                        "Unsupported context model type: " + modelType);
+            }
+
+            // End the unit of work
+            t.commit();
+        } catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+		return (List<CtxIdentifier>) foundList;
+		//return foundList;
 	}
 
 	@Override
@@ -272,36 +520,118 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			String attribType, Serializable minAttribValue,
 			Serializable maxAttribValue) throws CtxException {
 				
-        final List<CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
-        for (CtxIdentifier identifier : modelObjects.keySet()) {
-            if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
-                    && identifier.getType().equals(attribType)) {
-                final CtxAttribute attribute = (CtxAttribute) modelObjects
-                .get(identifier);
-//                if (attribute.getScope().getType().equals(entityType) && attribute.getValue().equals(minAttribValue)) {
-                if (attribute.getScope().getType().equals(entityType)) {
-                	if (minAttribValue instanceof String && maxAttribValue instanceof String) {
-                		if (attribute.getStringValue()!=null) {
+//      List<CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
+//      List<CtxEntityIdentifier> ctxIdentifiers = new ArrayList<CtxEntityIdentifier>();
+		List<? extends CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
+
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+      try {
+
+      	 if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+           	Query query = session.getNamedQuery("getCtxEntityIdsByAttrStringValue");
+          	query.setParameter("entType", entityType, Hibernate.STRING);
+              query.setParameter("attrType", attribType, Hibernate.STRING);
+              query.setParameter("minAttribValue", (String) minAttribValue, Hibernate.STRING);
+              query.setParameter("maxAttribValue", (String) maxAttribValue, Hibernate.STRING);
+              
+              foundList = (List<CtxEntityIdentifier>) query.list();
+              System.out.println("the list is - " + foundList);
+           } else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+            	Query query = session.getNamedQuery("getCtxEntityIdsByAttrIntegerValue");
+           	query.setParameter("entType", entityType, Hibernate.STRING);
+           	query.setParameter("attrType", attribType, Hibernate.STRING);
+              query.setParameter("minAttribValue", (Integer) minAttribValue, Hibernate.INTEGER);
+              query.setParameter("maxAttribValue", (Integer) maxAttribValue, Hibernate.INTEGER);
+               
+              foundList = (List<CtxEntityIdentifier>) query.list();
+//          	System.out.println("test - " + foundList.get(0));
+//          	CtxEntityIdentifier testIdent = foundList.get(0);
+          	System.out.println("the list is - " + foundList);
+
+           } else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
+             	Query query = session.getNamedQuery("getCtxEntityIdsByAttrDoubleValue");
+            	query.setParameter("entType", entityType, Hibernate.STRING);
+            	query.setParameter("attrType", attribType, Hibernate.STRING);
+              query.setParameter("minAttribValue", (Double) minAttribValue, Hibernate.DOUBLE);
+              query.setParameter("maxAttribValue", (Double) maxAttribValue, Hibernate.DOUBLE);
+                
+              foundList = (List<CtxEntityIdentifier>) query.list();
+              System.out.println("the list is - " + foundList);
+
+           } else { // if (attribValue instanceof Serializable)
+          	 
+          	 byte[] minValueBytes;
+          	 byte[] maxValueBytes;
+          	 try {
+          		 minValueBytes = SerialisationHelper.serialise(minAttribValue);
+          		 maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
+          		 if (Arrays.equals(minValueBytes, maxValueBytes)) {
+                       Query query = session.getNamedQuery("getCtxEntityIdsByAttrBlobValue"); 
+                       query.setParameter("entType", entityType, Hibernate.STRING);
+                  	 query.setParameter("attrType", attribType, Hibernate.STRING);
+                  	 query.setParameter("minAttribValue", (byte[]) minAttribValue, Hibernate.BINARY);
+//                  	 query.setParameter("maxAttribValue", (byte[]) maxAttribValue, Hibernate.BINARY);
+                  	 
+                     	 foundList = (List<CtxEntityIdentifier>) query.list();
+                  	 System.out.println("the list is - " + foundList);
+          		 }
+          	 } catch (IOException e) {
+          			 // TODO Auto-generated catch block
+          			 e.printStackTrace();
+          	 }
+          	 
+          }
+
+/*        	Query query = session.getNamedQuery("getCtxEntityByAttrType");
+      	query.setParameter("entType", entityType, Hibernate.STRING);
+          query.setParameter("attrType", attribType, Hibernate.STRING);
+          foundList = (List<CtxEntityIdentifier>) query.list();
+         
+          System.out.println("test - " + foundList.get(0));
+          CtxEntityIdentifier testIdent = foundList.get(0);
+          System.out.println("the list is - " + foundList);
+*/          	
+          t.commit();
+      } catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+/*        for (CtxIdentifier identifier : modelObjects.keySet()) {
+          if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
+                  && identifier.getType().equals(attribType)) {
+              final CtxAttribute attribute = (CtxAttribute) modelObjects
+              .get(identifier);
+//              if (attribute.getScope().getType().equals(entityType) && attribute.getValue().equals(minAttribValue)) {
+              if (attribute.getScope().getType().equals(entityType)) {
+              	if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+              		if (attribute.getStringValue()!=null) {
 		                	String valueStr = attribute.getStringValue();
 		                		if(valueStr.compareTo(minAttribValue.toString()) >=0 && valueStr.compareTo(maxAttribValue.toString()) <=0)
 		               				foundList.add(attribute.getScope());                			
-        				}
-                	} else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
-                		if(attribute.getIntegerValue()!=null) {
+      				}
+              	} else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+              		if(attribute.getIntegerValue()!=null) {
 		               		Integer valueInt = attribute.getIntegerValue();
 		          			if(valueInt.compareTo((Integer) minAttribValue) >=0 && valueInt.compareTo((Integer) maxAttribValue) <=0)
 		               			foundList.add(attribute.getScope());
-                		}
-                	} else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
-                		if(attribute.getDoubleValue()!=null) {
+              		}
+              	} else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
+              		if(attribute.getDoubleValue()!=null) {
 		               		Double valueDouble = attribute.getDoubleValue();
 		           			if(valueDouble.compareTo((Double) minAttribValue) >= 0 && valueDouble.compareTo((Double) maxAttribValue) <= 0)
 		               			foundList.add(attribute.getScope());                			
-                		}
-                	} else {
-                		byte[] valueBytes;
-                		byte[] minValueBytes;
-                		byte[] maxValueBytes;
+              		}
+              	} else {
+              		byte[] valueBytes;
+              		byte[] minValueBytes;
+              		byte[] maxValueBytes;
 						try {
 							minValueBytes = SerialisationHelper.serialise(minAttribValue);
 							maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
@@ -313,12 +643,13 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}                		
-                	}
-                	
-                }
-            }
-        }
-        return foundList;
+              	}
+              	
+              }
+          }
+      }*/
+		return (List<CtxEntityIdentifier>) foundList;
+//      return foundList;
 	}
 
 	@Override
@@ -334,11 +665,155 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public CtxModelObject retrieve(CtxIdentifier id) throws CtxException {
 
-		return this.modelObjects.get(id);
+		CtxModelObject retrieved = null;
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+        try {
+            // Start a unit of work
+            if (id.getModelType().equals(CtxModelType.ENTITY)) {
+            	retrieved = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
+
+            	System.out.println("test - " + retrieved);
+            } else if (id.getModelType().equals(CtxModelType.ATTRIBUTE)) {
+
+            	UserCtxAttributeDAO retrAttr = new UserCtxAttributeDAO();
+            	retrAttr = (UserCtxAttributeDAO) session.get(UserCtxAttributeDAO.class, id);
+
+            	CtxAttribute newAttribute = new CtxAttribute((CtxAttributeIdentifier) retrAttr.getAttributeId());
+            	
+            	retrieved = newAttribute;
+            	
+            	System.out.println("test - " + retrieved);
+            } else if (id.getModelType().equals(CtxModelType.ASSOCIATION)) {
+
+            	retrieved = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
+
+            	System.out.println("test - " + retrieved);
+            }             // End the unit of work
+            t.commit();
+        } catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+//		return this.modelObjects.get(id);
+//		this.modelObjects.put(id, retrModObj);
+		return retrieved;
+		
 	}
 
 	@Override
 	public CtxModelObject update(CtxModelObject modelObject) throws CtxException {
+
+		if (modelObject == null) 
+			throw new NullPointerException("modelObject can't be null");
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try{
+
+			if (modelObject.getModelType().equals(CtxModelType.ENTITY)) {
+				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+				CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
+				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, modelObject.getId());				
+				
+				entityDB.setEntityId(ctxEntCopy.getId());
+				//TODO change to timestamp
+//				entityDB.setTimestamp(entity.getLastModified());
+//				entityDB.setTimestamp(date);
+				
+				//setting identifier
+				UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+				entIdentDB.setOperatorId(ctxEntCopy.getOwnerId());
+				entIdentDB.setType(ctxEntCopy.getType());
+				entIdentDB.setObjectNumber(ctxEntCopy.getObjectNumber());
+
+				entityDB.setCtxIdentifier(entIdentDB);
+
+				session.update(entityDB);
+				t.commit();				
+			}
+			else if (modelObject.getModelType().equals(CtxModelType.ATTRIBUTE)) {
+				UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
+				CtxAttribute ctxAttrCopy = (CtxAttribute) this.retrieve(modelObject.getId());
+				attributeDB = (UserCtxAttributeDAO) session.get(UserCtxAttributeDAO.class, modelObject.getId());
+
+				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, ctxAttrCopy.getScope());
+
+				attributeDB.setAttributeId(ctxAttrCopy.getId());
+				//TODO change to timestamp
+//				attributeDB.setTimestamp(attribute.getLastModified());
+//				attributeDB.setTimestamp(date);
+				attributeDB.setValueStr(ctxAttrCopy.getStringValue());
+				attributeDB.setValueInt(ctxAttrCopy.getIntegerValue());
+				attributeDB.setValueDbl(ctxAttrCopy.getDoubleValue());
+				attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
+				attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
+				attributeDB.setSourceId(ctxAttrCopy.getSourceId());
+				attributeDB.setValueType(ctxAttrCopy.getValueType().toString());
+				attributeDB.setValueMetric(ctxAttrCopy.getValueMetric());
+	
+				//setting identifier
+				UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+				attrIdentDB.setType(ctxAttrCopy.getType());
+				attrIdentDB.setObjectNumber(ctxAttrCopy.getObjectNumber());
+				attrIdentDB.setScope(entityDB);
+				attributeDB.setCtxIdentifier(attrIdentDB);
+				entityDB.getAttrScope().add(attributeDB);
+
+				session.update(attributeDB);
+				t.commit();
+				
+			}
+			else if (modelObject.getModelType().equals(CtxModelType.ASSOCIATION)) {
+				UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
+				CtxAssociation ctxAssocCopy = (CtxAssociation) this.retrieve(modelObject.getId());
+				associationDB = (UserCtxAssociationDAO) session.get(UserCtxAssociationDAO.class, modelObject.getId());
+//				CtxAssociationIdentifier identifier = (CtxAssociationIdentifier) session.get(UserCtxAssociationIdentifierDAO.class, modelObject.getId());
+				
+				associationDB.setAssociationId(ctxAssocCopy.getId());
+				associationDB.setTimestamp(ctxAssocCopy.getLastModified());
+
+				if (ctxAssocCopy.getParentEntity() != null) {
+					associationDB.setParentEntityId(ctxAssocCopy.getParentEntity());
+				}
+				//TODO specify dynamic
+//				associationDB.setDynamic(association.get)
+				if (!ctxAssocCopy.childEntities.isEmpty())
+					associationDB.setMap(ctxAssocCopy.childEntities);
+				
+				//setting identifier
+				UserCtxAssociationIdentifierDAO associationIdentDB = new UserCtxAssociationIdentifierDAO();
+				associationIdentDB.setOperatorId(ctxAssocCopy.getOwnerId());
+//				associationIdentDB.setOperatorId(identifier.getOperatorId());
+				associationIdentDB.setOwnerId(ctxAssocCopy.getOwnerId());
+				associationIdentDB.setObjectNumber(ctxAssocCopy.getObjectNumber());
+				associationIdentDB.setType(ctxAssocCopy.getType());
+				associationDB.setCtxIdentifier(associationIdentDB);			
+
+				session.update(associationDB);
+				
+				t.commit();
+			}
+			else {
+				throw new IllegalArgumentException (
+						"Unsupported context model type: " 
+							+ modelObject.getModelType());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
 
 		if (this.modelObjects.keySet().contains(modelObject.getId())) {
 			this.modelObjects.put(modelObject.getId(), modelObject);
@@ -380,4 +855,21 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			      
 		return modelObject;
 	}	
+	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
+
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+
+	public ICtxEventMgr getCtxEventMgr() {
+		return ctxEventMgr;
+	}
+
+	public void setCtxEventMgr(ICtxEventMgr ctxEventMgr) {
+		this.ctxEventMgr = ctxEventMgr;
+	}
+
 }
