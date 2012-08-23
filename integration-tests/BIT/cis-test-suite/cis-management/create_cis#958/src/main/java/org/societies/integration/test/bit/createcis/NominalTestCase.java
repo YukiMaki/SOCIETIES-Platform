@@ -26,6 +26,7 @@ package org.societies.integration.test.bit.createcis;
 
 import static org.junit.Assert.*;
 
+import java.util.Hashtable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -38,6 +39,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.societies.api.cis.attributes.MembershipCriteria;
 import org.societies.api.cis.management.ICis;
 import org.societies.api.cis.management.ICisOwned;
 import org.societies.api.identity.IIdentity;
@@ -59,7 +61,9 @@ public class NominalTestCase {
 	private String cisId;
 	private String cssPassword;
 	private String cisName;
+	private String cisDescription;
 	private String cisType;
+	private Hashtable<String, MembershipCriteria> cisMembershipCriteria;
 
 
 	@Before
@@ -69,7 +73,9 @@ public class NominalTestCase {
 		cssId = TestCase958.commManager.getIdManager().getThisNetworkNode().getJid();
 		cssPassword = "password.societies.local";
 		cisName = "CisTest";
+		cisDescription = "CIS to Test CIS Creation";
 		cisType = "trialog";
+		cisMembershipCriteria = new Hashtable<String, MembershipCriteria>();
 		privacyPolicyWithoutRequestor = "<RequestPolicy>" +
 				"<Target>" +
 				"<Resource>" +
@@ -104,7 +110,7 @@ public class NominalTestCase {
 	public void tearDown() {
 		LOG.info("[#"+testCaseNumber+"] tearDown");
 		if (null != cisId && !"".equals(cisId)) {
-			TestCase958.cisManager.deleteCis(cssId, cssPassword, cisId);
+			TestCase958.cisManager.deleteCis(cisId);
 		}
 	}
 
@@ -116,7 +122,7 @@ public class NominalTestCase {
 
 		// Create CIS
 		LOG.info("############## CSS Id:"+cssId+" ("+cssPassword+")");
-		Future<ICisOwned> futureCis = TestCase958.cisManager.createCis(cssId, cssPassword, cisName, cisType, 1);
+		Future<ICisOwned> futureCis = TestCase958.cisManager.createCis(cisName, cisType, cisMembershipCriteria, cisDescription);
 		ICisOwned newCis = null;
 		assertNotNull("Future new CIS is null", futureCis);
 		
@@ -140,7 +146,7 @@ public class NominalTestCase {
 		assertNotNull("New CIS id is null", cisId);
 
 		// Check if the CIS is on the CIS Management registry
-		ICis cisRetrieved =  TestCase958.cisManager.getCis(TestCase958.commManager.getIdManager().getThisNetworkNode().getJid(), cisId);
+		ICis cisRetrieved =  TestCase958.cisManager.getCis(cisId);
 		assertNotNull("New CIS is not stored", cisRetrieved);
 		assertEquals("New CIS and retrived CIS should be the same but are not", newCis, cisRetrieved);
 	}
@@ -151,8 +157,9 @@ public class NominalTestCase {
 		LOG.info("[#"+testCaseNumber+"] "+testTitle);
 
 		// Create CIS
-		Future<ICisOwned> futureCis = TestCase958.cisManager.createCis(cssId, cssPassword, cisName, cisType, 1, privacyPolicyWithoutRequestor);
+		Future<ICisOwned> futureCis = TestCase958.cisManager.createCis(cisName, cisType, cisMembershipCriteria, cisDescription, privacyPolicyWithoutRequestor);
 		ICisOwned newCis = null;
+		
 		assertNotNull("Future new CIS is null", futureCis);
 		
 		// Retrieve future CIS
@@ -172,23 +179,37 @@ public class NominalTestCase {
 
 		// Retrieve CIS id
 		cisId =  newCis.getCisId();
+		
 		assertNotNull("New CIS id is null", cisId);
 
 		// Check if the CIS is on the CIS Management registry
-		ICis cisRetrieved =  TestCase958.cisManager.getCis(TestCase958.commManager.getIdManager().getThisNetworkNode().getJid(), cisId);
+		ICis cisRetrieved =  TestCase958.cisManager.getCis(cisId);
+		
+		
 		assertNotNull("New CIS is not stored", cisRetrieved);
+		
 		assertTrue("New CIS and retrived CIS should be the same but are not", newCis.equals(cisRetrieved));
+		
 
 		RequestPolicy expectedPrivacyPolicy = null;
 		RequestPolicy retrievedPrivacyPolicy = null;
 		try {
+			
 			// Retrieve privacy policy owner id
 			IIdentity cisIdentity = TestCase958.commManager.getIdManager().fromJid(cisId);
+			
+			
 			RequestorCis requestorCis = new RequestorCis(TestCase958.commManager.getIdManager().getThisNetworkNode(), cisIdentity);
+			
+			
 			expectedPrivacyPolicy = TestCase958.privacyPolicyManager.fromXMLString(privacyPolicyWithoutRequestor);
+			
+			
 			expectedPrivacyPolicy.setRequestor(requestorCis);
+			
 			// Retrieve privacy policy
 			retrievedPrivacyPolicy =  TestCase958.privacyPolicyManager.getPrivacyPolicy(requestorCis);
+			
 		} catch (PrivacyException e) {
 			LOG.error("[Error "+e.getLocalizedMessage()+"] "+testTitle, e);
 			fail("[Error PrivacyException] "+testTitle);
@@ -199,6 +220,11 @@ public class NominalTestCase {
 
 		LOG.info(retrievedPrivacyPolicy.toXMLString());
 		assertNotNull("CIS Privacy policy is null but it should not", retrievedPrivacyPolicy);
-		assertEquals("CIS privacy policy retrieved is not the one that has been sent", expectedPrivacyPolicy, retrievedPrivacyPolicy);
+		
+		//Modified by Rafik
+		//Before:
+		//assertEquals("CIS privacy policy retrieved is not the one that has been sent", expectedPrivacyPolicy, retrievedPrivacyPolicy);
+		//After:
+		assertEquals("CIS privacy policy retrieved is not the one that has been sent", expectedPrivacyPolicy.toXMLString(), retrievedPrivacyPolicy.toXMLString());
 	}
 }

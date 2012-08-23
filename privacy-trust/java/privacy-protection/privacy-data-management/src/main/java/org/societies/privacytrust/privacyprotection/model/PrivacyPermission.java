@@ -35,6 +35,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+<<<<<<< HEAD
+=======
+import org.societies.api.context.model.CtxAttributeIdentifier;
+import org.societies.api.context.model.CtxIdentifierFactory;
+>>>>>>> refs/heads/development
 import org.societies.api.context.model.MalformedCtxIdentifierException;
 import org.societies.api.identity.DataIdentifierFactory;
 import org.societies.api.identity.Requestor;
@@ -216,7 +221,7 @@ public class PrivacyPermission implements Serializable {
 		}
 		return actions;
 	}
-	
+
 	/*
 	 * Set a list of actions as a formatted string value:optional/value:optional/...
 	 */

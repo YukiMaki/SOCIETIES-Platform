@@ -24,6 +24,9 @@
  */
 package org.societies.context.user.refinement.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.societies.api.context.model.CtxAttribute;
@@ -63,15 +66,39 @@ public class UserCtxRefiner implements IUserCtxRefiner {
 	 * (org.societies.api.context.model.CtxAttributeIdentifier)
 	 */
 	@Override
-	public void refineContext(CtxAttributeIdentifier arg0) {
+	public CtxAttribute refineContext(CtxAttributeIdentifier arg0) {
 		
 		CtxAttribute toRefine = null;
 		//TODO retrieve CtxAttribute to modify from its identifier
 		
 		DAG rule = null;
 		
-		bayesianInference.eval(toRefine, rule);
+		return (bayesianInference.eval(toRefine, rule)).iterator().next();
+		
+		
 
+	}
+
+
+	/* (non-Javadoc)
+	 * @see org.societies.context.api.user.refinement.IUserCtxRefiner#getInferableTypes()
+	 */
+	@Override
+	public List<String> getInferableTypes() {
+		// TODO Auto-generated method stub
+		return new ArrayList<String>();
+	}
+	
+	
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.societies.context.api.user.refinement.IUserCtxRefiner#inferContextContinuously
+	 * (org.societies.api.context.model.CtxAttributeIdentifier, double)
+	 */
+	public void inferContextContinuously(CtxAttributeIdentifier id, double updateFreq){
+		//TODO
 	}
 
 }

@@ -27,8 +27,7 @@
 	<parent>
 		<groupId>org.societies</groupId>
 		<artifactId>spring-osgi-parent</artifactId>
-		<relativePath>../../../parent/spring-osgi.xml</relativePath>
-		<version>0.1</version>
+		<version>RELEASE</version>
 	</parent>
 
 	<dependencies>
@@ -56,7 +55,7 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.1</version>
-			<scope>provided</scope>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.simpleframework</groupId>
@@ -71,7 +70,6 @@
 		    <scope>compile</scope>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<plugins>
 			<plugin>
@@ -89,9 +87,9 @@
 							*
 						</_exportcontents>
 						<Import-Package>
-    						!javax.microedition.io,*
+    						<!--!javax.microedition.io,-->*
     					</Import-Package>
-						<Embed-Dependency>*</Embed-Dependency>
+						<Embed-Dependency>*;scope=compile|runtime</Embed-Dependency>
 						<!-- ;scope=compile|runtime -->
 						<Embed-Transitive>true</Embed-Transitive>
 					</instructions>

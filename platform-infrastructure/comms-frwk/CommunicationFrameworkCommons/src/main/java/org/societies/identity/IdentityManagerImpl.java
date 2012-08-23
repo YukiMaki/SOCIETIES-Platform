@@ -19,26 +19,32 @@ public class IdentityManagerImpl implements IIdentityManager {
 	private static Logger LOG = LoggerFactory
 			.getLogger(IdentityManagerImpl.class);
 	
-	private final INetworkNode thisNode;
-	private final INetworkNode domainAuthorityNode;
-	private final Set<IIdentity> publicIdentities;
-	private final IIdentityContextMapper ctxMapper;
+	private INetworkNode thisNode;
+	private INetworkNode cloudNode;
+	private INetworkNode domainAuthorityNode;
+	private Set<IIdentity> publicIdentities;
+	private IIdentityContextMapper ctxMapper;
 	// TODO cache known identities
 	
 	public IdentityManagerImpl(String thisNode) throws InvalidFormatException {
-		this.thisNode = fromFullJid(thisNode);
+		init(thisNode);
 		this.domainAuthorityNode = null;
+	}
+	
+	private void init(String thisNode) throws InvalidFormatException {
+		this.thisNode = fromFullJid(thisNode);
+		if (this.thisNode.getType().equals(IdentityType.CSS_RICH))
+			cloudNode = this.thisNode;
+		else
+			cloudNode = fromFullJid(this.thisNode.getIdentifier()+"."+this.thisNode.getDomain());
 		publicIdentities = new HashSet<IIdentity>();
 		publicIdentities.add(this.thisNode); // TODO pseudonyms
 		ctxMapper = new IdentityContextMapperImpl();
 	}
-	
+
 	public IdentityManagerImpl(String thisNode, String domainAuthortyNode) throws InvalidFormatException {
-		this.thisNode = fromFullJid(thisNode);
+		init(thisNode);
 		this.domainAuthorityNode = fromFullJid(domainAuthortyNode);
-		publicIdentities = new HashSet<IIdentity>();
-		publicIdentities.add(this.thisNode); // TODO pseudonyms
-		ctxMapper = new IdentityContextMapperImpl();
 	}
 	
 	
@@ -58,8 +64,9 @@ public class IdentityManagerImpl implements IIdentityManager {
 //				String[] richParts = jid.split("\\."); // TODO regexp
 //				LOG.info("JID="+jid+";richParts.length="+richParts.length);
 				int firstDotIndex = jid.indexOf(".");
-				String domain = jid.substring(firstDotIndex+1);
-				if (checkDomainNameFormat(domain)) {
+				if (firstDotIndex>0) {
+					String domain = jid.substring(firstDotIndex+1);
+//				if (checkDomainNameFormat(domain)) {
 					String identifier = jid.substring(0,firstDotIndex);
 					if (identifier.startsWith(CIS_PREFIX))
 						return new NetworkNodeImpl(IdentityType.CIS, identifier, domain, "cis");
@@ -88,6 +95,10 @@ public class IdentityManagerImpl implements IIdentityManager {
 
 	public INetworkNode getThisNetworkNode() {
 		return thisNode; // TODO clone?
+	}
+	
+	public INetworkNode getCloudNode() {
+		return cloudNode; // TODO clone?
 	}
 
 	public INetworkNode getDomainAuthorityNode() {
@@ -122,4 +133,6 @@ public class IdentityManagerImpl implements IIdentityManager {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	
 }

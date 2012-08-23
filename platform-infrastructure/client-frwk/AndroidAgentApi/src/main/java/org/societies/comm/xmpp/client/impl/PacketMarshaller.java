@@ -18,12 +18,14 @@ import org.jivesoftware.smack.packet.PacketExtension;
 import org.jivesoftware.smack.provider.ProviderManager;
 import org.jivesoftware.smack.util.PacketParserUtils;
 import org.simpleframework.xml.Serializer;
-import org.simpleframework.xml.convert.AnnotationStrategy;
+import org.simpleframework.xml.convert.Registry;
+import org.simpleframework.xml.convert.RegistryStrategy;
 import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.strategy.Strategy;
 import org.societies.api.comm.xmpp.datatypes.Stanza;
 import org.societies.comm.android.ipc.utils.MarshallUtils;
 import org.societies.impl.RawXmlProvider;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -37,9 +39,33 @@ import android.util.Log;
 
 public class PacketMarshaller {	
 	
+	private static final String LOG_TAG = PacketMarshaller.class.getName();
 	private final Map<String, String> nsToPackage = new HashMap<String, String>();
+	private Serializer s;
+	
+	public PacketMarshaller() {
+		Registry registry = new Registry();
+		Strategy strategy = new RegistryStrategy(registry);
+		try {
+			Element exampleElementImpl = DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument().createElement("dummy");
+			registry.bind(exampleElementImpl.getClass(), ElementConverter.class);
+		} catch (DOMException e) {
+			Log.e(LOG_TAG, "DOMException trying to get runtime ElementImpl");
+		} catch (ParserConfigurationException e) {
+			Log.e(LOG_TAG, "ParserConfigurationException trying to get runtime ElementImpl");
+		} catch (Exception e) {
+			Log.e(LOG_TAG, "Exception trying to register runtime ElementImpl in SimpleXML");
+		}
+		
+		s = new Persister(strategy);
+	}
 	
 	public void register(List<String> elementNames, List<String> namespaces, List<String> packages) {
+		Log.d(LOG_TAG, "register");
+		for (String element : elementNames) {
+			Log.d(LOG_TAG, "register element: " + element);
+		}
+		
 		try {
 			//TODO: SIMPLE XML
 			for (int i=0; i<packages.size(); i++) {
@@ -58,6 +84,8 @@ public class PacketMarshaller {
 	}
 	
 	public String marshallMessage(Stanza stanza, Message.Type type, Object payload) throws Exception {
+		Log.d(LOG_TAG, "marshallMessage type: " + type.name() + "stanza from : " + stanza.getFrom() + " to: " + stanza.getTo());
+		
 		final String xml = marshallPayload(payload);
 		Message message = new Message();
 		if(stanza.getId() != null)
@@ -82,6 +110,7 @@ public class PacketMarshaller {
 	}
 	
 	public String marshallIQ(Stanza stanza, IQ.Type type, Object payload) throws Exception {				
+		Log.d(LOG_TAG, "marshallIQ type: " + type + "stanza from : " + stanza.getFrom() + " to: " + stanza.getTo());
 		final String xml = marshallPayload(payload);
 		IQ iq = new IQ() {
 			@Override
@@ -99,14 +128,19 @@ public class PacketMarshaller {
 	}
 	
 	public IQ unmarshallIq(String xml) throws Exception {
+		Log.d(LOG_TAG, "unmarshallIq xml: " + xml);
+		
 		return parseIq(createXmlPullParser(xml));
 	}
 	
 	public Message unmarshallMessage(String xml) throws Exception {			
+		Log.d(LOG_TAG, "unmarshallMessage + xml: " + xml);
+		
 	    return (Message)PacketParserUtils.parseMessage(createXmlPullParser(xml));
 	}
 	
 	public Object unmarshallPayload(Packet packet) throws Exception {
+		Log.d(LOG_TAG, "unmarshallPayload packet: " + packet.getPacketID());
 		Element element = getElementAny(packet);
 		
 		if(element == null) // Empty stanza
@@ -122,15 +156,13 @@ public class PacketMarshaller {
 		Log.d(PacketMarshaller.class.getName(), "Trying to unmarshall: " + packageStr + "." + beanName);
 		Class<?> c = Class.forName(packageStr + "." + beanName);
 		
-		//GET SIMPLE SERIALISER 
-		Strategy strategy = new AnnotationStrategy();
-		Serializer s = new Persister(strategy);
 		Object payload = s.read(c, xml);
 		
 		return payload;
 	}
 	
 	public Entry<String, List<String>> parseItemsResult(Packet packet) throws SAXException, IOException, ParserConfigurationException {
+		Log.d(LOG_TAG, "Entry");
 		Element element = getElementAny(packet);
 		final String node = element.getAttribute("node");
 		final List<String> list = new ArrayList<String>();
@@ -157,11 +189,9 @@ public class PacketMarshaller {
 	}
 	
 	private String marshallPayload(Object payload) {
+		Log.d(LOG_TAG, "marshallPayload payload: " + payload.getClass().getName());
 		ByteArrayOutputStream os = new ByteArrayOutputStream();
 		
-		//GET SIMPLE SERIALISER 
-		Strategy strategy = new AnnotationStrategy();
-		Serializer s = new Persister(strategy);
 		try {
 			s.write(payload, os);
 		} catch (Exception e) {
@@ -174,6 +204,8 @@ public class PacketMarshaller {
 	/** Get the element with the payload out of the XMPP packet. 
 	 * @throws ParserConfigurationException */
 	private Element getElementAny(Packet packet) throws SAXException, IOException, ParserConfigurationException {
+		Log.d(LOG_TAG, "getElementAny packet: " + packet.getPacketID());
+		
 		if (packet instanceof IQ) {
 			// According to the schema in RCF6121 IQs only have one
 			// element, unless they have an error
@@ -208,6 +240,8 @@ public class PacketMarshaller {
 	}
 	
 	private XmlPullParser createXmlPullParser(String xml) throws XmlPullParserException, IOException {
+		Log.d(LOG_TAG, "createXmlPullParser xml: " + xml);
+		
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 	    factory.setNamespaceAware(true);
 	    XmlPullParser parser = factory.newPullParser();
@@ -217,6 +251,7 @@ public class PacketMarshaller {
 	}
 	
 	private IQ parseIq(XmlPullParser parser) throws Exception {
+		Log.d(LOG_TAG, "parseIq");
 		IQ iqPacket = null;
 		String id = parser.getAttributeValue("", "id");
 		String to = parser.getAttributeValue("", "to");
