@@ -142,7 +142,9 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
      * @return
      */
     public boolean isConnected(){
-	return false;
+    	
+    	return commMgr.isConnected();
+	
     }
     /**
      * When CommunicationAdapter is created it does not go online automatically
