@@ -35,10 +35,18 @@ import org.societies.api.comm.xmpp.datatypes.XMPPInfo;
 import org.societies.api.comm.xmpp.exceptions.XMPPError;
 import org.societies.api.comm.xmpp.interfaces.ICommCallback;
 import org.societies.api.identity.IIdentity;
+import org.societies.api.schema.cis.community.Community;
 import org.societies.api.schema.cis.manager.CommunityManager;
 import org.societies.api.schema.cis.manager.ListCrit;
 import org.societies.api.schema.cis.manager.ListResponse;
 import org.societies.comm.xmpp.client.impl.ClientCommunicationMgr;
+
+import org.societies.api.identity.IIdentity;
+import org.societies.api.identity.INetworkNode;
+import org.societies.api.identity.InvalidFormatException;
+import org.societies.identity.IdentityManagerImpl;
+
+import org.societies.android.api.internal.cismanager.AndroidCISRecord;
 
 import android.app.Service;
 import android.content.ContentValues;
@@ -62,7 +70,7 @@ import android.util.Log;
  * @author Babak.Farshchian@sintef.no
  *
  */
-public class CommunicationAdapter extends Service implements ISocialAdapter{
+public class CommunicationAdapter extends Service{//implements ISocialAdapter{
 
 	//COMMS REQUIRED VARIABLES
 	private static final List<String> ELEMENT_NAMES = Arrays.asList("communityManager", "listResponse");
@@ -75,6 +83,24 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
     private ClientCommunicationMgr commMgr;
     private IBinder binder = null;
     private static final String LOG_TAG = CommunicationAdapter.class.getName();
+    
+    private IIdentity toXCManager = null;
+    private String commsDestination = DEFAULT_DESTINATION;
+    //default destination of communication
+    private static final String DEFAULT_DESTINATION = "xcmanager.societies.local";
+    
+	/**
+	 * CIS Manager intents
+	 */
+	//Intents corresponding to return values of methods
+	public static final String INTENT_RETURN_LIST_CIS = "org.societies.android.platform.cismanager.ReturnListOfCISs";
+	public static final String INTENT_RETURN_CREATE_CIS = "org.societies.android.platform.cismanager.ReturnCreateCIS";
+
+	public static final String INTENT_CREATE_CIS = "org.societies.android.platform.cismanager.CREATE_CIS";
+	public static final String INTENT_LIST_CIS = "org.societies.android.platform.cismanager.LIST_CIS";
+
+
+    
     
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Android Service methods >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     @Override
@@ -110,21 +136,31 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
 	//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ISocialAdapter Methods >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	
 	/* @see org.societies.android.platform.ISocialAdapter#getListOfOwnedCis(org.societies.android.platform.ISocialAdapterCallback)*/
-	public void getListOfOwnedCis(ISocialAdapterCallback callback) {
-		Log.d(LOG_TAG, "getListOfOwnedCis called");
+	public void getListOfOwnedCis(String requestor) {
 		
-		//MESSAGE BEAN
+		//Get the Cloud destination
+		INetworkNode cloudNode = this.commMgr.getIdManager().getCloudNode();
+		this.commsDestination = cloudNode.getJid();
+		Log.d(LOG_TAG, "Cloud Node: " + this.commsDestination);
+    	try {
+			toXCManager = IdentityManagerImpl.staticfromJid(this.commsDestination);
+			Log.d(LOG_TAG, "toXCManager: " + toXCManager);
+			
+		} catch (InvalidFormatException e) {
+			Log.e(LOG_TAG, "Unable to get CIS MGMT Node identity", e);
+			throw new RuntimeException(e);
+		}     
+		
+
 		CommunityManager messageBean = new CommunityManager();
 		org.societies.api.schema.cis.manager.List listCISs = new org.societies.api.schema.cis.manager.List();
 		listCISs.setListCriteria(ListCrit.OWNED);
 		messageBean.setList(listCISs);
 		
-		//COMMS STUFF
-		IIdentity toID = commMgr.getIdManager().getCloudNode();
-		Stanza stanza = new Stanza(toID);
+		Stanza stanza = new Stanza(toXCManager);
 		
 		//MANAGE THE CALLBACKS
-		ICommCallback commCallback = new CommunityCallback(stanza.getId(), callback);
+		ICommCallback commCallback = new CommunityCallback(stanza.getId(), requestor);
         try {
         	Log.d(LOG_TAG, "Sending stanza");
         	commMgr.register(ELEMENT_NAMES, commCallback);
@@ -132,6 +168,8 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
 		} catch (Exception e) {
 			Log.e(this.getClass().getName(), "ERROR sending message: " + e.getMessage());
         }
+			
+        return;
 	}
 
 	
@@ -213,29 +251,13 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
 	 */
 	private class CommunityCallback implements ICommCallback {
 		
-		//MAP TO STORE THE ALL THE CLIENT CALLBACKS
-		private final Map<String, ISocialAdapterCallback> clientCallbacks = new HashMap<String, ISocialAdapterCallback>();
-
-		/** Constructor for callback
-		 * @param clientID unique ID of send request to comms framework
-		 * @param clientCallback callback from originating client
-		 */
-		public CommunityCallback(String clientID, ISocialAdapterCallback clientCallback) {
-			//STORE THIS CALLBACK FOR THIS CLIENT ID
-			clientCallbacks.put(clientID, clientCallback);
+		String returnIntent;
+		String client;
+		
+		public CommunityCallback(String client, String returnIntent) {
+			this.client = client;
+			this.returnIntent = returnIntent;
 		}
-
-		/**Returns the correct ISocialAdapterCallback client for this request 
-		 * @param requestID the id of the initiating request
-		 * @return
-		 * @throws UnavailableException
-		 */
-		private ISocialAdapterCallback getRequestingClient(String requestID) {
-			ISocialAdapterCallback requestingClient = (ISocialAdapterCallback) clientCallbacks.get(requestID);
-			clientCallbacks.remove(requestID);
-			return requestingClient;
-		}
-
 		public List<String> getXMLNamespaces() {
 			return NAME_SPACES;
 		}
@@ -248,13 +270,44 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
 			Log.d(LOG_TAG, "Callback receiveResult of type: " + msgBean.getClass().getName());
 	
 			// --------- COMMUNITY MANAGEMENT ListResponse BEAN ---------
-			if (msgBean instanceof ListResponse) {
-				Log.d(LOG_TAG, "ListResponse Result!");
+			if (msgBean instanceof CommunityManager) {
+				Log.d(LOG_TAG, "Com Manager result!");
 				
-				ListResponse communityResult = (ListResponse) msgBean; 
-				//GET CORRECT CLIENT'S ISocialAdapterCallback FOR THIS REQUEST
-				ISocialAdapterCallback clientCallback = getRequestingClient(returnStanza.getId());
-				clientCallback.receiveResult(communityResult.getCommunity());	
+				CommunityManager c = (CommunityManager) msgBean;
+
+				
+				// LIST RESPONSE
+				if (c.getCreate() != null){
+					Log.d(LOG_TAG, "create response!");				
+					
+				} 
+
+				
+				// CREATE RESPONSE
+				if (c.getListResponse() != null){
+					Log.d(LOG_TAG, "list response!");
+					
+					Intent intent = new Intent(returnIntent);
+					AndroidCISRecord aRecord = null;
+
+					if(c.getListResponse().getCommunity() != null && c.getListResponse().getCommunity().size() >0 ){
+						Log.d(LOG_TAG, "list is not empty!");
+						// TODO change to return several
+						org.societies.api.schema.cis.community.Community com = c.getListResponse().getCommunity().get(0);
+						aRecord = AndroidCISRecord.convertCisRecord(com);
+					}else{
+						Log.d(LOG_TAG, "list is empty!");
+					}
+					intent.putExtra(INTENT_RETURN_LIST_CIS, (Parcelable) aRecord);
+					intent.setPackage(client);
+
+					Log.d(LOG_TAG, "Callback receiveResult sent return value: ");
+
+					CommunicationAdapter.this.sendBroadcast(intent);
+										
+					
+				} 
+			
 			}
 			// --------- ACTIVITY BEAN ---------
 			//else if (msgBean instanceof ActivityBean)) {
@@ -278,4 +331,6 @@ public class CommunicationAdapter extends Service implements ISocialAdapter{
 			Log.d(LOG_TAG, "Callback receiveMessage");	
 		}
 	}//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> END COMMS CALLBACK >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+	
+	
 }

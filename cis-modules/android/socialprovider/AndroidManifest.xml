@@ -6,6 +6,16 @@
 
 <uses-sdk android:targetSdkVersion="8" android:minSdkVersion="8"/>
 
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.READ_CONTACTS" />
+	<uses-permission android:name="android.permission.WRITE_CONTACTS" />
+	<uses-permission android:name="android.permission.GET_ACCOUNTS" />
+	<uses-permission android:name="android.permission.MANAGE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
+	<uses-permission android:name="android.permission.READ_SYNC_SETTINGS" />
+	<uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
 <permission
     android:name="org.societies.android.SocialProvider.READ"
     android:label="@string/provider_read_permission"
@@ -19,6 +29,8 @@
     android:protectionLevel="dangerous"
     android:description="@string/provider_write_permission_desc">
 </permission>
+
+
     
 <application
 	android:debuggable="true"
