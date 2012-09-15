@@ -2,17 +2,91 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:tx="http://www.springframework.org/schema/tx"
   xsi:schemaLocation="http://www.springframework.org/schema/osgi 
     http://www.springframework.org/schema/osgi/spring-osgi-1.2.xsd
     http://www.springframework.org/schema/beans 
     http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/context 
-    http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-
+    http://www.springframework.org/schema/context/spring-context-2.5.xsd
+    http://www.springframework.org/schema/jdbc 
+    http://www.springframework.org/schema/jdbc/spring-jdbc-3.0.xsd
+    http://www.springframework.org/schema/tx 
+    http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+    
   <!-- regular spring configuration file defining the beans for this
        bundle. The configuration of OSGi definitions is kept in a separate 
        configuration file so that this file can easily be used
        for integration testing outside of an OSGi environment -->
        
 	<context:component-scan base-package="org.societies.context"></context:component-scan>
+	
+	<bean 
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="ignoreResourceNotFound" value="true"></property>
+		<property name="locations">
+			<list>
+			<!-- 	<value>classpath:META-INF/spring/mysql_database.properties</value>--> 
+			 	<value>file:${CONFIG_DIR}\org.societies.platform.properties</value> 
+			</list>
+		</property>	
+	</bean>
+
+	<!-- <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		init-method="createDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.driverClassName}" />
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialSize" value="2" />
+		<property name="maxActive" value="5" />
+	</bean>  -->
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+
+		<property name="annotatedClasses">
+			<list>
+				<value>org.societies.context.user.db.impl.model.UserCtxEntityDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserCtxAttributeDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserCtxAssociationDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserCtxHistoricAttributeDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserCtxModelOjectNumberDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserCtxQualityDAO</value>
+			</list>
+		</property>
+
+		<property name="annotatedPackages">
+			<list>
+				<value>org.societies.context.user.db.impl.model</value>
+			</list>
+		</property>
+
+		<property name="hibernateProperties">
+			<props>
+				<!-- <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">create-drop</prop>
+				<prop key="hibernate.jdbc.batch_size">0</prop> -->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<prop key="hibernate.format_sql">true</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- enable the configuration of transactional behavior based on annotations -->
+	<tx:annotation-driven transaction-manager="transactionManager" />
+
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+<!-- 	<bean id="userCtxDBMgr"
+		class="org.societies.context.user.db.impl.UserCtxDBMgr">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	 -->
 </beans>

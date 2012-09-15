@@ -61,7 +61,7 @@
 		</osgi:interfaces>
 	</osgi:service>
 
-	<!-- user history db -->
+	<!-- community history db -->
 	<osgi:service ref="userContextHistoryManagement">
 		<osgi:interfaces>
 			<value>org.societies.context.api.user.history.IUserCtxHistoryMgr</value>
@@ -104,7 +104,8 @@
 	<osgi:reference id="privacyLogAppender"
 		interface="org.societies.api.internal.privacytrust.privacyprotection.model.privacyassessment.IPrivacyLogAppender"
 		cardinality="0..1" timeout="100" />
-
+	<osgi:reference id="dataSource" 
+	    interface="javax.sql.DataSource" />
 
 	<!-- event mgr -->
 	<osgi:reference id="eventAdmin" interface="org.osgi.service.event.EventAdmin"
