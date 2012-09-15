@@ -106,7 +106,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	
 	// TODO Remove and instantiate privateId properly so that privateId.toString() can be used instead
 	private final String privateIdtoString = "myFooIIdentity@societies.local";
-	
+
+	@Autowired(required=true)
 	UserCtxDBMgr (ICommManager commMgr) {
 
 		LOG.info(this.getClass() + " instantiated");
@@ -120,7 +121,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	/*
 	 * Used for JUnit testing only
 	 */
-	@Autowired(required=true)
 	public UserCtxDBMgr() {
 		
 		LOG.info(this.getClass() + " instantiated - fooId");
