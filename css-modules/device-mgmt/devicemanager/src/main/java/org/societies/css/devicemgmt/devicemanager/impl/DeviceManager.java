@@ -59,7 +59,7 @@ public class DeviceManager implements IDeviceManager, BundleContextAware{
 
 	private Map<String, DeviceImpl> deviceInstanceContainer;
 	
-	private final Map<String, Map<String, DeviceImpl>> deviceFamilyContainer; 
+	public static Map<String, Map<String, DeviceImpl>> deviceFamilyContainer; 
 	
 	private final Map<String, ServiceRegistration> serviceRegistrationConatainer; 
 	
@@ -375,8 +375,17 @@ public class DeviceManager implements IDeviceManager, BundleContextAware{
 
 		return null;
 	}
-
-
+	
+	
+//	public DeviceImpl getDeviceImplementation (String deviceFamily, String deviceId)
+//	{
+//		
+//		if (null != deviceFamilyContainer.get(deviceFamily).get(deviceId)) {
+//			
+//			return deviceFamilyContainer.get(deviceFamily).get(deviceId);
+//		}
+//		return null;
+//	}
 }
 
 

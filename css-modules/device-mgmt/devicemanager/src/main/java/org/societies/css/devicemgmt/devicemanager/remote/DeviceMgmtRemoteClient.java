@@ -22,28 +22,26 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+package org.societies.css.devicemgmt.devicemanager.remote;
 
 /**
- * Describe your class here...
  *
- * @author aleckey
+ * @author Rafik
  *
  */
-package org.societies.css.devicemanager.schema;
+public class DeviceMgmtRemoteClient implements IDeviceMgmtRemote{
 
 
-public class RemoteDeviceBeanResult {
-
-	private DeviceDescription deviceDescriptionResult;
-
-
-	public DeviceDescription getDeviceDescriptionResult() {
-		return deviceDescriptionResult;
+	@Override
+	public String getDeviceDescription(String deviceId) {
+		return null;
 	}
 
-	public void setDeviceDescriptionResult(DeviceDescription deviceDescriptionResult) {
-		this.deviceDescriptionResult = deviceDescriptionResult;
+
+	@Override
+	public String invokeAction(String deviceId, String driverServiceName,
+			String actionName, String actionJsonParameters) {
+		return null;
 	}
 
-	
 }

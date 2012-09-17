@@ -33,6 +33,14 @@
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>jaxb2-maven-plugin</artifactId>
 				<version>1.3.1</version>
+				<executions>
+            <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>schemagen</goal>
+                </goals>
+            </execution>
+        </executions>
 				<configuration>
 					<includes>
 					<include>**/*.java</include>
@@ -61,6 +69,34 @@
 					</instructions>
 				</configuration>
 			</plugin>
+			<plugin>
+        <groupId>org.societies.maven</groupId>
+        <artifactId>societies-xmpp-maven-plugin</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <executions>
+            <execution>
+                <phase>generate-sources</phase>
+                <goals>
+                    <goal>xsd</goal>
+                </goals>
+            </execution>
+        </executions>
+        <configuration>
+            <!-- List of Beans to refactor. This parameter is optional. By default, complexType with "Bean" 
+            or "BeanResult" in their name or refactored. -->
+            <!-- <beans>
+                <bean>ServiceAMsgBean</bean>
+                <bean>ServiceAMsgBeanResult</bean>
+            </beans> -->
+            <!-- Namespace define in the CommClient and CommServer of the beans -->
+            <packageName>org.societies.api.schema.css.devicemgmt.devicecontrol</packageName>
+            <httpNamespace>http://societies.org/api/schema/css/devicemgmt/devicecontrol</httpNamespace>
+            <!-- Output and input directories -->
+            <!-- <folderInputDirectory>${project.build.directory}/generated-resources/schemagen</folderInputDirectory> -->
+            <!-- <file>schema1.xsd</file> -->
+            <!-- <folderOutputDirectory>${project.basedir}/src/main/resources/</folderOutputDirectory> -->
+        </configuration>
+    </plugin>
 		</plugins>
 	</build>
 </project>

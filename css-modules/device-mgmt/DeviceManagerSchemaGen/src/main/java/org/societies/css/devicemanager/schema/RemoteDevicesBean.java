@@ -31,37 +31,18 @@
  */
 package org.societies.css.devicemanager.schema;
 
-/*
-  Based on the below interface, the task is to generate a Bean that will allow you to
-  query which method was called and what parameters were passed. Do not add the return type here.
-  This is added in the Result bean.
- 
-  public interface ICalc 
-  {
-      public int Add(int a, int b);
-      public int Subtract(int a, int b);
-  }
-   
-generate XSD, run the maven command:
-> mvn jaxb2:schemagen
-
-The schema.xsd file will be in /target/generated-resources/schemagen directory
-
- */
 
 public class RemoteDevicesBean {
 	
 	public enum methodType {getDeviceDescription, invokeAction};
 	private methodType method;
-	private String nodeId;
+	private String deviceFamily;
 	private String deviceId;
+	private String driverServiceName;
+	private String actionName;
+	private String actionJsonParameters;
 	
-	public String getNodeId() {
-		return nodeId;
-	}
-	public void setNodeId(String nodeId) {
-		this.nodeId = nodeId;
-	}
+	
 
 	public String getDeviceId() {
 		return deviceId;
@@ -77,4 +58,63 @@ public class RemoteDevicesBean {
 	public void setMethod(methodType method) {
 		this.method = method;
 	}
+	
+	/**
+	 * @return the driverServiceName
+	 */
+	public String getDriverServiceName() {
+		return driverServiceName;
+	}
+	
+	/**
+	 * @param driverServiceName the driverServiceName to set
+	 */
+	public void setDriverServiceName(String driverServiceName) {
+		this.driverServiceName = driverServiceName;
+	}
+	
+	/**
+	 * @return the actionName
+	 */
+	public String getActionName() {
+		return actionName;
+	}
+	
+	/**
+	 * @param actionName the actionName to set
+	 */
+	public void setActionName(String actionName) {
+		this.actionName = actionName;
+	}
+	
+	/**
+	 * @return the actionJsonParameters
+	 */
+	public String getActionJsonParameters() {
+		return actionJsonParameters;
+	}
+	
+	/**
+	 * @param actionJsonParameters the actionJsonParameters to set
+	 */
+	public void setActionJsonParameters(String actionJsonParameters) {
+		this.actionJsonParameters = actionJsonParameters;
+	}
+	
+	/**
+	 * @return the deviceFamily
+	 */
+	public String getDeviceFamily() {
+		return deviceFamily;
+	}
+	
+	/**
+	 * @param deviceFamily the deviceFamily to set
+	 */
+	public void setDeviceFamily(String deviceFamily) {
+		this.deviceFamily = deviceFamily;
+	}
+
+
+	
 }

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" elementFormDefault="qualified"
+	targetNamespace="http://societies.org/api/schema/css/devicemgmt/devicecontrol"
+	xmlns:tns="http://societies.org/api/schema/css/devicemgmt/devicecontrol"
+	
+	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="remoteDeviceBeanResult">
+	<xs:complexType>
+    <xs:sequence>
+      <xs:element name="deviceDescriptionResult" type="tns:deviceDescription" minOccurs="0"/>
+    </xs:sequence>
+  	</xs:complexType>
+	</xs:element>
+
+  <xs:complexType name="deviceDescription">
+    <xs:sequence>
+      <xs:element name="deviceActions" type="tns:deviceAction" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="deviceStateVariables" type="tns:deviceStateVariable" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="driverServices" type="tns:driverService" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deviceAction">
+    <xs:sequence>
+      <xs:element name="actionDescription" type="xs:string" minOccurs="0"/>
+      <xs:element name="actionName" type="xs:string" minOccurs="0"/>
+      <xs:element name="inputArgumentsNames" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="outputArgumentsName" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="deviceStateVariable">
+    <xs:sequence>
+      <xs:element name="actionName" type="xs:string" minOccurs="0"/>
+      <xs:element name="allowedValues" type="xs:string" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element name="dataJavaType" type="xs:string" minOccurs="0"/>
+      <xs:element name="defaultValue" type="xs:string" minOccurs="0"/>
+      <xs:element name="description" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceMgmtDataType" type="xs:string" minOccurs="0"/>
+      <xs:element name="enventable" type="xs:boolean"/>
+      <xs:element name="maximumValue" type="tns:number" minOccurs="0"/>
+      <xs:element name="minimumValue" type="tns:number" minOccurs="0"/>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+      <xs:element name="step" type="tns:number" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="number" abstract="true">
+    <xs:sequence/>
+  </xs:complexType>
+
+  <xs:complexType name="driverService">
+    <xs:sequence>
+      <xs:element name="name" type="xs:string" minOccurs="0"/>
+      <xs:element name="serviceDescription" type="xs:string" minOccurs="0"/>
+      <xs:element name="serviceName" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="remoteDevicesBean">
+	<xs:complexType>
+    <xs:sequence>
+      <xs:element name="actionJsonParameters" type="xs:string" minOccurs="0"/>
+      <xs:element name="actionName" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceFamily" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceId" type="xs:string" minOccurs="0"/>
+      <xs:element name="driverServiceName" type="xs:string" minOccurs="0"/>
+      <xs:element name="method" type="tns:methodType" minOccurs="0"/>
+    </xs:sequence>
+  	</xs:complexType>
+	</xs:element>
+
+  <xs:simpleType name="methodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="getDeviceDescription"/>
+      <xs:enumeration value="invokeAction"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+

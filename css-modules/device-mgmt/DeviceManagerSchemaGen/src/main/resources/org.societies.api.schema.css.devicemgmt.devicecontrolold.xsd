@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema  elementFormDefault="qualified" version="1.0"
+			targetNamespace="http://societies.org/api/schema/css/devicemgmt.devicecontrol" 
+			xmlns:tns="http://societies.org/api/schema/css/devicemgmt.devicecontrol" 
+			xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+
+
+
+
+<xs:element name="remoteDeviceBeanResult">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="result" type="xs:string" minOccurs="0"/>
+      <xs:element name="text" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+<xs:element name="remoteDevicesBean">
+  <xs:complexType>
+    <xs:sequence>
+      <xs:element name="actionJsonParameters" type="xs:string" minOccurs="0"/>
+      <xs:element name="actionName" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceFamily" type="xs:string" minOccurs="0"/>
+      <xs:element name="deviceId" type="xs:string" minOccurs="0"/>
+      <xs:element name="driverServiceName" type="xs:string" minOccurs="0"/>
+      <xs:element name="method" type="tns:methodType" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:element>
+
+  <xs:simpleType name="methodType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="getDeviceDescription"/>
+      <xs:enumeration value="invokeAction"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>
+
