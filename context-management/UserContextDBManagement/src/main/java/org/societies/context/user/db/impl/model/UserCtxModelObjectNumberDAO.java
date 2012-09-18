@@ -65,6 +65,7 @@ public class UserCtxModelObjectNumberDAO implements Serializable {
 	}
 
 	@Id
+//	@GeneratedValue(generator="hilo")
 	@Column(name="next_value")
 	public long getNextValue() {
 		return nextValue;

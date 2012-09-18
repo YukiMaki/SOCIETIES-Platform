@@ -161,9 +161,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		Transaction t = session.beginTransaction();
 
 		try{
-			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-			objectNumber.setNextValue(modelObjectNumber);
-			session.save(objectNumber);
+//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+//			objectNumber.setNextValue(modelObjectNumber);
+//			session.save(objectNumber);
 			Date date = new Date();
 			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
 
@@ -241,9 +241,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		entity.addAttribute(attribute);
 		
 		try{
-			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-			objectNumber.setNextValue(modelObjectNumber);
-			session.save(objectNumber);
+//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+//			objectNumber.setNextValue(modelObjectNumber);
+//			session.save(objectNumber);
 			
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
 			entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, scope);
@@ -323,9 +323,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 		try{
 
-			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-			objectNumber.setNextValue(modelObjectNumber);
-			session.save(objectNumber);
+//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+//			objectNumber.setNextValue(modelObjectNumber);
+//			session.save(objectNumber);
 	
 			Date date = new Date();
 
@@ -395,9 +395,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		this.modelObjects.put(entity.getId(), entity);
 
 		try{
-			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-			objectNumber.setNextValue(modelObjectNumber);
-			session.save(objectNumber);
+//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+//			objectNumber.setNextValue(modelObjectNumber);
+//			session.save(objectNumber);
 			
 			Date date = new Date();
 
