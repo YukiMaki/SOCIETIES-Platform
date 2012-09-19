@@ -173,6 +173,7 @@ public class InternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 * @throws InvalidFormatException 
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveIndividualEntity() throws Exception {
 
@@ -193,6 +194,7 @@ public class InternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 * @throws InvalidFormatException 
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveCssNode() throws Exception {
 
@@ -219,6 +221,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testCreateAttributeByCtxEntityIdentifierString() throws CtxException, InterruptedException, ExecutionException {
 
@@ -278,6 +281,7 @@ public class InternalCtxBrokerTest {
 		//System.out.println(" commListResults size :"+commListResults.size());
 	}
 	
+	@Ignore
 	@Test
 	public void testRetrieveCommunityCtxAttr() throws CtxException, InterruptedException, ExecutionException {
 		
@@ -314,6 +318,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testCreateEntityByString() throws CtxException, InterruptedException, ExecutionException {
 
@@ -333,6 +338,7 @@ public class InternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 */
 	
+	@Ignore
 	@Test
 	public void testCreateCommunityEntityByString() throws CtxException, InterruptedException, ExecutionException {
 
@@ -350,6 +356,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testCreateIndividualEntity() throws CtxException, InterruptedException, ExecutionException {
 
@@ -366,6 +373,7 @@ public class InternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testCreateAssociationString() {
 		try {
@@ -390,6 +398,7 @@ public class InternalCtxBrokerTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void testStoreRetrieveServiceParameters2() {
 
@@ -450,6 +459,7 @@ public class InternalCtxBrokerTest {
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
 	
+	@Ignore
 	@Test
 	public void testStoreRetrieveServiceParameters() {
 
@@ -540,6 +550,7 @@ public class InternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveEntitiesAssociationString() {
 		try {
@@ -710,6 +721,7 @@ public class InternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#lookup(org.societies.api.context.model.CtxModelType)}.
 	 */
+	@Ignore
 	@Test
 	public void testLookupCtxModelTypeString() {
 
@@ -758,6 +770,7 @@ public class InternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#lookup(org.societies.api.context.model.CtxEntityIdentfier,org.societies.api.context.model.CtxModelType,java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testLookupByCtxEntityIdentfierCtxModelTypeString() throws Exception {
 
@@ -859,6 +872,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testRemoveCtxIdentifier() throws CtxException, InterruptedException, ExecutionException {
 		
@@ -887,6 +901,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveCtxIdentifier() throws CtxException, InterruptedException, ExecutionException {
 		
@@ -930,6 +945,7 @@ public class InternalCtxBrokerTest {
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createHistoryAttribute(CtxAttributeIdentifier attID, Date date, Serializable value, CtxAttributeValueType valueType)}.
 	 */
 
+	@Ignore
 	@Test
 	public void testCreateHistoryAttribute() {
 
@@ -993,6 +1009,7 @@ public class InternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#retrievePast(org.societies.api.context.model.CtxAttributeIdentifier, java.util.Date, java.util.Date)}.
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveHistoryCtxAttributeIdentifierDateDate() {
 
@@ -1094,6 +1111,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testUpdateByCtxEntity() throws CtxException, InterruptedException, ExecutionException {
 		
@@ -1129,6 +1147,7 @@ public class InternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testUpdateByCtxAttribute() throws IOException, ClassNotFoundException, CtxException, InterruptedException, ExecutionException {
 
@@ -1183,6 +1202,7 @@ public class InternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 * @throws CtxException 
 	 */
+	@Ignore
 	@Test
 	public void testUpdateByCtxAssociation() throws InterruptedException, ExecutionException, CtxException {
 		
@@ -1221,6 +1241,7 @@ public class InternalCtxBrokerTest {
 	 * @throws IOException 
 	 * @throws ClassNotFoundException 
 	 */
+	@Ignore
 	@Test
 	public void testUpdateAttributeByCtxAttributeIdSerializableString() throws CtxException, InterruptedException, ExecutionException, IOException, ClassNotFoundException {
 
@@ -1277,6 +1298,7 @@ public class InternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 */
 
+	@Ignore
 	@Test
 	public void testSetGetHistoryTuples() throws CtxException, InterruptedException, ExecutionException {
 
@@ -1325,6 +1347,7 @@ public class InternalCtxBrokerTest {
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#updateHistoryTuples(CtxAttributeIdentifier primaryAttrIdentifier, List<CtxAttributeIdentifier> arg1)}.
 	 */
 
+	@Ignore
 	@Test
 	public void testUpdateHistoryTuples() {
 
@@ -1386,6 +1409,7 @@ public class InternalCtxBrokerTest {
 
 
 
+	@Ignore
 	@Test
 	public void testLookupAttributeValues(){
 
@@ -1464,6 +1488,7 @@ public class InternalCtxBrokerTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void testHistoryTupleDataRetrievalByType() throws CtxException, InterruptedException, ExecutionException {
 
@@ -1579,6 +1604,7 @@ public class InternalCtxBrokerTest {
 
 	}
 
+	@Ignore
 	@Test
 	public void testHistoryMultipleSizeTupleDataRetrieval() throws CtxException, InterruptedException, ExecutionException {
 
@@ -1668,6 +1694,7 @@ public class InternalCtxBrokerTest {
 
 
 
+	@Ignore
 	@Test
 	public void testHistoryTupleDataRetrieval() throws CtxException, InterruptedException, ExecutionException {
 

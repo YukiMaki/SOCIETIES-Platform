@@ -127,6 +127,7 @@ public class BeanTranslatorTest {
 	 * @throws InterruptedException 
 	 * @throws InvalidFormatException 
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveIndividualEntity() throws Exception {
 
