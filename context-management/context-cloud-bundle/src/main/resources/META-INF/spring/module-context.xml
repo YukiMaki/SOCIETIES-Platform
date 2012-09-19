@@ -46,7 +46,7 @@
 				<value>org.societies.context.user.db.impl.model.UserCtxAttributeDAO</value>
 				<value>org.societies.context.user.db.impl.model.UserCtxAssociationDAO</value>
 				<value>org.societies.context.user.db.impl.model.UserCtxHistoricAttributeDAO</value>
-				<!--value>org.societies.context.user.db.impl.model.UserCtxModelOjectNumberDAO</value-->
+				<value>org.societies.context.user.db.impl.model.UserCtxModelObjectNumberDAO</value>
 				<value>org.societies.context.user.db.impl.model.UserCtxQualityDAO</value>
 			</list>
 		</property>

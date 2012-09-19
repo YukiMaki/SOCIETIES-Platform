@@ -161,9 +161,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		Transaction t = session.beginTransaction();
 
 		try{
-//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-//			objectNumber.setNextValue(modelObjectNumber);
-//			session.save(objectNumber);
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
 			Date date = new Date();
 			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
 
@@ -241,9 +241,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		entity.addAttribute(attribute);
 		
 		try{
-//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-//			objectNumber.setNextValue(modelObjectNumber);
-//			session.save(objectNumber);
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
 			
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
 			entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, scope);
@@ -323,9 +323,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 		try{
 
-//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-//			objectNumber.setNextValue(modelObjectNumber);
-//			session.save(objectNumber);
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
 	
 			Date date = new Date();
 
@@ -395,9 +395,9 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		this.modelObjects.put(entity.getId(), entity);
 
 		try{
-//			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-//			objectNumber.setNextValue(modelObjectNumber);
-//			session.save(objectNumber);
+			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+			objectNumber.setNextValue(modelObjectNumber);
+			session.save(objectNumber);
 			
 			Date date = new Date();
 
@@ -526,6 +526,112 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 	@Override
 	public CtxModelObject update(CtxModelObject modelObject) throws CtxException {
+
+		if (modelObject == null) 
+			throw new NullPointerException("modelObject can't be null");
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+		try{
+
+			if (modelObject.getModelType().equals(CtxModelType.ENTITY)) {
+				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+				CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
+				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, modelObject.getId());				
+				
+				entityDB.setEntityId(ctxEntCopy.getId());
+				//TODO change to timestamp
+//				entityDB.setTimestamp(entity.getLastModified());
+//				entityDB.setTimestamp(date);
+				
+				//setting identifier
+				UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+				entIdentDB.setOperatorId(ctxEntCopy.getOwnerId());
+				entIdentDB.setType(ctxEntCopy.getType());
+				entIdentDB.setObjectNumber(ctxEntCopy.getObjectNumber());
+
+				entityDB.setCtxIdentifier(entIdentDB);
+
+				session.update(entityDB);
+				t.commit();				
+			}
+			else if (modelObject.getModelType().equals(CtxModelType.ATTRIBUTE)) {
+				UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
+				CtxAttribute ctxAttrCopy = (CtxAttribute) this.retrieve(modelObject.getId());
+				attributeDB = (UserCtxAttributeDAO) session.get(UserCtxAttributeDAO.class, modelObject.getId());
+
+				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, ctxAttrCopy.getScope());
+
+				attributeDB.setAttributeId(ctxAttrCopy.getId());
+				//TODO change to timestamp
+//				attributeDB.setTimestamp(attribute.getLastModified());
+//				attributeDB.setTimestamp(date);
+				attributeDB.setValueStr(ctxAttrCopy.getStringValue());
+				attributeDB.setValueInt(ctxAttrCopy.getIntegerValue());
+				attributeDB.setValueDbl(ctxAttrCopy.getDoubleValue());
+				attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
+				attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
+				attributeDB.setSourceId(ctxAttrCopy.getSourceId());
+				attributeDB.setValueType(ctxAttrCopy.getValueType().toString());
+				attributeDB.setValueMetric(ctxAttrCopy.getValueMetric());
+	
+				//setting identifier
+				UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+				attrIdentDB.setType(ctxAttrCopy.getType());
+				attrIdentDB.setObjectNumber(ctxAttrCopy.getObjectNumber());
+				attrIdentDB.setScope(entityDB);
+				attributeDB.setCtxIdentifier(attrIdentDB);
+				entityDB.getAttrScope().add(attributeDB);
+
+				session.update(attributeDB);
+				t.commit();
+				
+			}
+			else if (modelObject.getModelType().equals(CtxModelType.ASSOCIATION)) {
+				UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
+				CtxAssociation ctxAssocCopy = (CtxAssociation) this.retrieve(modelObject.getId());
+				associationDB = (UserCtxAssociationDAO) session.get(UserCtxAssociationDAO.class, modelObject.getId());
+//				CtxAssociationIdentifier identifier = (CtxAssociationIdentifier) session.get(UserCtxAssociationIdentifierDAO.class, modelObject.getId());
+				
+				associationDB.setAssociationId(ctxAssocCopy.getId());
+				associationDB.setTimestamp(ctxAssocCopy.getLastModified());
+
+				if (ctxAssocCopy.getParentEntity() != null) {
+					associationDB.setParentEntityId(ctxAssocCopy.getParentEntity());
+				}
+				//TODO specify dynamic
+//				associationDB.setDynamic(association.get)
+				if (!ctxAssocCopy.childEntities.isEmpty())
+					associationDB.setMap(ctxAssocCopy.childEntities);
+				
+				//setting identifier
+				UserCtxAssociationIdentifierDAO associationIdentDB = new UserCtxAssociationIdentifierDAO();
+				associationIdentDB.setOperatorId(ctxAssocCopy.getOwnerId());
+//				associationIdentDB.setOperatorId(identifier.getOperatorId());
+				associationIdentDB.setOwnerId(ctxAssocCopy.getOwnerId());
+				associationIdentDB.setObjectNumber(ctxAssocCopy.getObjectNumber());
+				associationIdentDB.setType(ctxAssocCopy.getType());
+				associationDB.setCtxIdentifier(associationIdentDB);			
+
+				session.update(associationDB);
+				
+				t.commit();
+			}
+			else {
+				throw new IllegalArgumentException (
+						"Unsupported context model type: " 
+							+ modelObject.getModelType());
+			}
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
 
 		if (this.modelObjects.keySet().contains(modelObject.getId())) {
 			this.modelObjects.put(modelObject.getId(), modelObject);
