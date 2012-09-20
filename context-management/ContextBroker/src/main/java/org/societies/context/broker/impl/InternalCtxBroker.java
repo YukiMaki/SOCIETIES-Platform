@@ -609,12 +609,18 @@ public class InternalCtxBroker implements ICtxBroker {
 		IndividualCtxEntity cssOwner = null;
 		final List<CtxIdentifier> attrIds = this.userCtxDBMgr.lookup(
 				CtxModelType.ATTRIBUTE, CtxAttributeTypes.ID);
+		LOG.info("inside Broker lookup gives - " + attrIds);
+		
 		for (final CtxIdentifier attrId : attrIds) {
 
 			final CtxAttribute cssIdAttr = (CtxAttribute) this.userCtxDBMgr.retrieve(attrId);
+			LOG.info("inside Broker retrieve AttrID gives - " + cssIdAttr.getId());
+
 			if (!CtxEntityTypes.CSS_NODE.equals(cssIdAttr.getScope().getType())
 					&& cssId.toString().equals(cssIdAttr.getStringValue())) {
+				LOG.info("inside Broker before 2nd retrieve");
 				final CtxModelObject object = this.userCtxDBMgr.retrieve(cssIdAttr.getScope());
+				LOG.info("inside Broker retrieve gives - " + object);
 				if (object instanceof IndividualCtxEntity) {
 					cssOwner = (IndividualCtxEntity) object; 
 					break;

@@ -44,6 +44,7 @@ import javax.persistence.Table;
 import javax.persistence.Embedded;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
@@ -59,6 +60,10 @@ import org.societies.api.context.model.CtxIdentifier;
 	@NamedQuery(
 	name = "getCtxAttributeIdsByType",
 	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.ctxIdentifier.type = :type"
+	),
+	@NamedQuery(
+		name = "retrieveCtxAttribute",
+		query = "from UserCtxAttributeDAO as attribute where attribute.ctxIdentifier.scope = :id"
 	)
 })
 @Entity
@@ -72,7 +77,7 @@ public class UserCtxAttributeDAO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private CtxIdentifier attributeId;
-	private Date timestamp;
+	private Date lastModified;
 	private UserCtxAttributeIdentifierDAO ctxIdentifier;
 	private String valueStr;
 	private Integer valueInt;
@@ -97,12 +102,12 @@ public class UserCtxAttributeDAO implements Serializable {
 	 * @param valueType 
 	 * @param valueMetric 
 	 */
-	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date timestamp, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
+	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date lastModified, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
 
 //		super();
 
 		this.attributeId = attributeId;
-		this.timestamp = timestamp;
+		this.lastModified = lastModified;
 		this.ctxIdentifier = ctxIdentifier;
 		this.valueStr = valueStr;
 		this.valueInt = valueInt;
@@ -144,14 +149,15 @@ public class UserCtxAttributeDAO implements Serializable {
 	}
 
 	/*GenerationTime can be either INSERT or ALWAYS*/
-	@Column(name = "timestamp")
-	@Temporal(value=TemporalType.TIMESTAMP)
-	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
-	public Date getTimestamp() {
-		return timestamp;
+	@Column(name = "lastModified")
+//	@Temporal(value=TemporalType.TIMESTAMP)
+//	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
+	@Version
+	public Date getLastModified() {
+		return lastModified;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 
 	@Column(name = "value_str")

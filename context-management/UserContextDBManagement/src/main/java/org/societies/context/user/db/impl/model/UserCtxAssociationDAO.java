@@ -38,6 +38,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Version;
 
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
@@ -68,7 +69,7 @@ public class UserCtxAssociationDAO implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	private CtxIdentifier associationId;
-	private Date timestamp;
+	private Date lastModified;
 	private CtxIdentifier parentEntityId;
 	private boolean dynamic;
 	private UserCtxAssociationIdentifierDAO ctxIdentifier;
@@ -82,12 +83,12 @@ public class UserCtxAssociationDAO implements Serializable {
 	 * @param ctxIdentifier
 	 *
 	 */
-	public UserCtxAssociationDAO(CtxIdentifier associationId, Date timestamp, CtxIdentifier parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
+	public UserCtxAssociationDAO(CtxIdentifier associationId, Date lastModified, CtxIdentifier parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
 
 		super();
 
 		this.associationId = associationId;
-		this.timestamp = timestamp;
+		this.lastModified = lastModified;
 		this.parentEntityId = parentEntityId;
 		this.dynamic = dynamic;
 		this.ctxIdentifier = ctxIdentifier;
@@ -102,12 +103,13 @@ public class UserCtxAssociationDAO implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	@Column(name = "timestamp")
-	public Date getTimestamp() {
-		return timestamp;
+	@Column(name = "lastModified")
+	@Version
+	public Date getLastModified() {
+		return lastModified;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 
 	@Column(name = "parent_entity_id")

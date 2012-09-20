@@ -48,6 +48,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Version;
 
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
@@ -120,7 +121,7 @@ public class UserCtxEntityDAO implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private CtxIdentifier entityId;
 
-	private Date timestamp;
+	private Date lastModified;
 	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
 	private Set<String> map;
 	private UserCtxEntityIdentifierDAO ctxIdentifier;
@@ -129,13 +130,13 @@ public class UserCtxEntityDAO implements Serializable {
 	 * @param entityId
 	 * @param timestamp
 	 */
-	public UserCtxEntityDAO(CtxIdentifier entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date timestamp) {
+	public UserCtxEntityDAO(CtxIdentifier entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date lastModified) {
 
 //		super();
 		
 		this.entityId = entityId;
 		this.ctxIdentifier = ctxIdentifier;
-		this.timestamp = timestamp;
+		this.lastModified = lastModified;
 	}
 	
 	public UserCtxEntityDAO(CtxIdentifier entityId, Set<UserCtxAttributeDAO> attrScope) {
@@ -165,14 +166,15 @@ public class UserCtxEntityDAO implements Serializable {
 		this.entityId = entityId;
 	}
 
-	@Column(name = "timestamp")
-	@Temporal(value=TemporalType.TIMESTAMP)
-	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
-	public Date getTimestamp() {
-		return timestamp;
+	@Column(name = "lastModified")
+//	@Temporal(value=TemporalType.TIMESTAMP)
+//	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
+	@Version
+	public Date getLastModified() {
+		return lastModified;
 	}
-	public void setTimestamp(Date timestamp) {
-		this.timestamp = timestamp;
+	public void setLastModified(Date lastModified) {
+		this.lastModified = lastModified;
 	}
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")

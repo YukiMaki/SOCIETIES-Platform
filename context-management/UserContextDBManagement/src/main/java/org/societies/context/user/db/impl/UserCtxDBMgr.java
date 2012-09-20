@@ -168,7 +168,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
 
 			associationDB.setAssociationId(association.getId());
-			associationDB.setTimestamp(association.getLastModified());
+//			associationDB.setLastModified(association.getLastModified());
 
 			if (association.getParentEntity() != null) {
 				associationDB.setParentEntityId(association.getParentEntity());
@@ -192,7 +192,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			LOG.error("Could not create association: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
 				session.close();
@@ -253,7 +254,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			attributeDB.setAttributeId(attribute.getId());
 			//TODO change to timestamp
 //			attributeDB.setTimestamp(attribute.getLastModified());
-			attributeDB.setTimestamp(date);
+//			attributeDB.setLastModified(date);
 			attributeDB.setValueStr(attribute.getStringValue());
 			attributeDB.setValueInt(attribute.getIntegerValue());
 			attributeDB.setValueDbl(attribute.getDoubleValue());
@@ -275,7 +276,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			LOG.error("Could not create attribute: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
 				session.close();
@@ -334,7 +336,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			entityDB.setEntityId(entity.getId());
 			//TODO change to timestamp
 //			entityDB.setTimestamp(entity.getLastModified());
-			entityDB.setTimestamp(date);
+//			entityDB.setLastModified(date);
 			
 			//setting identifier
 			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
@@ -348,7 +350,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			LOG.error("Could not create entity: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
 				session.close();
@@ -406,7 +409,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			entityDB.setEntityId(entity.getId());
 			//TODO change to timestamp
 //			entityDB.setTimestamp(entity.getLastModified());
-			entityDB.setTimestamp(date);
+//			entityDB.setLastModified(date);
 			
 			//setting identifier
 			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
@@ -420,7 +423,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			LOG.error("Could not create individual entity: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
 				session.close();
@@ -444,51 +448,211 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	public List<CtxIdentifier> lookup(CtxModelType modelType, String type) throws CtxException {
 		// TODO Auto-generated method stub
 		
-		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		if (modelType == null) {
+			throw new NullPointerException("modelType can't be null");
+		}
+		if (type == null) {
+			throw new NullPointerException("type can't be null");
+		}
+		
+		//final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+//		List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		List<? extends CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		
+//        final boolean isWildcardType = type.contains("%");
+
+/*		for (CtxIdentifier identifier : modelObjects.keySet()) {
+			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
+				foundList.add(identifier);
+			}		
+		}
+		System.out.println("the list is - " + foundList);
+	*/	
+		LOG.info("problem here before sessionFactory!!!!");
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		LOG.info("problem after sessionFactory!!!");
+
+        try {
+            // Start a unit of work
+            if (modelType.equals(CtxModelType.ENTITY)) {
+
+            	Query query = session.getNamedQuery("getCtxEntityIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = (List<CtxIdentifier>) query.list();
+            	LOG.info("test lookup (an entity) - " + foundList.get(0));
+            	System.out.println("test - " + foundList.get(0));
+            	CtxIdentifier testIdent = foundList.get(0);
+            	System.out.println("the list is - " + foundList);
+            	LOG.info("test lookup (an entity) - the list is: " + foundList);
+            	
+            } else if (modelType.equals(CtxModelType.ATTRIBUTE)) {
+
+            	Query query = session.getNamedQuery("getCtxAttributeIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = query.list();
+            	System.out.println("the list is - " + foundList);
+            	LOG.info("test lookup (an attribute) the list is - " + foundList);
+            	
+            } else if (modelType.equals(CtxModelType.ASSOCIATION)) {
+
+            	Query query = session.getNamedQuery("getCtxAssociationIdsByType");
+            	query.setParameter("type", type, Hibernate.STRING);
+            	foundList = query.list();
+				System.out.println("the list is - " + foundList);
+				LOG.info("test lookup (an association) the list is - " + foundList);
+				
+            } else {
+ 
+                throw new IllegalArgumentException(
+                        "Unsupported context model type: " + modelType);
+            }
+
+            // End the unit of work
+            t.commit();
+        } catch (Exception e) {
+//			e.printStackTrace();
+			LOG.error("Could not lookup: " + e.getLocalizedMessage(),e);
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+		return (List<CtxIdentifier>) foundList;
+		//return foundList;
+		
+/*		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
 		
 		for (CtxIdentifier identifier : modelObjects.keySet()) {
 			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
 				foundList.add(identifier);
 			}		
 		}
-		return foundList;
+		return foundList;*/
 	}
 
 	@Override
 	public List<CtxEntityIdentifier> lookupEntities(String entityType,
 			String attribType, Serializable minAttribValue,
 			Serializable maxAttribValue) throws CtxException {
-				
-        final List<CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
-        for (CtxIdentifier identifier : modelObjects.keySet()) {
-            if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
-                    && identifier.getType().equals(attribType)) {
-                final CtxAttribute attribute = (CtxAttribute) modelObjects
-                .get(identifier);
-//                if (attribute.getScope().getType().equals(entityType) && attribute.getValue().equals(minAttribValue)) {
-                if (attribute.getScope().getType().equals(entityType)) {
-                	if (minAttribValue instanceof String && maxAttribValue instanceof String) {
-                		if (attribute.getStringValue()!=null) {
+		List<? extends CtxEntityIdentifier> foundList = new ArrayList<CtxEntityIdentifier>();
+
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+		
+		try {
+			
+			if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+				Query query = session.getNamedQuery("getCtxEntityIdsByAttrStringValue");
+				query.setParameter("entType", entityType, Hibernate.STRING);
+				query.setParameter("attrType", attribType, Hibernate.STRING);
+				query.setParameter("minAttribValue", (String) minAttribValue, Hibernate.STRING);
+				query.setParameter("maxAttribValue", (String) maxAttribValue, Hibernate.STRING);
+              
+				foundList = (List<CtxEntityIdentifier>) query.list();
+				System.out.println("the list is - " + foundList);
+				LOG.info("test lookupEntities (string) minAttribValue: " + minAttribValue + " maxAttribValue: " + maxAttribValue);
+				LOG.info("test lookupEntities (String) the list is - " + foundList);
+            } else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+            	Query query = session.getNamedQuery("getCtxEntityIdsByAttrIntegerValue");
+            	query.setParameter("entType", entityType, Hibernate.STRING);
+            	query.setParameter("attrType", attribType, Hibernate.STRING);
+            	query.setParameter("minAttribValue", (Integer) minAttribValue, Hibernate.INTEGER);
+            	query.setParameter("maxAttribValue", (Integer) maxAttribValue, Hibernate.INTEGER);
+               
+            	foundList = (List<CtxEntityIdentifier>) query.list();
+            	System.out.println("the list is - " + foundList);
+				LOG.info("test lookupEntities (attribute) minAttribValue: " + minAttribValue + " maxAttribValue: " + maxAttribValue);
+            	LOG.info("test lookupEntities (Integer) the list is - " + foundList);
+
+           } else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
+             	Query query = session.getNamedQuery("getCtxEntityIdsByAttrDoubleValue");
+            	query.setParameter("entType", entityType, Hibernate.STRING);
+            	query.setParameter("attrType", attribType, Hibernate.STRING);
+            	query.setParameter("minAttribValue", (Double) minAttribValue, Hibernate.DOUBLE);
+            	query.setParameter("maxAttribValue", (Double) maxAttribValue, Hibernate.DOUBLE);
+                
+            	foundList = (List<CtxEntityIdentifier>) query.list();
+            	System.out.println("the list is - " + foundList);
+				LOG.info("test lookupEntities (double) minAttribValue: " + minAttribValue + " maxAttribValue: " + maxAttribValue);
+            	LOG.info("test lookupEntities (Double) the list is - " + foundList);
+
+           } else { // if (attribValue instanceof Serializable)
+          	 
+        	   byte[] minValueBytes;
+        	   byte[] maxValueBytes;
+        	   try {
+        		   minValueBytes = SerialisationHelper.serialise(minAttribValue);
+        		   maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
+        		   if (Arrays.equals(minValueBytes, maxValueBytes)) {
+        			   Query query = session.getNamedQuery("getCtxEntityIdsByAttrBlobValue"); 
+                       query.setParameter("entType", entityType, Hibernate.STRING);
+                       query.setParameter("attrType", attribType, Hibernate.STRING);
+                       query.setParameter("minAttribValue", (byte[]) minAttribValue, Hibernate.BINARY);
+//                  	 query.setParameter("maxAttribValue", (byte[]) maxAttribValue, Hibernate.BINARY);
+                  	 
+                       foundList = (List<CtxEntityIdentifier>) query.list();
+                       System.out.println("the list is - " + foundList);
+                       LOG.info("test lookupEntities (blobs) minAttribValue: " + minAttribValue);
+                       LOG.info("test lookupEntities (Blobs) the list is - " + foundList);
+                   }
+        	   } catch (IOException e) {
+          			 // TODO Auto-generated catch block
+          			 //e.printStackTrace();
+        		   LOG.error("Could not lookupEntities (Blobs): " + e.getLocalizedMessage(),e);
+        	   }
+          	 
+          }
+
+/*        	Query query = session.getNamedQuery("getCtxEntityByAttrType");
+      	query.setParameter("entType", entityType, Hibernate.STRING);
+          query.setParameter("attrType", attribType, Hibernate.STRING);
+          foundList = (List<CtxEntityIdentifier>) query.list();
+         
+          System.out.println("test - " + foundList.get(0));
+          CtxEntityIdentifier testIdent = foundList.get(0);
+          System.out.println("the list is - " + foundList);
+*/          	
+          t.commit();
+      } catch (Exception e) {
+//			e.printStackTrace();
+			LOG.error("Could not lookupEntities: " + e.getLocalizedMessage(),e);
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+/*        for (CtxIdentifier identifier : modelObjects.keySet()) {
+          if (identifier.getModelType().equals(CtxModelType.ATTRIBUTE)
+                  && identifier.getType().equals(attribType)) {
+              final CtxAttribute attribute = (CtxAttribute) modelObjects
+              .get(identifier);
+//              if (attribute.getScope().getType().equals(entityType) && attribute.getValue().equals(minAttribValue)) {
+              if (attribute.getScope().getType().equals(entityType)) {
+              	if (minAttribValue instanceof String && maxAttribValue instanceof String) {
+              		if (attribute.getStringValue()!=null) {
 		                	String valueStr = attribute.getStringValue();
 		                		if(valueStr.compareTo(minAttribValue.toString()) >=0 && valueStr.compareTo(maxAttribValue.toString()) <=0)
 		               				foundList.add(attribute.getScope());                			
-        				}
-                	} else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
-                		if(attribute.getIntegerValue()!=null) {
+      				}
+              	} else if (minAttribValue instanceof Integer && maxAttribValue instanceof Integer) {
+              		if(attribute.getIntegerValue()!=null) {
 		               		Integer valueInt = attribute.getIntegerValue();
 		          			if(valueInt.compareTo((Integer) minAttribValue) >=0 && valueInt.compareTo((Integer) maxAttribValue) <=0)
 		               			foundList.add(attribute.getScope());
-                		}
-                	} else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
-                		if(attribute.getDoubleValue()!=null) {
+              		}
+              	} else if (minAttribValue instanceof Double && maxAttribValue instanceof Double) {
+              		if(attribute.getDoubleValue()!=null) {
 		               		Double valueDouble = attribute.getDoubleValue();
 		           			if(valueDouble.compareTo((Double) minAttribValue) >= 0 && valueDouble.compareTo((Double) maxAttribValue) <= 0)
 		               			foundList.add(attribute.getScope());                			
-                		}
-                	} else {
-                		byte[] valueBytes;
-                		byte[] minValueBytes;
-                		byte[] maxValueBytes;
+              		}
+              	} else {
+              		byte[] valueBytes;
+              		byte[] minValueBytes;
+              		byte[] maxValueBytes;
 						try {
 							minValueBytes = SerialisationHelper.serialise(minAttribValue);
 							maxValueBytes = SerialisationHelper.serialise(maxAttribValue);
@@ -500,12 +664,13 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}                		
-                	}
-                	
-                }
-            }
-        }
-        return foundList;
+              	}
+              	
+              }
+          }
+      }*/
+		return (List<CtxEntityIdentifier>) foundList;
+//      return foundList;
 	}
 
 	@Override
@@ -521,7 +686,58 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public CtxModelObject retrieve(CtxIdentifier id) throws CtxException {
 
-		return this.modelObjects.get(id);
+		CtxModelObject retrieved = null;
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
+        try {
+            // Start a unit of work
+            if (id.getModelType().equals(CtxModelType.ENTITY)) {
+//            	retrieved = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
+            	retrieved = this.modelObjects.get(id);
+
+            	System.out.println("test - " + retrieved);
+            	LOG.info("test retrieve (entity) - " + retrieved);
+            } else if (id.getModelType().equals(CtxModelType.ATTRIBUTE)) {
+
+//            	UserCtxAttributeDAO retrAttr = new UserCtxAttributeDAO();
+ //           	retrAttr = (UserCtxAttributeDAO) session.get(UserCtxAttributeDAO.class, id);
+
+//            	LOG.info("test retrieved retrAttr valueStr " + retrAttr.getValueStr());
+ //           	CtxAttribute newAttribute = new CtxAttribute((CtxAttributeIdentifier) retrAttr.getAttributeId());
+            	
+  //          	retrieved = newAttribute;
+
+               	Query query = session.getNamedQuery("retrieveCtxAttribute");
+            	query.setParameter("id", id, Hibernate.STRING);
+            	UserCtxAttributeDAO retrAttr = new UserCtxAttributeDAO();
+//            	retrAttr = query.uniqueResult();
+//            	LOG.info("test retrieve attr as CtxAttrDAO - " + query.uniqueResult());
+//            	retrieved = (CtxModelObject) query.list();
+            	retrieved = this.modelObjects.get(id);
+//            	foundList = (List<CtxIdentifier>) query.list();
+            	System.out.println("test - " + retrieved);
+            	LOG.info("test retrieve (attribute)" + retrieved);
+            } else if (id.getModelType().equals(CtxModelType.ASSOCIATION)) {
+
+//            	retrieved = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
+            	retrieved = this.modelObjects.get(id);
+
+            	System.out.println("test - " + retrieved);
+            	LOG.info("test retrieve (association)" + retrieved);
+            }             // End the unit of work
+            t.commit();
+        } catch (Exception e) {
+			LOG.error("Could not retrieve: " + e.getLocalizedMessage(),e);
+		} finally {
+			if (session != null) {
+				session.close();
+			}
+		}
+
+//		return this.modelObjects.get(id);
+//		this.modelObjects.put(id, retrModObj);
+		return retrieved;
 	}
 
 	@Override
@@ -596,7 +812,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 //				CtxAssociationIdentifier identifier = (CtxAssociationIdentifier) session.get(UserCtxAssociationIdentifierDAO.class, modelObject.getId());
 				
 				associationDB.setAssociationId(ctxAssocCopy.getId());
-				associationDB.setTimestamp(ctxAssocCopy.getLastModified());
+//				associationDB.setLastModified(ctxAssocCopy.getLastModified());
 
 				if (ctxAssocCopy.getParentEntity() != null) {
 					associationDB.setParentEntityId(ctxAssocCopy.getParentEntity());
@@ -626,7 +842,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			}
 		}
 		catch (Exception e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			LOG.error("Could not update: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
 				session.close();

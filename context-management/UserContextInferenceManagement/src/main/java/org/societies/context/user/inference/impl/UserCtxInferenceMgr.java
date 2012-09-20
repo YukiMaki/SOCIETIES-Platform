@@ -102,7 +102,10 @@ public class UserCtxInferenceMgr implements IUserCtxInferenceMgr {
 			this.cssOwnerId = commMgr.getIdManager().fromJid(cssOwnerStr);
 			LOG.debug("*** cssOwnerId = " + this.cssOwnerId);
 
+			LOG.info("problem starts here !! ");
 			this.ownerEntity = this.internalCtxBroker.retrieveIndividualEntity(cssOwnerId).get();
+			LOG.info("the retrieved is - " + this.ownerEntity);
+			
 			List<String> infTypesList = this.getInferrableTypes();
 			
 			for(String inferableType: infTypesList){
