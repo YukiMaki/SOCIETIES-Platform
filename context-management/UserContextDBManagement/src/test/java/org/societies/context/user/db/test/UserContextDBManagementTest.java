@@ -294,6 +294,7 @@ public class UserContextDBManagementTest {
        
 	}
    
+	@Ignore
 	@Test
 	public void testLookupEntitiesByAttrType() throws CtxException {
 		List<CtxEntityIdentifier> identifiers;
@@ -333,6 +334,7 @@ public class UserContextDBManagementTest {
 
 	}
    
+	@Ignore
 	@Test
 	public void testLookupEntitiesIntegers() throws CtxException {
 		List<CtxEntityIdentifier> identifiers;
@@ -368,7 +370,8 @@ public class UserContextDBManagementTest {
 		assertEquals("NUMBER", entityId.getType());
 
 	}
-   	   
+
+	@Ignore
 	@Test
 	public void testLookupEntitiesBLOBS() throws CtxException {
 		List<CtxEntityIdentifier> identifiers;

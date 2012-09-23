@@ -606,21 +606,11 @@ public class InternalCtxBroker implements ICtxBroker {
 
 		this.logRequest(null, cssId);
 
+		LOG.info("the cssId I get from Broker - " + cssId.toString());
+		
 		IndividualCtxEntity cssOwner = null;
-		final List<CtxIdentifier> attrIds = this.userCtxDBMgr.lookup(
-				CtxModelType.ATTRIBUTE, CtxAttributeTypes.ID);
-		for (final CtxIdentifier attrId : attrIds) {
 
-			final CtxAttribute cssIdAttr = (CtxAttribute) this.userCtxDBMgr.retrieve(attrId);
-			if (!CtxEntityTypes.CSS_NODE.equals(cssIdAttr.getScope().getType())
-					&& cssId.toString().equals(cssIdAttr.getStringValue())) {
-				final CtxModelObject object = this.userCtxDBMgr.retrieve(cssIdAttr.getScope());
-				if (object instanceof IndividualCtxEntity) {
-					cssOwner = (IndividualCtxEntity) object; 
-					break;
-				}
-			}
-		}
+		cssOwner = this.userCtxDBMgr.retrieveIndividualEntity(cssId);
 
 		return new AsyncResult<IndividualCtxEntity>(cssOwner);
 	}

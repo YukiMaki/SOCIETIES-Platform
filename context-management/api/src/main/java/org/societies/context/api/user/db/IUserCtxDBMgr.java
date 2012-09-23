@@ -36,6 +36,7 @@ import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
 import org.societies.api.context.model.CtxModelObject;
 import org.societies.api.context.model.CtxModelType;
+import org.societies.api.identity.IIdentity;
 
 /**
  * 
@@ -129,6 +130,13 @@ public interface IUserCtxDBMgr {
 	 */
 	public CtxModelObject retrieve(CtxIdentifier identifier) throws CtxException;
 
+	/**
+	 * Retrieves the requested individual context entity
+	 * 
+	 * @parm cssId
+	 */
+	public IndividualCtxEntity retrieveIndividualEntity(IIdentity cssId) throws CtxException;
+	
 	/**
 	 * Updates a single context model object.
 	 * 
