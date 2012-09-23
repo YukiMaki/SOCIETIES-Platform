@@ -33,6 +33,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.model.CtxAttribute;
@@ -105,7 +106,8 @@ public class UserContextDBManagementTest {
 		userDB = null;
 	}
 	
-   @Test
+	@Ignore
+	@Test
  	public void testCreateIndividualCtxEntity() throws CtxException{
 		System.out.println("---- testCreateIndividualCtxEntity");
 		indEntity = userDB.createIndividualCtxEntity("person");
@@ -114,7 +116,8 @@ public class UserContextDBManagementTest {
 		assertEquals("person", indEntity.getType());
 	}
 
-   @Test
+	@Ignore
+	@Test
  	public void testCreateCtxAssociation() throws CtxException{
 		System.out.println("---- testCreateCtxAssociation");
 		association = userDB.createAssociation("IsRelatedWith");
@@ -122,7 +125,8 @@ public class UserContextDBManagementTest {
 		assertEquals("IsRelatedWith", association.getType());
 	}
 
-   @Test
+	@Ignore
+	@Test
  	public void testAssociations() throws CtxException{
 		System.out.println("---- testAssociations");
 
@@ -154,20 +158,22 @@ public class UserContextDBManagementTest {
 		assertTrue(association.getChildEntities().isEmpty());
 	}
 
-   @Test
-   public void testRetrieveAssociation() throws CtxException{
-	   System.out.println("---- testRetrieveAssociation");
-	   ////////////////
-	   association = userDB.createAssociation("IsRelatedWith");
+	@Ignore
+	@Test
+	public void testRetrieveAssociation() throws CtxException{
+		System.out.println("---- testRetrieveAssociation");
+		////////////////
+		association = userDB.createAssociation("IsRelatedWith");
 
 	   
-	   modObj = userDB.retrieve(association.getId());
-	   association = (CtxAssociation) modObj;
+		modObj = userDB.retrieve(association.getId());
+		association = (CtxAssociation) modObj;
 
-	   assertNotNull(association);
-   }
+		assertNotNull(association);
+	}
 
-   @Test
+	@Ignore
+	@Test
 	public void testCreateAttribute() throws CtxException{
 	   System.out.println("---- testCreateAttribute");
 	   indEntity = userDB.createIndividualCtxEntity("house");
@@ -179,223 +185,226 @@ public class UserContextDBManagementTest {
 
    }
    
-   @Test
-   public void testRetrieveAttribute() throws CtxException{
-	   System.out.println("---- testRetrieveAttribute");
-	   ////////////////
-	   indEntity = userDB.createIndividualCtxEntity("house");
-	   attribute = userDB.createAttribute(indEntity.getId(), "name");
+	@Ignore
+	@Test
+	public void testRetrieveAttribute() throws CtxException{
+		System.out.println("---- testRetrieveAttribute");
+		////////////////
+		indEntity = userDB.createIndividualCtxEntity("house");
+		attribute = userDB.createAttribute(indEntity.getId(), "name");
 	   
-	   modObj = userDB.retrieve(attribute.getId());
-	   attribute = (CtxAttribute) modObj;
+		modObj = userDB.retrieve(attribute.getId());
+		attribute = (CtxAttribute) modObj;
 
-	   assertNotNull(attribute);
+		assertNotNull(attribute);
    }
 
-   @Test
-   public void testUpdateAttribute() throws CtxException{
-	   System.out.println("---- testUpdateAttribute");
+	@Ignore
+	@Test
+	public void testUpdateAttribute() throws CtxException{
+		System.out.println("---- testUpdateAttribute");
 
-	   indEntity = userDB.createIndividualCtxEntity("house");
-	   attribute = userDB.createAttribute(indEntity.getId(), "name");
+		indEntity = userDB.createIndividualCtxEntity("house");
+		attribute = userDB.createAttribute(indEntity.getId(), "name");
 
-	   modObj = userDB.retrieve(attribute.getId());
-	   attribute = (CtxAttribute) modObj;
-//	   attribute = (CtxAttribute) callback.getCtxModelObject();
-	   attribute.setIntegerValue(5);
-	   userDB.update(attribute);
-	   //verify update
-	   modObj = userDB.retrieve(attribute.getId());
-	   attribute = (CtxAttribute) modObj;
-//	   attribute = (CtxAttribute) callback.getCtxModelObject();
-	   System.out.println("attribute value should be 5 and it is:"+attribute.getIntegerValue());
+		modObj = userDB.retrieve(attribute.getId());
+		attribute = (CtxAttribute) modObj;
+		//	   attribute = (CtxAttribute) callback.getCtxModelObject();
+		attribute.setIntegerValue(5);
+		userDB.update(attribute);
+		//verify update
+		modObj = userDB.retrieve(attribute.getId());
+		attribute = (CtxAttribute) modObj;
+		//	   attribute = (CtxAttribute) callback.getCtxModelObject();
+		System.out.println("attribute value should be 5 and it is:"+attribute.getIntegerValue());
 
-	   assertNotNull(attribute);
-//	   assertEquals(5,attribute.getIntegerValue());
+		assertNotNull(attribute);
+		//	   assertEquals(5,attribute.getIntegerValue());
 	}
-   
-   @Test
-   public void testLookup() throws CtxException{
-	   System.out.println("---- testLookup");
+
+	@Ignore
+	@Test
+	public void testLookup() throws CtxException{
+		System.out.println("---- testLookup");
 	   
-       List<CtxIdentifier> ids;
+		List<CtxIdentifier> ids;
        
-       // Create test entities.
-       final CtxEntityIdentifier entId1 = userDB.createEntity("FooBar").getId();
-       final CtxEntityIdentifier entId2 = userDB.createEntity("Foo").getId();
-       final CtxEntityIdentifier entId3 = userDB.createEntity("Bar").getId();
+		// Create test entities.
+		final CtxEntityIdentifier entId1 = userDB.createEntity("FooBar").getId();
+		final CtxEntityIdentifier entId2 = userDB.createEntity("Foo").getId();
+		final CtxEntityIdentifier entId3 = userDB.createEntity("Bar").getId();
       
-       // Create test attributes.
-       final CtxAttributeIdentifier attrId1 = userDB.createAttribute(entId1, "FooBar").getId();
-       final CtxAttributeIdentifier attrId2 = userDB.createAttribute(entId1, "Foo").getId();
-       final CtxAttributeIdentifier attrId3 = userDB.createAttribute(entId1, "Bar").getId();
+		// Create test attributes.
+		final CtxAttributeIdentifier attrId1 = userDB.createAttribute(entId1, "FooBar").getId();
+		final CtxAttributeIdentifier attrId2 = userDB.createAttribute(entId1, "Foo").getId();
+		final CtxAttributeIdentifier attrId3 = userDB.createAttribute(entId1, "Bar").getId();
        
-       // Create test attributes.
-       final CtxAssociationIdentifier assocId1 = userDB.createAssociation("FooBar").getId();
-       final CtxAssociationIdentifier assocId2 = userDB.createAssociation("Foo").getId();
-       final CtxAssociationIdentifier assocId3 = userDB.createAssociation("Bar").getId();
+		// Create test attributes.
+		final CtxAssociationIdentifier assocId1 = userDB.createAssociation("FooBar").getId();
+		final CtxAssociationIdentifier assocId2 = userDB.createAssociation("Foo").getId();
+		final CtxAssociationIdentifier assocId3 = userDB.createAssociation("Bar").getId();
 
-       //
-       // Lookup entities
-       //
+		//
+		// Lookup entities
+		//
        
-       ids =userDB.lookup(CtxModelType.ENTITY, "FooBar");
-       assertTrue(ids.contains(entId1));
-       assertEquals(1, ids.size());
+		ids =userDB.lookup(CtxModelType.ENTITY, "FooBar");
+		assertTrue(ids.contains(entId1));
+		assertEquals(1, ids.size());
               
-       ids = userDB.lookup(CtxModelType.ENTITY, "Foo");
-       assertTrue(ids.contains(entId2));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ENTITY, "Foo");
+		assertTrue(ids.contains(entId2));
+		assertEquals(1, ids.size());
        
-       ids = userDB.lookup(CtxModelType.ENTITY, "Bar");
-       assertTrue(ids.contains(entId3));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ENTITY, "Bar");
+		assertTrue(ids.contains(entId3));
+		assertEquals(1, ids.size());
        
-       //
-       // Lookup attributes
-       //
+		//
+		// Lookup attributes
+		//
        
-       ids = userDB.lookup(CtxModelType.ATTRIBUTE, "FooBar");
-       assertTrue(ids.contains(attrId1));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ATTRIBUTE, "FooBar");
+		assertTrue(ids.contains(attrId1));
+		assertEquals(1, ids.size());
               
-       ids = userDB.lookup(CtxModelType.ATTRIBUTE, "Foo");
-       assertTrue(ids.contains(attrId2));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ATTRIBUTE, "Foo");
+		assertTrue(ids.contains(attrId2));
+		assertEquals(1, ids.size());
        
-       ids = userDB.lookup(CtxModelType.ATTRIBUTE, "Bar");
-       assertTrue(ids.contains(attrId3));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ATTRIBUTE, "Bar");
+		assertTrue(ids.contains(attrId3));
+		assertEquals(1, ids.size());
        
-       //
-       // Lookup associations.
-       //
+		//
+		// Lookup associations.
+		//
        
-       ids = userDB.lookup(CtxModelType.ASSOCIATION, "FooBar");
-       assertTrue(ids.contains(assocId1));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ASSOCIATION, "FooBar");
+		assertTrue(ids.contains(assocId1));
+		assertEquals(1, ids.size());
              
-       ids = userDB.lookup(CtxModelType.ASSOCIATION, "Foo");
-       assertTrue(ids.contains(assocId2));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ASSOCIATION, "Foo");
+		assertTrue(ids.contains(assocId2));
+		assertEquals(1, ids.size());
        
-       ids = userDB.lookup(CtxModelType.ASSOCIATION, "Bar");
-       assertTrue(ids.contains(assocId3));
-       assertEquals(1, ids.size());
+		ids = userDB.lookup(CtxModelType.ASSOCIATION, "Bar");
+		assertTrue(ids.contains(assocId3));
+		assertEquals(1, ids.size());
        
 	}
    
-   @Test
-   public void testLookupEntitiesByAttrType() throws CtxException {
-       List<CtxEntityIdentifier> identifiers;
-       CtxEntity entity, entity2;
-       CtxAttribute attribute2;
-       CtxEntityIdentifier entityId;
+	@Test
+	public void testLookupEntitiesByAttrType() throws CtxException {
+		List<CtxEntityIdentifier> identifiers;
+		CtxEntity entity, entity2;
+		CtxAttribute attribute2;
+		CtxEntityIdentifier entityId;
 
-       entity = userDB.createEntity("PERSON");
-       attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "NAME");
-       entity2 = userDB.createEntity("PERSON");
-       attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "NAME");
+		entity = userDB.createEntity("PERSON");
+		attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "NAME");
+		entity2 = userDB.createEntity("PERSON");
+		attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "NAME");
        
-       // lookup by name attribute
-       System.out.println("Paul".compareTo("Lora"));
-       System.out.println("Paul".compareTo("Steven"));
+		// lookup by name attribute
+		System.out.println("Paul".compareTo("Lora"));
+		System.out.println("Paul".compareTo("Steven"));
        
-       identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
-       assertEquals(0, identifiers.size());
-       attribute.setStringValue("Paul");
-       attribute.setValueType(CtxAttributeValueType.STRING);
-       userDB.update(attribute);
-       attribute2.setStringValue("Ester");
-       attribute2.setValueType(CtxAttributeValueType.STRING);
-       userDB.update(attribute2);
-      //update with DB
-       identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
-       System.out.println(identifiers);
-       System.out.println(identifiers.get(0));
+		identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
+		assertEquals(0, identifiers.size());
+		attribute.setStringValue("Paul");
+		attribute.setValueType(CtxAttributeValueType.STRING);
+		userDB.update(attribute);
+		attribute2.setStringValue("Ester");
+		attribute2.setValueType(CtxAttributeValueType.STRING);
+		userDB.update(attribute2);
+		//update with DB
+		identifiers = userDB.lookupEntities("PERSON", "NAME", "Lora", "Steven");
+		System.out.println(identifiers);
+		System.out.println(identifiers.get(0));
 //       System.out.println(identifiers.get(1));
        
-       assertEquals(1, identifiers.size());
+		assertEquals(1, identifiers.size());
        
-       assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
-       entityId = (CtxEntityIdentifier) identifiers.get(0);
-       assertEquals(CtxModelType.ENTITY, entityId.getModelType());
-       assertEquals("PERSON", entityId.getType());
+		assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
+		entityId = (CtxEntityIdentifier) identifiers.get(0);
+		assertEquals(CtxModelType.ENTITY, entityId.getModelType());
+		assertEquals("PERSON", entityId.getType());
 
-   }
+	}
    
-   @Test
-   public void testLookupEntitiesIntegers() throws CtxException {
-       List<CtxEntityIdentifier> identifiers;
-       CtxEntity entity, entity2;
-       CtxAttribute attribute2;
-       CtxEntityIdentifier entityId;
+	@Test
+	public void testLookupEntitiesIntegers() throws CtxException {
+		List<CtxEntityIdentifier> identifiers;
+		CtxEntity entity, entity2;
+		CtxAttribute attribute2;
+		CtxEntityIdentifier entityId;
 
-       entity = userDB.createEntity("NUMBER");
-       attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "BOOKS");
-       entity2 = userDB.createEntity("NUMBER");
-       attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "BOOKS");
+		entity = userDB.createEntity("NUMBER");
+		attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "BOOKS");
+		entity2 = userDB.createEntity("NUMBER");
+		attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "BOOKS");
        
-       // lookup by name attribute
-       identifiers = userDB.lookupEntities("NUMBER", "BOOKS", 1, 10);
-       assertEquals(0, identifiers.size());
-       attribute.setIntegerValue(5);
-       attribute.setValueType(CtxAttributeValueType.INTEGER);
-       userDB.update(attribute);
-       attribute2.setIntegerValue(12);
-       attribute2.setValueType(CtxAttributeValueType.INTEGER);
-       userDB.update(attribute2);
-      //update with DB
-       identifiers = userDB.lookupEntities("NUMBER", "BOOKS", 1, 10);
-       System.out.println(identifiers);
-//       System.out.println(identifiers.get(0));
-//       System.out.println(identifiers.get(1));
+		// lookup by name attribute
+		identifiers = userDB.lookupEntities("NUMBER", "BOOKS", 1, 10);
+		assertEquals(0, identifiers.size());
+		attribute.setIntegerValue(5);
+		attribute.setValueType(CtxAttributeValueType.INTEGER);
+		userDB.update(attribute);
+		attribute2.setIntegerValue(12);
+		attribute2.setValueType(CtxAttributeValueType.INTEGER);
+		userDB.update(attribute2);
+		//update with DB
+		identifiers = userDB.lookupEntities("NUMBER", "BOOKS", 1, 10);
+		System.out.println(identifiers);
+		//       System.out.println(identifiers.get(0));
+		//       System.out.println(identifiers.get(1));
        
-       assertEquals(1, identifiers.size());
+		assertEquals(1, identifiers.size());
        
-       assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
-       entityId = (CtxEntityIdentifier) identifiers.get(0);
-       assertEquals(CtxModelType.ENTITY, entityId.getModelType());
-       assertEquals("NUMBER", entityId.getType());
+		assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
+		entityId = (CtxEntityIdentifier) identifiers.get(0);
+		assertEquals(CtxModelType.ENTITY, entityId.getModelType());
+		assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
    	   
-   @Test
-   public void testLookupEntitiesBLOBS() throws CtxException {
-       List<CtxEntityIdentifier> identifiers;
-       CtxEntity entity, entity2;
-       CtxAttribute attribute2;
-       CtxEntityIdentifier entityId;
+	@Test
+	public void testLookupEntitiesBLOBS() throws CtxException {
+		List<CtxEntityIdentifier> identifiers;
+		CtxEntity entity, entity2;
+		CtxAttribute attribute2;
+		CtxEntityIdentifier entityId;
 
-       entity = userDB.createEntity("NUMBER");
-       attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "BOOKS");
-       entity2 = userDB.createEntity("NUMBER");
-       attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "BOOKS");
+		entity = userDB.createEntity("NUMBER");
+		attribute = userDB.createAttribute((CtxEntityIdentifier)entity.getId(), "BOOKS");
+		entity2 = userDB.createEntity("NUMBER");
+		attribute2 = userDB.createAttribute((CtxEntityIdentifier)entity2.getId(), "BOOKS");
        
-       byte[] byteArray = new byte[2];
-       byteArray[0] = 0x11;
-       byteArray[1] = 0x00;
-       byte[] byteArray2 = new byte[2];
-       byteArray2[0] = 0x11;
-       byteArray2[1] = 0x00;
+		byte[] byteArray = new byte[2];
+		byteArray[0] = 0x11;
+		byteArray[1] = 0x00;
+		byte[] byteArray2 = new byte[2];
+		byteArray2[0] = 0x11;
+		byteArray2[1] = 0x00;
        
-       identifiers = userDB.lookupEntities("NUMBER", "BOOKS", byteArray, byteArray2);
-       assertEquals(0, identifiers.size());
-       attribute.setBinaryValue(byteArray);
-       attribute.setValueType(CtxAttributeValueType.BINARY);
-       userDB.update(attribute);
-      //update with DB
-       identifiers = userDB.lookupEntities("NUMBER", "BOOKS", byteArray, byteArray2);
-       System.out.println(identifiers);
-//       System.out.println(identifiers.get(0));
-//       System.out.println(identifiers.get(1));
+		identifiers = userDB.lookupEntities("NUMBER", "BOOKS", byteArray, byteArray2);
+		assertEquals(0, identifiers.size());
+		attribute.setBinaryValue(byteArray);
+		attribute.setValueType(CtxAttributeValueType.BINARY);
+		userDB.update(attribute);
+		//update with DB
+		identifiers = userDB.lookupEntities("NUMBER", "BOOKS", byteArray, byteArray2);
+		System.out.println(identifiers);
+		//       System.out.println(identifiers.get(0));
+		//       System.out.println(identifiers.get(1));
        
-       assertEquals(1, identifiers.size());
+		assertEquals(1, identifiers.size());
        
-       assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
-       entityId = (CtxEntityIdentifier) identifiers.get(0);
-       assertEquals(CtxModelType.ENTITY, entityId.getModelType());
-       assertEquals("NUMBER", entityId.getType());
+		assertTrue(identifiers.get(0)instanceof CtxEntityIdentifier);
+		entityId = (CtxEntityIdentifier) identifiers.get(0);
+		assertEquals(CtxModelType.ENTITY, entityId.getModelType());
+		assertEquals("NUMBER", entityId.getType());
 
-   }
+	}
 }

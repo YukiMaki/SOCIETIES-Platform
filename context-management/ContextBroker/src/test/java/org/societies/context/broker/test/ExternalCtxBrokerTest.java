@@ -37,6 +37,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.societies.api.context.CtxException;
 import org.societies.api.context.broker.CtxAccessControlException;
@@ -153,6 +154,7 @@ public class ExternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testCreateEntityByString() throws CtxException, InterruptedException, ExecutionException {
 
@@ -173,6 +175,7 @@ public class ExternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testCreateAttributeByCtxEntityIdentifierString() throws CtxException, InterruptedException, ExecutionException {
 
@@ -198,6 +201,7 @@ public class ExternalCtxBrokerTest {
 	 * @throws InterruptedException 
 	 * @throws InvalidFormatException 
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveCssOwnerEntityId() throws Exception {
 
@@ -213,6 +217,7 @@ public class ExternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testCreateAssociationByString() throws Exception {
 
@@ -242,6 +247,7 @@ public class ExternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.InternalCtxBroker#createAssociation(java.lang.String)}.
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveEntitiesAssociationString() {
 
@@ -335,6 +341,7 @@ public class ExternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.CtxBroker#lookup(org.societies.api.context.model.CtxModelType)}.
 	 */
+	@Ignore
 	@Test
 	public void testLookupCtxModelTypeString() {
 
@@ -385,6 +392,7 @@ public class ExternalCtxBrokerTest {
 	/**
 	 * Test method for {@link org.societies.context.broker.impl.CtxBroker#retrievePast(Requestor, org.societies.api.context.model.CtxAttributeIdentifier, java.util.Date, java.util.Date)}.
 	 */
+	@Ignore
 	@Test
 	public void testRetrieveHistoryCtxAttributeIdentifierDateDate() {
 
@@ -468,6 +476,7 @@ public class ExternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test
 	public void testUpdateByCtxAttribute() throws Exception {
 
@@ -525,6 +534,7 @@ public class ExternalCtxBrokerTest {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
+	@Ignore
 	@Test(expected=CtxAccessControlException.class)
 	public void testUpdateByCtxAttributeAccessControlException() throws Exception {
 
@@ -547,6 +557,7 @@ public class ExternalCtxBrokerTest {
 		this.ctxBroker.update(requestor, emptyAttribute).get();
 	}
 
+	@Ignore
 	@Test
 	public void testLookupAttributeValues() throws Exception {
 
