@@ -65,6 +65,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.societies.api.context.model.CtxEntity;
 import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
 
@@ -116,12 +117,12 @@ import org.societies.api.context.model.CtxIdentifier;
 })
 @Entity
 @Table(name = "entities")
-public class UserCtxEntityDAO implements Serializable {
+public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)
-	private CtxIdentifier entityId;
+	private static CtxIdentifier entityId;
 
 	private Date lastModified;
 	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
@@ -134,7 +135,7 @@ public class UserCtxEntityDAO implements Serializable {
 	 */
 	public UserCtxEntityDAO(CtxIdentifier entityId, UserCtxEntityIdentifierDAO ctxIdentifier, Date lastModified) {
 
-//		super();
+		super((CtxEntityIdentifier) entityId);
 		
 		this.entityId = entityId;
 		this.ctxIdentifier = ctxIdentifier;
@@ -143,7 +144,7 @@ public class UserCtxEntityDAO implements Serializable {
 	
 	public UserCtxEntityDAO(CtxIdentifier entityId, Set<UserCtxAttributeDAO> attrScope) {
 
-//		super();
+		super((CtxEntityIdentifier) entityId);
 		
 		this.entityId = entityId;
 		this.attrScope = attrScope;
@@ -153,7 +154,7 @@ public class UserCtxEntityDAO implements Serializable {
 	 * 
 	 */
 	public UserCtxEntityDAO() {
-//		super();
+		super((CtxEntityIdentifier) entityId);
 		// TODO Auto-generated constructor stub
 	}
 

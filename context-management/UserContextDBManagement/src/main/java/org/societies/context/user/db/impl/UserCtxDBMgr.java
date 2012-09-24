@@ -157,10 +157,12 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			identifier = new CtxAssociationIdentifier(this.privateIdtoString, 
 				type, modelObjectNumber);
 		}
-		
+
+		//with maps
 		final CtxAssociation association = new  CtxAssociation(identifier);
 		this.modelObjects.put(association.getId(), association);		
 
+		//with hibernate
 		Session session = sessionFactory.openSession();
 		Transaction t = session.beginTransaction();
 
@@ -168,7 +170,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
 			objectNumber.setNextValue(modelObjectNumber);
 			session.save(objectNumber);
-			Date date = new Date();
+
 			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
 
 			associationDB.setAssociationId(association.getId());
@@ -179,7 +181,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			}
 			//TODO specify dynamic
 //			associationDB.setDynamic(association.get)
-//			session.save(tmpEntity);
+
 			if (!association.childEntities.isEmpty())
 				associationDB.setMap(association.childEntities);
 			
@@ -224,9 +226,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	public CtxAttribute createAttribute(final CtxEntityIdentifier scope,
 			final String type) throws CtxException {
 
-		Session session = sessionFactory.openSession();
-		Transaction t = session.beginTransaction();
-
 		if (scope == null)
 			throw new NullPointerException("scope can't be null");
 		if (type == null)
@@ -238,81 +237,93 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			throw new UserCtxDBMgrException("Scope not found: " + scope);
 
 		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
-		
+
+		//with maps
 		CtxAttributeIdentifier attrIdentifier = new CtxAttributeIdentifier(scope, type, modelObjectNumber);
 		final CtxAttribute attribute = new CtxAttribute(attrIdentifier);
 
 		this.modelObjects.put(attribute.getId(), attribute);
-		entity.addAttribute(attribute);
+		LOG.info("Attribute created with maps - " + attribute.getId());
 		
+		//with hibernate
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
+
 		try{
-			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
-			objectNumber.setNextValue(modelObjectNumber);
-			session.save(objectNumber);
-			
+			//find corresponding entity
 			if (session.get(UserIndividualCtxEntityDAO.class, scope) != null) {
-				UserIndividualCtxEntityDAO entityDB = new UserIndividualCtxEntityDAO();
-				entityDB = (UserIndividualCtxEntityDAO) session.get(UserIndividualCtxEntityDAO.class, scope);
+				UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+				objectNumber.setNextValue(modelObjectNumber);
+				session.save(objectNumber);
 				
-				Date date = new Date();
-				UserIndCtxAttributeDAO attributeDB = new UserIndCtxAttributeDAO();
-				attributeDB.setAttributeId(attribute.getId());
-				//TODO change to timestamp
-	//			attributeDB.setTimestamp(attribute.getLastModified());
-	//			attributeDB.setLastModified(date);
-				attributeDB.setValueStr(attribute.getStringValue());
-				attributeDB.setValueInt(attribute.getIntegerValue());
-				attributeDB.setValueDbl(attribute.getDoubleValue());
-				attributeDB.setValueBlob(attribute.getBinaryValue());
-				attributeDB.setHistory(attribute.isHistoryRecorded());
-				attributeDB.setSourceId(attribute.getSourceId());
-				attributeDB.setValueType(attribute.getValueType().toString());
-				attributeDB.setValueMetric(attribute.getValueMetric());
+				UserIndividualCtxEntityDAO indEntityDB = new UserIndividualCtxEntityDAO();
+				indEntityDB = (UserIndividualCtxEntityDAO) session.get(UserIndividualCtxEntityDAO.class, scope);
+				
+				LOG.info("Attribute to BE created - " + attribute.getId());
+				LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + attribute.getObjectNumber());
+				
+				UserIndCtxAttributeDAO indAttributeDB = new UserIndCtxAttributeDAO();
+				indAttributeDB.setAttributeId(attribute.getId());
+				indAttributeDB.setValueStr(attribute.getStringValue());
+				indAttributeDB.setValueInt(attribute.getIntegerValue());
+				indAttributeDB.setValueDbl(attribute.getDoubleValue());
+				indAttributeDB.setValueBlob(attribute.getBinaryValue());
+				indAttributeDB.setHistory(attribute.isHistoryRecorded());
+				indAttributeDB.setSourceId(attribute.getSourceId());
+				//TODO doesn't get value Type!!!
+				indAttributeDB.setValType(attribute.getValueType().toString());
+				indAttributeDB.setValueMetric(attribute.getValueMetric());
 				
 				//setting identifier
-				UserCtxIndAttributeIdentifierDAO attrIdentDB = new UserCtxIndAttributeIdentifierDAO();
-				attrIdentDB.setType(attribute.getType());
-				attrIdentDB.setObjectNumber(attrIdentifier.getObjectNumber());
-				attrIdentDB.setScopeIndividual(entityDB);
-				attributeDB.setCtxIdentifier(attrIdentDB);
-				entityDB.getAttrScope().add(attributeDB);
+				UserCtxIndAttributeIdentifierDAO indAttrIdentDB = new UserCtxIndAttributeIdentifierDAO();
+				indAttrIdentDB.setType(attribute.getType());
+				indAttrIdentDB.setObjectNumber(attribute.getObjectNumber());
+				indAttrIdentDB.setScopeIndividual(indEntityDB);
+				indAttributeDB.setCtxIdentifier(indAttrIdentDB);
+				indEntityDB.getAttrScope().add(indAttributeDB);
+				LOG.info("AttributeCtxIdentifier created with hibernate - " + indAttrIdentDB);
 	
-				session.save(attributeDB);
+				session.save(indAttributeDB);
 				t.commit();
+				LOG.info("Attribute created with hibernate (ind) from - " + attribute.getId());
 			}
 			else {
+				UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
+				objectNumber.setNextValue(modelObjectNumber);
+				session.save(objectNumber);
+				
 				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
 				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, scope);
 				
-				Date date = new Date();
+				LOG.info("Attribute to BE created - " + attribute.getId());
+				LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + attribute.getObjectNumber());
 				UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
 				attributeDB.setAttributeId(attribute.getId());
-				//TODO change to timestamp
-	//			attributeDB.setTimestamp(attribute.getLastModified());
-	//			attributeDB.setLastModified(date);
 				attributeDB.setValueStr(attribute.getStringValue());
 				attributeDB.setValueInt(attribute.getIntegerValue());
 				attributeDB.setValueDbl(attribute.getDoubleValue());
 				attributeDB.setValueBlob(attribute.getBinaryValue());
 				attributeDB.setHistory(attribute.isHistoryRecorded());
 				attributeDB.setSourceId(attribute.getSourceId());
-				attributeDB.setValueType(attribute.getValueType().toString());
+				//TODO doesn't get value Type!!!
+				attributeDB.setValType(attribute.getValueType().toString());
 				attributeDB.setValueMetric(attribute.getValueMetric());
 				
 				//setting identifier
 				UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
 				attrIdentDB.setType(attribute.getType());
-				attrIdentDB.setObjectNumber(attrIdentifier.getObjectNumber());
+				attrIdentDB.setObjectNumber(attribute.getObjectNumber());
 				attrIdentDB.setScope(entityDB);
 				attributeDB.setCtxIdentifier(attrIdentDB);
 				entityDB.getAttrScope().add(attributeDB);
-	
+				LOG.info("AttributeCtxIdentifier created with hibernate - " + attrIdentDB);
+				
 				session.save(attributeDB);
 				t.commit();				
+				LOG.info("Attribute created with hibernate from - " + attribute.getId());
 			}
 		}
 		catch (Exception e) {
-//			e.printStackTrace();
 			LOG.error("Could not create attribute: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
@@ -353,9 +364,11 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 					type, modelObjectNumber);
 		}
 
+		//using maps
 		final CtxEntity entity = new  CtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);		
 
+		//using hibernate
 		Session session = sessionFactory.openSession();
 		Transaction t = session.beginTransaction();
 
@@ -365,15 +378,12 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			objectNumber.setNextValue(modelObjectNumber);
 			session.save(objectNumber);
 	
-			Date date = new Date();
-
 			//Prepare CtxEntityDAO
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
 			entityDB.setEntityId(entity.getId());
-			//TODO change to timestamp
-//			entityDB.setTimestamp(entity.getLastModified());
-//			entityDB.setLastModified(date);
 			
+			LOG.info("Entity to BE created - " + entity.getId() + " and ownerId " + entity.getOwnerId());
+			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + entity.getObjectNumber());
 			//setting identifier
 			UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
 			entIdentDB.setOperatorId(entity.getOwnerId());
@@ -386,7 +396,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-//			e.printStackTrace();
 			LOG.error("Could not create entity: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
@@ -414,9 +423,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	@Override
 	public IndividualCtxEntity createIndividualCtxEntity(String type) throws CtxException {
 
-		Session session = sessionFactory.openSession();
-		Transaction t = session.beginTransaction();
-
 		CtxEntityIdentifier identifier;
 
 		long modelObjectNumber = CtxModelObjectNumberGenerator.getNextValue();
@@ -429,25 +435,25 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			identifier = new CtxEntityIdentifier(this.privateIdtoString,
 					type, modelObjectNumber);			
 		}
-		
+
+		//using maps 
 		IndividualCtxEntity entity = new IndividualCtxEntity(identifier);
 		this.modelObjects.put(entity.getId(), entity);
+
+		//using hibernate
+		Session session = sessionFactory.openSession();
+		Transaction t = session.beginTransaction();
 
 		try{
 			UserCtxModelObjectNumberDAO objectNumber = new UserCtxModelObjectNumberDAO();
 			objectNumber.setNextValue(modelObjectNumber);
 			session.save(objectNumber);
 			
-			Date date = new Date();
-
-
 			UserIndividualCtxEntityDAO indEntityDB = new UserIndividualCtxEntityDAO();
 			indEntityDB.setEntityId(entity.getId());
 			
-			//TODO change to timestamp
-//			entityDB.setTimestamp(entity.getLastModified());
-//			entityDB.setLastModified(date);
-			
+			LOG.info("Entity to BE created - " + entity.getId() + " and ownerId " + entity.getOwnerId());
+			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + entity.getObjectNumber());
 			//setting identifier
 			UserCtxIndEntityIdentifierDAO identDB = new UserCtxIndEntityIdentifierDAO();
 			identDB.setOperatorId(entity.getOwnerId());
@@ -461,7 +467,6 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			t.commit();
 		}
 		catch (Exception e) {
-			//e.printStackTrace();
 			LOG.error("Could not create individual entity: " + e.getLocalizedMessage(),e);
 		} finally {
 			if (session != null) {
@@ -726,44 +731,46 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	public CtxModelObject retrieve(CtxIdentifier id) throws CtxException {
 
 		CtxModelObject retrieved = null;
+		CtxModelObject retrieved2 = null;
 		Session session = sessionFactory.openSession();
 		Transaction t = session.beginTransaction();
 
         try {
             // Start a unit of work
-            if (id.getModelType().equals(CtxModelType.ENTITY)) {
+            if (id.getModelType().equals(CtxModelType.ENTITY)) {            	
 //            	retrieved = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
             	retrieved = this.modelObjects.get(id);
 
+            	if (session.get(UserCtxEntityDAO.class, id) != null) {
+            		LOG.info("trying from CtxEntity!");
+            		retrieved2 = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
+            	}
+            	else {
+            		LOG.info("trying from IndividualCtxEntity!");
+            		retrieved2 = (CtxModelObject) session.get(UserIndividualCtxEntityDAO.class, id);       		
+            	}
+            	
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (entity) - " + retrieved);
+            	LOG.info("test retrieve (entity) - " + retrieved + " and from db - " + retrieved2);
             } else if (id.getModelType().equals(CtxModelType.ATTRIBUTE)) {
 
-//            	UserCtxAttributeDAO retrAttr = new UserCtxAttributeDAO();
- //           	retrAttr = (UserCtxAttributeDAO) session.get(UserCtxAttributeDAO.class, id);
-
-//            	LOG.info("test retrieved retrAttr valueStr " + retrAttr.getValueStr());
- //           	CtxAttribute newAttribute = new CtxAttribute((CtxAttributeIdentifier) retrAttr.getAttributeId());
+           		LOG.info("trying from CtxAttribute!");
+           		retrieved2 = (CtxModelObject) session.get(UserCtxAttributeDAO.class, id);
+            	if (retrieved2 == null) {
+            		LOG.info("trying from IndividualCtxAttribute!");
+            		retrieved2 = (CtxModelObject) session.get(UserIndCtxAttributeDAO.class, id);
+            	}
             	
-  //          	retrieved = newAttribute;
-
-               	Query query = session.getNamedQuery("retrieveCtxAttribute");
-            	query.setParameter("id", id, Hibernate.STRING);
-            	UserCtxAttributeDAO retrAttr = new UserCtxAttributeDAO();
-//            	retrAttr = query.uniqueResult();
-//            	LOG.info("test retrieve attr as CtxAttrDAO - " + query.uniqueResult());
-//            	retrieved = (CtxModelObject) query.list();
             	retrieved = this.modelObjects.get(id);
-//            	foundList = (List<CtxIdentifier>) query.list();
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (attribute)" + retrieved);
+            	LOG.info("test retrieve (attribute)" + retrieved + " and from db - " + retrieved2);
             } else if (id.getModelType().equals(CtxModelType.ASSOCIATION)) {
 
-//            	retrieved = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
+            	retrieved2 = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
             	retrieved = this.modelObjects.get(id);
 
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (association)" + retrieved);
+            	LOG.info("test retrieve (association)" + retrieved + " and from db - " + retrieved2);
             }             // End the unit of work
             t.commit();
         } catch (Exception e) {
@@ -884,7 +891,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 					attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
 					attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
 					attributeDB.setSourceId(ctxAttrCopy.getSourceId());
-					attributeDB.setValueType(ctxAttrCopy.getValueType().toString());
+					attributeDB.setValType(ctxAttrCopy.getValueType().toString());
 					attributeDB.setValueMetric(ctxAttrCopy.getValueMetric());
 		
 					//setting identifier
@@ -915,7 +922,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 					attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
 					attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
 					attributeDB.setSourceId(ctxAttrCopy.getSourceId());
-					attributeDB.setValueType(ctxAttrCopy.getValueType().toString());
+					attributeDB.setValType(ctxAttrCopy.getValueType().toString());
 					attributeDB.setValueMetric(ctxAttrCopy.getValueMetric());
 		
 					//setting identifier

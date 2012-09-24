@@ -48,6 +48,8 @@ import javax.persistence.Version;
 
 import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxAttribute;
+import org.societies.api.context.model.CtxAttributeIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
 
 /**
@@ -72,11 +74,11 @@ import org.societies.api.context.model.CtxIdentifier;
 @AssociationOverride(name = "ctxIdentifier.type", joinColumns = @JoinColumn(name = "type")),
 @AssociationOverride(name = "ctxIdentifier.objectNumber", joinColumns = @JoinColumn(name = "object_number"))
         })
-public class UserCtxAttributeDAO implements Serializable {
+public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private CtxIdentifier attributeId;
+	private static CtxIdentifier attributeId;
 	private Date lastModified;
 	private UserCtxAttributeIdentifierDAO ctxIdentifier;
 	private String valueStr;
@@ -104,7 +106,7 @@ public class UserCtxAttributeDAO implements Serializable {
 	 */
 	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date lastModified, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
 
-//		super();
+		super((CtxAttributeIdentifier) attributeId);
 
 		this.attributeId = attributeId;
 		this.lastModified = lastModified;
@@ -123,17 +125,17 @@ public class UserCtxAttributeDAO implements Serializable {
 	 * 
 	 */
 	public UserCtxAttributeDAO() {
-//		super();
+		super((CtxAttributeIdentifier) attributeId);
 		// TODO Auto-generated constructor stub
 	}
 
 	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
 	@PrimaryKeyJoinColumn
-	public UserCtxQualityDAO getQuality() {
+	public UserCtxQualityDAO getCtxQuality() {
 		return this.quality;
 	}
 
-	public void setQuality(UserCtxQualityDAO quality) {
+	public void setCtxQuality(UserCtxQualityDAO quality) {
 		this.quality = quality;
 	}
 
@@ -209,10 +211,10 @@ public class UserCtxAttributeDAO implements Serializable {
 	}
 
 	@Column(name = "value_type")
-	public String getValueType() {
+	public String getValType() {
 		return valueType;
 	}
-	public void setValueType(String valueType) {
+	public void setValType(String valueType) {
 		this.valueType = valueType;
 	}
 

@@ -43,6 +43,7 @@ import javax.persistence.Version;
 import org.hibernate.annotations.CollectionOfElements;
 import org.hibernate.annotations.MapKey;
 import org.hibernate.annotations.Type;
+import org.societies.api.context.model.CtxAssociation;
 import org.societies.api.context.model.CtxAssociationIdentifier;
 import org.societies.api.context.model.CtxEntityIdentifier;
 import org.societies.api.context.model.CtxIdentifier;
@@ -64,11 +65,11 @@ import org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierTyp
 
 @Entity
 @Table(name = "associations")
-public class UserCtxAssociationDAO implements Serializable {
+public class UserCtxAssociationDAO extends CtxAssociation implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private CtxIdentifier associationId;
+	private static CtxIdentifier associationId;
 	private Date lastModified;
 	private CtxIdentifier parentEntityId;
 	private boolean dynamic;
@@ -85,7 +86,7 @@ public class UserCtxAssociationDAO implements Serializable {
 	 */
 	public UserCtxAssociationDAO(CtxIdentifier associationId, Date lastModified, CtxIdentifier parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
 
-		super();
+		super((CtxAssociationIdentifier) associationId);
 
 		this.associationId = associationId;
 		this.lastModified = lastModified;
@@ -99,7 +100,7 @@ public class UserCtxAssociationDAO implements Serializable {
 	 * 
 	 */
 	public UserCtxAssociationDAO() {
-		super();
+		super((CtxAssociationIdentifier) associationId);
 		// TODO Auto-generated constructor stub
 	}
 

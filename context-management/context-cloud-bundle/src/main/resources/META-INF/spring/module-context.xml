@@ -50,6 +50,7 @@
 				<value>org.societies.context.user.db.impl.model.UserCtxHistoricAttributeDAO</value>
 				<value>org.societies.context.user.db.impl.model.UserCtxModelObjectNumberDAO</value>
 				<value>org.societies.context.user.db.impl.model.UserCtxQualityDAO</value>
+				<value>org.societies.context.user.db.impl.model.UserIndCtxQualityDAO</value>
 			</list>
 		</property>
 		<property name="annotatedPackages">
