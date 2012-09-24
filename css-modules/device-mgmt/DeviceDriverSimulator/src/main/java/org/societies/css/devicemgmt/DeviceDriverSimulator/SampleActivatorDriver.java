@@ -127,11 +127,11 @@ public class SampleActivatorDriver implements BundleContextAware{
 	 */
 	public void startSimul() 
 	{
-		deviceCommonInfo1 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 1 test", "Zigbee", "Room1", "Trialog", null, true);
-		deviceCommonInfo2 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 2 test", "Zigbee", "Room2", "Trialog", null, true);
-		deviceCommonInfo3 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 3 test", "Zigbee", "Room3", "Trialog", null, true);
+		deviceCommonInfo1 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 1 test", "Zigbee", "Room1", "Trialog", null, true, physicalDeviceId1);
+		deviceCommonInfo2 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 2 test", "Zigbee", "Room2", "Trialog", null, true, physicalDeviceId2);
+		deviceCommonInfo3 = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Light Sensor", DeviceTypeConstants.LIGHT_SENSOR, "Light Sensor 3 test", "Zigbee", "Room3", "Trialog", null, true, physicalDeviceId3);
 
-		screenCommonInfo = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Sony Screen", DeviceTypeConstants.SCREEN, "Screen display test", "HDMI", "Corridor1", "Trialog", null, false);
+		screenCommonInfo = new DeviceCommonInfo("org.societies.DeviceDriverSimulator", "Sony Screen", DeviceTypeConstants.SCREEN, "Screen display test", "HDMI", "Corridor1", "Trialog", null, false, screenPhysicalDeviceId);
 		/* creation of sensors */
 		
 		ls = new LightSensor(this, DeviceMgmtDriverServiceNames.LIGHT_SENSOR_DRIVER_SERVICE, physicalDeviceId1, lightSensorCount);

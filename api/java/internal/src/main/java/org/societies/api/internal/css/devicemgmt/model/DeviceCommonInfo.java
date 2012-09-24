@@ -52,7 +52,7 @@ public class DeviceCommonInfo {
 			String deviceName, String deviceType,
 			String deviceDescription, String deviceConnectionType,
 			String deviceLocation, String deviceProvider, String deviceID,
-			boolean contextSource) {
+			boolean contextSource, String devicePhysicalAddress) {
 		super();
 		this.deviceFamilyIdentity = deviceFamilyIdentity;
 		this.deviceName = deviceName;
@@ -63,6 +63,7 @@ public class DeviceCommonInfo {
 		this.deviceProvider = deviceProvider;
 		this.deviceID = deviceID;
 		this.contextSource = contextSource;
+		this.devicePhysicalAddress = devicePhysicalAddress;
 	}
 	
 	
@@ -162,6 +163,7 @@ public class DeviceCommonInfo {
 				+ ", deviceProvider=" + deviceProvider
 				+ ", deviceID=" + deviceID 
 				+ ", contextSource=" + contextSource
+				+ ", devicePhysicalAddress=" + devicePhysicalAddress
 				+ "]";
 	}
 }

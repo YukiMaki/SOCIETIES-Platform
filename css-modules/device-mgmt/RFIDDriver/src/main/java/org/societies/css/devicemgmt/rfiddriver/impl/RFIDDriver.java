@@ -121,7 +121,7 @@ public class RFIDDriver implements /*IRfidDriver,*/ BundleContextAware{
 		rfidSystemCommonInfo = new DeviceCommonInfo(DEVICE_FAMILY_IDENTITY, DEVICE_NAME, 
 				DeviceTypeConstants.RFID_READER, DEVICE_DESCR, DeviceConnectionTypesConstants.ETHERNET_CONNECTION,
 				DEVICE_LOCATION, 
-				DEVICE_PROVIDER, null, false);
+				DEVICE_PROVIDER, null, false, physicalDeviceId);
 		
 		rfidSystem = new RfidSystem(eventMgr);
 		

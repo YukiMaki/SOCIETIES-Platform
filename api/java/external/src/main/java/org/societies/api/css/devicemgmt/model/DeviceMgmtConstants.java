@@ -113,9 +113,37 @@ public class DeviceMgmtConstants {
 	/**
 	 * This indicating whether the device is context compliant.
 	 * Constant to be used to get or set device service context compliant property
-	 * @value "contextCompliant"
+	 * @value "contextSource"
 	 */
 	public static final String DEVICE_CONTEXT_SOURCE = "contextSource";
+	
+	
+	/**
+	 * This indicating whether the device is shareable or not.
+	 * Constant to be used to get or set device service shareability property
+	 * @value "deviceShareability"
+	 * 
+	 * "0" The device is not shareable, which means that the device owner can't share it
+	 * "1" The device is shareable once, which means that only the device owner can share it to his CIS but another member  of the CIS can't share it
+	 * "2" The device is shareable twice, which means that the device owner can share it to his CIS and all members of this CIS can share it once.
+	 * "." ...
+	 * "." ...
+	 * "." ...
+	 * "n" The device can be shared without limit.
+	 */
+	public static final String DEVICE_SHAREABILITY = "deviceShareability";
+	
+	
+	/**
+	 * This indicating whether the device is local, remote or shared one.
+	 * Constant to be used to get or set device service Origin property
+	 * @value "deviceOrigin"
+	 * 
+	 * "0" The device is local, which means that the device is connected to the local node of my CSS
+	 * "1" The device is remote, which means that the device is connected to the remote Node of my CSS
+	 * "2" The device is shared, which means that the device is shared through a CIS and it is connected to a node which owns the CIS.
+	 */
+	public static final String DEVICE_ORIGIN = "deviceOrigin";
 	
 
 }

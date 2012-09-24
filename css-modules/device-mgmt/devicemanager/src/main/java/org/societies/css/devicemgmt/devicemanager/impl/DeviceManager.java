@@ -60,18 +60,28 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 	private static Logger LOG = LoggerFactory.getLogger(DeviceManager.class);
 
 	private Map<String, DeviceImpl> deviceInstanceContainer;
+	
+	private Map<String, DeviceImpl> sharedDeviceInstanceContainer;
 
 	private final Map<String, Map<String, DeviceImpl>> deviceFamilyContainer;
+	
+	private final Map<String, Map<String, DeviceImpl>> sharedDeviceFamilyContainer;
 
 	private final Map<String, ServiceRegistration> serviceRegistrationConatainer;
+	
+	private final Map<String, ServiceRegistration> sharedDeviceServiceRegistrationConatainer;
 
 	private DeviceImpl deviceImpl;
 
 	private Map<String, String[]> deviceServiceNamesContainer;
+	
+	private Map<String, String[]> sharedDeviceServiceNamesContainer;
 
 	public static BundleContext bundleContext;
 
 	private BidiMap deviceIdBindingTable;
+	
+	private BidiMap sharedDeviceIdBindingTable;
 
 	private IIdentityManager idManager;
 
@@ -81,6 +91,8 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 
 	// BJB 10/09/2012: Change Dictionary<String, String> -> Dictionary<String, Object>
 	private Dictionary<String, Object> properties;
+	
+	private Dictionary<String, Object> sharedDeviceProperties;
 	// END
 	
 	private ServiceRegistration registration;
@@ -96,11 +108,17 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 	public DeviceManager() {
 
 		deviceFamilyContainer = new HashMap<String, Map<String, DeviceImpl>>();
+		sharedDeviceFamilyContainer = new HashMap<String, Map<String, DeviceImpl>>();
+		
 		deviceServiceNamesContainer = new HashMap<String, String[]>();
+		sharedDeviceServiceNamesContainer = new HashMap<String, String[]>();
+		
 		// TODO Fill this table
 		deviceIdBindingTable = new DualHashBidiMap();
+		sharedDeviceIdBindingTable = new DualHashBidiMap();
 
 		serviceRegistrationConatainer = new HashMap<String, ServiceRegistration>();
+		sharedDeviceServiceRegistrationConatainer = new HashMap<String, ServiceRegistration>();
 	}
 
 	public DmCommManager getDeviceCommManager() {
@@ -183,8 +201,7 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 	}
 
 	public String getPhysicalDeviceId(String deviceId) {
-		String physicalDeviceId = (String) deviceIdBindingTable
-				.inverseBidiMap().getKey(deviceId);
+		String physicalDeviceId = (String) deviceIdBindingTable.inverseBidiMap().getKey(deviceId);
 
 		LOG.info(" %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% DeviceManager info: getPhysicalDeviceId ::::::::::: "
 				+ physicalDeviceId);
@@ -237,6 +254,12 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 			properties.put(DeviceMgmtConstants.DEVICE_LOCATION,deviceCommonInfo.getDeviceLocation());
 			properties.put(DeviceMgmtConstants.DEVICE_PROVIDER,deviceCommonInfo.getDeviceProvider());
 			properties.put(DeviceMgmtConstants.DEVICE_CONNECTION_TYPE,deviceCommonInfo.getDeviceConnectionType());
+			
+			//TODO Default value, to be changed with the value coming from the driver.
+			properties.put(DeviceMgmtConstants.DEVICE_SHAREABILITY,"1");
+			properties.put(DeviceMgmtConstants.DEVICE_ORIGIN,"0");
+			
+			
 			if (deviceCommonInfo.getContextSource()) {
 				properties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE, "isContextSource");
 			} else {
@@ -302,7 +325,9 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 				return deviceId;
 			}
 
-		} else {
+		}
+		else
+		{
 			// The bundle is Known, so get the device instance container
 			deviceInstanceContainer = deviceFamilyContainer
 					.get(deviceCommonInfo.getDeviceFamilyIdentity());
@@ -333,6 +358,10 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 						deviceCommonInfo.getDeviceProvider());
 				properties.put(DeviceMgmtConstants.DEVICE_CONNECTION_TYPE,
 						deviceCommonInfo.getDeviceConnectionType());
+				
+				//TODO Default value, to be changed with the value coming from the driver.
+				properties.put(DeviceMgmtConstants.DEVICE_SHAREABILITY,"1");
+				properties.put(DeviceMgmtConstants.DEVICE_ORIGIN,"0");
 
 				if (deviceCommonInfo.getContextSource()) {
 					properties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE,
@@ -441,20 +470,201 @@ public class DeviceManager implements IDeviceManager, BundleContextAware {
 		return null;
 	}
 
-	@Override
-	public String fireNewSharedDevice(DeviceCommonInfo deviceCommonInfo,
-			IIdentity deviceNodeId) {
-		LOG.info("-- Device Manager : create a new local device "
-				+ deviceCommonInfo.getDeviceName()
-				+ " representing a remote device connected to CSS Node "
-				+ deviceNodeId);
-		return "device A";
-	}
+	
 
 	@Override
 	public boolean fireDisconnectedSharedDevice(String deviceId) {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
+
+	@Override
+	public String fireNewSharedDevice(DeviceCommonInfo deviceCommonInfo,
+			IIdentity deviceNodeId) {
+
+		LOG.info("-- Device Manager : create a new shared device with following info: "
+				+ deviceCommonInfo.toString()
+				+ " This representing a remote shared device connected to CSS Node with the following JID: "
+				+ deviceNodeId
+				+ " To compare, my JID is:"
+				+ nodeId.getJid());
+
+
+		//If the sharedDeviceFamilyContainer doesn't contain a container of the sharedDeviceInstanceContainer
+		if (sharedDeviceFamilyContainer.get(deviceCommonInfo.getDeviceFamilyIdentity()) == null) 
+		{
+			// Create a new shared device instance container
+			sharedDeviceInstanceContainer = new HashMap<String, DeviceImpl>();
+
+			sharedDeviceProperties = new Hashtable<String, Object>();
+
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_NODE_ID, deviceNodeId.getJid());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_ID, deviceCommonInfo.getDeviceID());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_NAME,	deviceCommonInfo.getDeviceName());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_TYPE,deviceCommonInfo.getDeviceType());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_FAMILY,deviceCommonInfo.getDeviceFamilyIdentity());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_LOCATION,deviceCommonInfo.getDeviceLocation());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_PROVIDER,deviceCommonInfo.getDeviceProvider());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONNECTION_TYPE,deviceCommonInfo.getDeviceConnectionType());
+
+			//TODO Default value, to be changed with the value coming from the driver.
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_SHAREABILITY,"1");
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_ORIGIN, "2");
+
+			if (deviceCommonInfo.getContextSource()) {
+				sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE, "isContextSource");
+			} else {
+				sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE, "isNotContextSource");
+			}
+			
+			// BJB : 31 08 2012
+			sharedDeviceProperties.put(TARGET_PLATFORM,"SOCIETIES");
+			sharedDeviceProperties.put(SERVICE_PROVIDER,"ICT-SOCIETIES");
+
+			Service deviceService = new Service();
+			deviceService.setServiceCategory(deviceCommonInfo.getDeviceType());
+			deviceService.setServiceDescription(deviceCommonInfo.getDeviceDescription());
+
+			deviceService.setServiceLocation(deviceCommonInfo.getDeviceLocation());
+
+			deviceService.setServiceName(deviceCommonInfo.getDeviceName());
+			deviceService.setServiceType(ServiceType.DEVICE);
+			if (deviceCommonInfo.getContextSource()) {
+				deviceService.setContextSource("isContextSource"); 
+			} 
+			else {
+				deviceService.setContextSource("isNotContextSource");  
+			}
+
+			sharedDeviceProperties.put("ServiceMetaModel", deviceService);
+
+			// END BJB 31 08 2012
+			// Object lock = new Object();
+
+			// create a new IDevice implementation
+			deviceImpl = new DeviceImpl(this, deviceNodeId.getJid(), deviceCommonInfo.getDeviceID(), deviceCommonInfo);
+
+			sharedDeviceInstanceContainer.put(deviceCommonInfo.getDeviceID(), deviceImpl);
+			
+			//TODO get driver service names from the owner node
+			//sharedDeviceServiceNamesContainer.put(deviceCommonInfo.getDeviceID(), serviceNames);
+			
+//			LOG.info(" %%%%%%%%%%%%%%%%======================%%%%%%%%%%%%%%%%% DeviceManager info: fireNewSharedDevice "
+//					+ sharedDeviceServiceNamesContainer.toString());
+			
+			sharedDeviceFamilyContainer.put(deviceCommonInfo.getDeviceFamilyIdentity(), sharedDeviceInstanceContainer);
+
+			synchronized (this) {
+				registration = bundleContext.registerService(IDevice.class.getName(), deviceImpl, sharedDeviceProperties);
+
+				LOG.info("-- A device service with the deviceId: "
+						+ sharedDeviceProperties.get("deviceId") + " has been registred");
+
+				// Add the service registration to the map for future use (to
+				// unregister a service, to change his property...etc)
+				sharedDeviceServiceRegistrationConatainer.put(deviceCommonInfo.getDeviceID(), registration);
+
+				
+				
+				//TODO broadcast the new device shared to the other nodes of this CSS so that they can use the shared device?
+//				LOG.info("-- Device Manager before Broadcast");
+//				// Broadcast the the device connected event to the other nodes
+//				deviceCommManager.fireNewDeviceConnected(deviceId, deviceCommonInfo);
+//
+//				LOG.info("-- Device Manager after Broadcast");
+
+				return deviceCommonInfo.getDeviceID();
+			}
+		}
+		else
+		{
+			// The bundle is Known, so get the device instance container
+			sharedDeviceInstanceContainer = deviceFamilyContainer.get(deviceCommonInfo.getDeviceFamilyIdentity());
+
+			sharedDeviceProperties = new Hashtable<String, Object>();
+
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_NODE_ID, nodeId.getJid());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_ID, deviceCommonInfo.getDeviceID());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_NAME, deviceCommonInfo.getDeviceName());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_TYPE, deviceCommonInfo.getDeviceType());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_FAMILY, deviceCommonInfo.getDeviceFamilyIdentity());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_LOCATION, deviceCommonInfo.getDeviceLocation());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_PROVIDER, deviceCommonInfo.getDeviceProvider());
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONNECTION_TYPE, deviceCommonInfo.getDeviceConnectionType());
+
+			//TODO Default value, to be changed with the value coming from the driver.
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_SHAREABILITY,"1");
+			sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_ORIGIN,"2");
+
+			if (deviceCommonInfo.getContextSource()) {
+				sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE,
+						"isContextSource");
+			} else {
+				sharedDeviceProperties.put(DeviceMgmtConstants.DEVICE_CONTEXT_SOURCE,
+						"isNotContextSource");
+			}
+			// BJB : 31 08 2012
+			sharedDeviceProperties.put(TARGET_PLATFORM,"SOCIETIES");
+			sharedDeviceProperties.put(SERVICE_PROVIDER,"ICT-SOCIETIES");
+
+			Service deviceService = new Service();
+			deviceService.setServiceCategory(deviceCommonInfo.getDeviceType());
+			deviceService.setServiceDescription(deviceCommonInfo.getDeviceDescription());
+
+			deviceService.setServiceLocation(deviceCommonInfo.getDeviceLocation());
+
+			deviceService.setServiceName(deviceCommonInfo.getDeviceName());
+			deviceService.setServiceType(ServiceType.DEVICE);
+			if (deviceCommonInfo.getContextSource()) {
+				deviceService.setContextSource("isContextSource"); 
+			} 
+			else {
+				deviceService.setContextSource("isNotContextSource");  
+			}
+
+			sharedDeviceProperties.put("ServiceMetaModel", deviceService);
+
+			// END BJB 31 08 2012
+
+			// Object lock = new Object();
+
+			// create a new IDevice implementation
+			deviceImpl = new DeviceImpl(this, nodeId.getJid(), deviceCommonInfo.getDeviceID(), deviceCommonInfo);
+
+			sharedDeviceInstanceContainer.put(deviceCommonInfo.getDeviceID(), deviceImpl);
+			
+			
+			//TODO get driver service names from the owner node
+			//sharedDeviceServiceNamesContainer.put(deviceCommonInfo.getDeviceID(), serviceNames);
+			
+			
+//			LOG.info(" %%%%%%%%%%%%%%%%======================%%%%%%%%%%%%%%%%% DeviceManager info: fireNewDeviceShared "
+//						+ sharedDeviceServiceNamesContainer.toString());
+
+			sharedDeviceFamilyContainer.put(deviceCommonInfo.getDeviceFamilyIdentity(), sharedDeviceInstanceContainer);
+
+			synchronized (this) {
+				registration = bundleContext.registerService(IDevice.class.getName(), deviceImpl, sharedDeviceProperties);
+
+				LOG.info("-- A device service with the deviceId: "
+						+ sharedDeviceProperties.get("deviceId")
+						+ " has been registred");
+
+				// Add the service registration to the map for future use
+				// (to unregister a service, to change his property...etc)
+				sharedDeviceServiceRegistrationConatainer.put(deviceCommonInfo.getDeviceID(), registration);
+
+
+				//TODO broadcast the new device shared to the other nodes of this CSS so that they can use the shared device?
+//				LOG.info("-- Device Manager before Broadcast");
+//				// Broadcast the the device connected event to the other
+//				// nodes
+//				deviceCommManager.fireNewDeviceConnected(deviceId, deviceCommonInfo);
+//
+//				LOG.info("-- Device Manager after Broadcast");
+
+				return deviceCommonInfo.getDeviceID();
+			}
+		}
+	}
 }

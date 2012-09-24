@@ -43,6 +43,7 @@ public class DeviceRegistryForm {
 	private String deviceProvider;
 	private String deviceID;
 	private boolean contextSource;
+	private String devicePhysicalAddress;
 	
 	/**
 	 * @return the method
@@ -177,6 +178,19 @@ public class DeviceRegistryForm {
 	 */
 	public void setContextSource(boolean contextSource) {
 		this.contextSource = contextSource;
+	}
+	
+	/**
+	 * @return the devicePhysicalAddress
+	 */
+	public String getDevicePhysicalAddress() {
+		return devicePhysicalAddress;
+	}
+	/**
+	 * @param devicePhysicalAddress the devicePhysicalAddress to set
+	 */
+	public void setDevicePhysicalAddress(String devicePhysicalAddress) {
+		this.devicePhysicalAddress = devicePhysicalAddress;
 	}
 	
 	

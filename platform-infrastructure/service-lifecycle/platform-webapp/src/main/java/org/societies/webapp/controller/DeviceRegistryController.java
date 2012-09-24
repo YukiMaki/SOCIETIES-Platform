@@ -117,7 +117,8 @@ public class DeviceRegistryController {
 						drForm.getDeviceLocation(), 
 						drForm.getDeviceProvider(), 
 						drForm.getDeviceID(),
-						drForm.isContextSource() );
+						drForm.isContextSource(),
+						drForm.getDevicePhysicalAddress());
 				String cssNodeId = drForm.getCssNodeId();
 				res = deviceRegistry.addDevice(deviceInfo, cssNodeId);
 				

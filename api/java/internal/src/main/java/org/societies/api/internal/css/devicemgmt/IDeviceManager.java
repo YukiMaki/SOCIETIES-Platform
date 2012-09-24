@@ -74,6 +74,8 @@ public interface IDeviceManager {
 	 */
 	public String fireNewSharedDevice (DeviceCommonInfo deviceCommonInfo, IIdentity deviceNodeId);
 	
+	
+	
 	/**
 	 * BJB : 30/08/2012 (remove this once tested)
 	 * Method used to inform the Device Manager about an uninstall of shared device through SLM. The DM will destroy the local OSGi IDevice service 
