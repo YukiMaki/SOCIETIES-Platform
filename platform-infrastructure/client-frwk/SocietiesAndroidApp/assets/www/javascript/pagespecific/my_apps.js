@@ -24,7 +24,7 @@ var Societies3PServices = {
 
 			//DISPLAY SERVICES
 			for (i  = 0; i < data.length; i++) {
-				var tableEntry = '<li><a href="#" onclick="Societies3PServices.showDetails(' + i + ')"><img src="../images/printer_icon.png" class="profile_list" alt="logo" >' +
+				var tableEntry = '<li><a href="#" onclick="Societies3PServices.showDetails(' + i + ')"><img src="images/printer_icon.png" class="profile_list" alt="logo" >' +
 					'<h2>' + data[i].serviceName + '</h2>' + 
 					'<p>' + data[i].serviceDescription + '</p>' + 
 					'</a></li>';
@@ -61,10 +61,11 @@ var Societies3PServices = {
 
 			//DISPLAY SERVICES
 			for (i  = 0; i < data.length; i++) {
-				var tableEntry = '<li><a href="#localapp-item?pos=' + i + '"><img src="' + data[i].icon + '" class="profile_list" alt="logo" >' +
+				var tableEntry = '<li><a href="#" data-rel="dialog" onclick="Societies3PServices.startActivity(\'' + data[i].applicationName + '\', \'' + data[i].packageName + '\')">' +
+									'<img src="' + data[i].icon + '" class="profile_list" alt="logo" >' + 
 									'<h2>' + data[i].applicationName + '</h2>' + 
-									'<p>' + data[i].packageName+ '</p></a>' +  
-									'<a href="#" data-rel="dialog" data-transition="fade" onclick="Societies3PServices.startActivity(\'' + data[i].applicationName + '\', \'' + data[i].packageName + '\')">Launch</a>' +
+									'<p>' + data[i].packageName + '</p></a>' +  
+									//'<a href="#" data-rel="dialog" data-transition="fade" onclick="Societies3PServices.startActivity(\'' + data[i].applicationName + '\', \'' + data[i].packageName + '\')">Launch</a>' +
 									'</li>';
 				jQuery('ul#LocalServicesDiv').append(tableEntry);
 			}
@@ -79,9 +80,26 @@ var Societies3PServices = {
 	},
 	
 	startActivity: function (appName, packageName) {
+		function success(data) {
+			window.plugins.SocietiesCoreServiceMonitor.startActivity(packageName, failure);
+		}
+		
+		function failure(data) {
+			window.alert("Failed to start application!");
+		}
+		
 		if(window.confirm("Launch " + appName + "?"))
-			//LaunchApp(packageName);
-			return null;
+			SocietiesCoreServiceMonitorHelper.connectToCoreServiceMonitor(success);
+	},
+	
+	startStopService: function () {
+		Societies3PServices.startStopService();
+		$('#service_status').html( status );
+		//BUTTON TEXT
+		if (status == "started")
+			$('#start_stop').value="Stop";
+		else
+			$('#start_stop').value="Start";
 	},
 	
 	showDetails: function (servicePos) {
@@ -91,16 +109,24 @@ var Societies3PServices = {
 			//VALID SERVICE OBJECT
 			var markup = "<h1>" + serviceObj.serviceName + "</h1>" + 
 						 "<p>" + serviceObj.serviceDescription + "</p>" +
-						 "<p>" + serviceObj.serviceInstance.serviceImpl.serviceProvider + "</p>" + 
-						 "<p>" + serviceObj.serviceStatus + "</p>";
+						 "<p>" + serviceObj.serviceInstance.serviceImpl.serviceProvider + "</p><br />"; 
 			//INJECT
 			$('#app_detail').html( markup );
+			//SERVICE STATUS
+			var status = serviceObj.serviceStatus;
+			$('#service_status').html( status );
+			//BUTTON TEXT
+			if (status == "started")
+				$('#start_stop').value="Stop";
+			else
+				$('#start_stop').value="Start";
+						
 			try {//REFRESH FORMATTING
 				//ERRORS THE FIRST TIME AS YOU CANNOT refresh() A LISTVIEW IF NOT INITIALISED
 				$('ul#app_details').listview('refresh');
 			}
 			catch(err) {}
-			$.mobile.changePage("my_apps_details.html");
+			$.mobile.changePage($("#my_apps_details"), { transition: "fade"} );
 		}
 	}
 };
@@ -113,34 +139,8 @@ var Societies3PServices = {
  */
 $(document).bind('pageinit',function(){
 
-	console.log("pageinit: Active Services jQuery calls");
-	
-	//Listen for any attempts to call changePage().
-	/*
-	$(document).bind( "pagebeforechange", function( e, data ) {
-	
-		// We only want to handle changePage() calls where the caller is
-		// asking us to load a page by URL.
-		if ( typeof data.toPage === "string" ) {
-	
-			// We are being asked to load a page by URL, but we only
-			// want to handle URLs that request the data for a specific
-			// category.
-			var u = $.mobile.path.parseUrl( data.toPage ),
-				re = /^#category-item/;
-	
-			if ( u.hash.search(re) !== -1 ) {
-				// We're being asked to display the items for a specific category.
-				// Call our internal method that builds the content for the category
-				// on the fly based on our in-memory category data structure.
-				Societies3PServices.showCategory( u, data.options );
-	
-				// Make sure to tell changePage() we've handled this call so it doesn't
-				// have to do anything.
-				e.preventDefault();
-			}
-		}
+	$("input#start_stop").off('click').on('click', function(e){
+		ServiceManagementServiceHelper.connectToServiceManagement(Societies3PServices.refresh3PServices);
 	});
-	*/
 	
 });

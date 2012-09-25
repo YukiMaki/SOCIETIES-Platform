@@ -17,11 +17,12 @@
 	</div>
 	<!-- /header -->
 	<div data-role="content">
-		<input type="search" name="search" id="search-basic" value="Search Communities" data-theme="b"/>
+		<!--  <input type="search" name="search" id="search-basic" value="Search Communities" data-theme="b"/> -->		
 		<br/><br/>
-		<ul data-role="listview" data-theme="d" data-divider-theme="b" id="CommunitiesListDiv">
+		<ul data-role="listview" data-theme="d" data-divider-theme="b" id="CommunitiesListDiv" data-filter="true" data-filter-placeholder="Filter communities..." >
 			<li data-role="list-divider">Your Communities</li>
 			<!-- //////////////////// LIST OF COMMUNITIES /////////////////// -->
+			<li id="searchMsg"><img src="../javascript/jquerymobile/images/ajax-loader.gif" /></li>
 		</ul>
 		<br/><br/>
 		<div class="terms">
@@ -34,16 +35,16 @@
    <div class="footer_fixed" data-role="footer" data-position="fixed">
 		<ul class="nav">
 			<li class="btn-home">
-				<input id="home-button" type="image" alt="home" src="../images/icons/home_logo.png"  data-role="none"/>
+				<input id="home-button" type="image" alt="home" src="images/icons/home_logo.png"  data-role="none"/>
 			</li>
 			<li class="btn-profile">
-				<input id="profile-button" type="image" alt="profile" src="../images/icons/my_profile.png"  data-role="none"/>	
+				<input id="profile-button" type="image" alt="profile" src="images/icons/my_profile.png"  data-role="none"/>	
 			</li>
 			<li class="btn-settings">
-				<input id="settings-button" type="image" alt="settings" src="../images/icons/settings.png"  data-role="none"/>	
+				<input id="settings-button" type="image" alt="settings" src="images/icons/settings.png"  data-role="none"/>	
 			</li>
 			<li class="btn-about">
-				<input id="about-button" type="image" alt="about" src="../images/icons/about.png"  data-role="none"/>	
+				<input id="about-button" type="image" alt="about" src="images/icons/about.png"  data-role="none"/>	
 			</li>
 		</ul><!-- /global navbar -->
 	</div>

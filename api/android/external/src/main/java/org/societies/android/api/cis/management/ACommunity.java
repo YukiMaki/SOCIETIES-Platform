@@ -25,6 +25,8 @@
 package org.societies.android.api.cis.management;
 
 import org.societies.api.schema.cis.community.Community;
+import org.societies.api.schema.cis.community.MembershipCrit;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -39,7 +41,7 @@ public class ACommunity extends Community implements Parcelable {
 	private static final long serialVersionUID = 6612786379303369931L;
 
 	public AMembershipCrit getMembershipCrit() {
-		return (AMembershipCrit)this.getMembershipCrit();
+		return AMembershipCrit.convertMembershipCrit( this.membershipCrit);
 	}
 	
 	public void setMembershipCrit(AMembershipCrit amembershipCrit) {
@@ -59,17 +61,22 @@ public class ACommunity extends Community implements Parcelable {
 		dest.writeString(this.getCommunityJid());
 		dest.writeString(this.getCommunityName());
 		dest.writeString(this.getCommunityType());
+		dest.writeString(this.getDescription());
 		dest.writeString(this.getOwnerJid());
-		dest.writeParcelable(this.getMembershipCrit(), flags);
+		if (null != this.getMembershipCrit() && null != this.getMembershipCrit().getACriteria() && this.getMembershipCrit().getACriteria().size() > 0){
+			dest.writeParcelable(this.getMembershipCrit(), flags);
+		}
 	}
-	
+			
 	private ACommunity(Parcel in) {
 		super();
 		this.setCommunityJid(in.readString());
 		this.setCommunityName(in.readString());
 		this.setCommunityType(in.readString());
+		this.setDescription(in.readString());
 		this.setOwnerJid(in.readString());
-		this.setMembershipCrit((AMembershipCrit) in.readParcelable(this.getClass().getClassLoader()));
+		if(in.dataAvail() >0)
+			this.setMembershipCrit((AMembershipCrit) in.readParcelable(this.getClass().getClassLoader()));
 	}
 
 	public static final Parcelable.Creator<ACommunity> CREATOR = new Parcelable.Creator<ACommunity>() {

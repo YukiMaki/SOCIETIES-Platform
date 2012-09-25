@@ -45,8 +45,15 @@ window.plugins.SocietiesCoreServiceMonitor = {
 		else {
 			successCallback(phonegapdesktop.internal.getDebugValue('CoreServiceMonitorService', 'getInstalledApplications'));
 		}
-	}
-	
+	},
+	startActivity: function(activity, errorCallback){
+		if (phonegapdesktop.internal.randomException("CoreServiceMonitorService")) {
+			errorCallback('A random error was generated');
+		}
+		else {
+			successCallback(true);
+		}
+	}	
 }
 
 var SocietiesCoreServiceMonitorHelper = {
