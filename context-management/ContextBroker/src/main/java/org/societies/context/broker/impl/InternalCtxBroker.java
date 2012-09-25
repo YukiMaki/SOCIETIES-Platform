@@ -627,6 +627,7 @@ public class InternalCtxBroker implements ICtxBroker {
 
 		cssOwner2 = this.userCtxDBMgr.retrieveIndividualEntity(cssId);
 
+		LOG.info("RetrieveIndividual from Broker. CssOwner from db is - " + cssOwner + " and from maps - " + cssOwner2);
 		return new AsyncResult<IndividualCtxEntity>((IndividualCtxEntity) cssOwner);
 	}
 

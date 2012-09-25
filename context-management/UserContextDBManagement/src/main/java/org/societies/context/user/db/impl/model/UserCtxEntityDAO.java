@@ -116,9 +116,16 @@ import org.societies.api.context.model.CtxIdentifier;
 			"and attribute.valueDbl between :minAttribValue and :maxAttribValue"
 	)
 })
+@NamedNativeQueries({
+	@NamedNativeQuery(
+	name = "getIndividualCtxEntityByCssId",
+	query = "select * from entities entity where entity.operator_id = :id and entity.dtype = :dtype",
+	resultClass = UserCtxEntityDAO.class
+	)
+})
 @Entity
 @Table(name = "entities")
-@MappedSuperclass
+@Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;

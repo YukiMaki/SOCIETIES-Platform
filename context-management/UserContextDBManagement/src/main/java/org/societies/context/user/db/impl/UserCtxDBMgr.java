@@ -459,7 +459,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		
 		//final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
 		List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
-///		List<? extends CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
+		List<? extends CtxIdentifier> foundList2 = new ArrayList<CtxIdentifier>();
 		
 //        final boolean isWildcardType = type.contains("%");
 
@@ -470,7 +470,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		}
 		System.out.println("the list is - " + foundList);
 		
-/*		LOG.info("problem here before sessionFactory!!!!");
+		LOG.info("problem here before sessionFactory!!!!");
 		Session session = sessionFactory.openSession();
 		Transaction t = session.beginTransaction();
 		LOG.info("problem after sessionFactory!!!");
@@ -481,28 +481,28 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
             	Query query = session.getNamedQuery("getCtxEntityIdsByType");
             	query.setParameter("type", type, Hibernate.STRING);
-            	foundList = (List<CtxIdentifier>) query.list();
-            	LOG.info("test lookup (an entity) - " + foundList.get(0));
-            	System.out.println("test - " + foundList.get(0));
-            	CtxIdentifier testIdent = foundList.get(0);
-            	System.out.println("the list is - " + foundList);
-            	LOG.info("test lookup (an entity) - the list is: " + foundList);
+            	foundList2 = (List<CtxIdentifier>) query.list();
+            	LOG.info("test lookup (an entity) - " + foundList2.get(0));
+            	System.out.println("test - " + foundList2.get(0));
+            	CtxIdentifier testIdent = foundList2.get(0);
+            	System.out.println("the list is - " + foundList2);
+            	LOG.info("test lookup (an entity) - the list is: " + foundList2);
             	
             } else if (modelType.equals(CtxModelType.ATTRIBUTE)) {
 
             	Query query = session.getNamedQuery("getCtxAttributeIdsByType");
             	query.setParameter("type", type, Hibernate.STRING);
-            	foundList = query.list();
-            	System.out.println("the list is - " + foundList);
-            	LOG.info("test lookup (an attribute) the list is - " + foundList);
+            	foundList2 = query.list();
+            	System.out.println("the list is - " + foundList2);
+            	LOG.info("test lookup (an attribute) the list is - " + foundList2);
             	
             } else if (modelType.equals(CtxModelType.ASSOCIATION)) {
 
             	Query query = session.getNamedQuery("getCtxAssociationIdsByType");
             	query.setParameter("type", type, Hibernate.STRING);
-            	foundList = query.list();
-				System.out.println("the list is - " + foundList);
-				LOG.info("test lookup (an association) the list is - " + foundList);
+            	foundList2 = query.list();
+				System.out.println("the list is - " + foundList2);
+				LOG.info("test lookup (an association) the list is - " + foundList2);
 				
             } else {
  
@@ -521,17 +521,10 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			}
 		}
 
-		return (List<CtxIdentifier>) foundList;*/
+        LOG.info("returned lookup from maps - " + foundList + " and from db - " + foundList2);
+//		return (List<CtxIdentifier>) foundList;
 		return foundList;
 		
-/*		final List<CtxIdentifier> foundList = new ArrayList<CtxIdentifier>();
-		
-		for (CtxIdentifier identifier : modelObjects.keySet()) {
-			if (identifier.getModelType().equals(modelType) && identifier.getType().equals(type)) {
-				foundList.add(identifier);
-			}		
-		}
-		return foundList;*/
 	}
 
 	@Override
@@ -758,8 +751,11 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
         try {
 	
         	String id = cssId.toString();
+        	String dtype = "UserIndividualCtxEntityDAO";
         	LOG.info("the id I give is - " + id);
-			Query query = session.getNamedQuery("getIndividualCtxEntityByCssId").setString("id", id); 
+			Query query = session.getNamedQuery("getIndividualCtxEntityByCssId"); 
+            query.setParameter("id", id, Hibernate.STRING);
+            query.setParameter("dtype", dtype, Hibernate.STRING);
 
 			LOG.info("directly I get - " + query.list());
 
@@ -788,43 +784,23 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 			if (modelObject.getModelType().equals(CtxModelType.ENTITY)) {
 				
-				if (session.get(UserIndividualCtxEntityDAO.class, modelObject.getId()) != null) {
-					UserIndividualCtxEntityDAO entityDB = new UserIndividualCtxEntityDAO();
-					CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
-					entityDB = (UserIndividualCtxEntityDAO) session.get(UserIndividualCtxEntityDAO.class, modelObject.getId());				
+				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
+				CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
+				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, modelObject.getId());				
 					
-					entityDB.setEntityId(ctxEntCopy.getId());
+				entityDB.setEntityId(ctxEntCopy.getId());
 					
-					//setting identifier
-					UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
-					entIdentDB.setOperatorId(ctxEntCopy.getOwnerId());
-					entIdentDB.setType(ctxEntCopy.getType());
-					entIdentDB.setObjectNumber(ctxEntCopy.getObjectNumber());
+				//setting identifier
+				UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
+				entIdentDB.setOperatorId(ctxEntCopy.getOwnerId());
+				entIdentDB.setType(ctxEntCopy.getType());
+				entIdentDB.setObjectNumber(ctxEntCopy.getObjectNumber());
 	
-					entityDB.setCtxIdentifier(entIdentDB);
-	
-					session.update(entityDB);
-					t.commit();
-				}
-				else{
-					UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
-					CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
-					entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, modelObject.getId());				
-					
-					entityDB.setEntityId(ctxEntCopy.getId());
-					
-					//setting identifier
-					UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
-					entIdentDB.setOperatorId(ctxEntCopy.getOwnerId());
-					entIdentDB.setType(ctxEntCopy.getType());
-					entIdentDB.setObjectNumber(ctxEntCopy.getObjectNumber());
-	
-					entityDB.setCtxIdentifier(entIdentDB);
-	
-					session.update(entityDB);
-					t.commit();					
-				}		
-			}
+				entityDB.setCtxIdentifier(entIdentDB);
+
+				session.update(entityDB);
+				t.commit();					
+			}		
 			else if (modelObject.getModelType().equals(CtxModelType.ATTRIBUTE)) {
 				CtxAttribute ctxAttrCopy = (CtxAttribute) this.retrieve(modelObject.getId());
 				

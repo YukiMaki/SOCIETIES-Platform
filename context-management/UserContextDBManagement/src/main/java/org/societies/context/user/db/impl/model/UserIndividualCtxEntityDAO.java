@@ -75,15 +75,7 @@ import org.societies.api.context.model.IndividualCtxEntity;
  * @author Pavlos Kosmides
  *
  */
-@NamedNativeQueries({
-	@NamedNativeQuery(
-	name = "getIndividualCtxEntityByCssId",
-	query = "select * from indEntities indEntity where indEntity.operator_id = :id",
-	resultClass = UserIndividualCtxEntityDAO.class
-	)
-})
 @Entity
-@Table(name = "indEntities")
 public class UserIndividualCtxEntityDAO extends UserCtxEntityDAO implements Serializable {
 
 	private static final long serialVersionUID = 1L;
