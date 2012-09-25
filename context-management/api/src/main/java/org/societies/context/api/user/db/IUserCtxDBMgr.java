@@ -135,7 +135,7 @@ public interface IUserCtxDBMgr {
 	 * 
 	 * @parm cssId
 	 */
-	public IndividualCtxEntity retrieveIndividualEntity(IIdentity cssId) throws CtxException;
+	public CtxModelObject retrieveIndividualEntity(IIdentity cssId) throws CtxException;
 	
 	/**
 	 * Updates a single context model object.

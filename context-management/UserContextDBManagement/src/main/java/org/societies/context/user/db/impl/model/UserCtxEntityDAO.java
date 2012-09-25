@@ -44,6 +44,7 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinTable;
 import javax.persistence.MapKeyEnumerated;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.NamedNativeQueries;
 import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
@@ -117,6 +118,7 @@ import org.societies.api.context.model.CtxIdentifier;
 })
 @Entity
 @Table(name = "entities")
+@MappedSuperclass
 public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 
 	private static final long serialVersionUID = 1L;
