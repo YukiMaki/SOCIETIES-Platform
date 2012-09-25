@@ -85,34 +85,34 @@ import org.societies.api.context.model.CtxIdentifier;
 	name = "getCtxEntityIdsByAttrType",
 	query = "select distinct entity.ctxIdentifier from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
-			"and attribute.ctxIdentifier.type = :attrType"
+			"and attribute.type = :attrType"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrStringValue",
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
-			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.type = :attrType " +
 			"and attribute.valueStr between :minAttribValue and :maxAttribValue"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrIntegerValue",
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
-			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.type = :attrType " +
 			"and attribute.valueInt between :minAttribValue and :maxAttribValue"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrBlobValue",
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
-			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.type = :attrType " +
 			"and attribute.valueBlob = :minAttribValue"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrDoubleValue",
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
-			"and attribute.ctxIdentifier.type = :attrType " +
+			"and attribute.type = :attrType " +
 			"and attribute.valueDbl between :minAttribValue and :maxAttribValue"
 	)
 })
@@ -131,7 +131,7 @@ public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Enumerated(EnumType.STRING)
-	private static CtxIdentifier entityId;
+	private CtxIdentifier entityId;
 
 	private Date lastModified;
 	private Set<UserCtxAttributeDAO> attrScope = new HashSet<UserCtxAttributeDAO>(0);
@@ -163,7 +163,7 @@ public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 	 * 
 	 */
 	public UserCtxEntityDAO() {
-		super((CtxEntityIdentifier) entityId);
+		super(null);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -189,7 +189,7 @@ public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 		this.lastModified = lastModified;
 	}
 
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "ctxIdentifier.scope")
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "scope")
 	public Set<UserCtxAttributeDAO> getAttrScope() {
 		return this.attrScope;
 	}

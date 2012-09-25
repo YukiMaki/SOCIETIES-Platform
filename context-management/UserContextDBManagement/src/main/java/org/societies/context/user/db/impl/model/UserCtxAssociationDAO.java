@@ -69,7 +69,7 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 
 	private static final long serialVersionUID = 1L;
 
-	private static CtxIdentifier associationId;
+	private CtxIdentifier associationId;
 	private Date lastModified;
 	private CtxIdentifier parentEntityId;
 	private boolean dynamic;
@@ -100,7 +100,7 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 	 * 
 	 */
 	public UserCtxAssociationDAO() {
-		super((CtxAssociationIdentifier) associationId);
+		super(null);
 		// TODO Auto-generated constructor stub
 	}
 

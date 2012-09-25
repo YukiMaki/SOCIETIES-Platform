@@ -36,6 +36,7 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -50,6 +51,7 @@ import org.hibernate.annotations.GenerationTime;
 import org.hibernate.annotations.Type;
 import org.societies.api.context.model.CtxAttribute;
 import org.societies.api.context.model.CtxAttributeIdentifier;
+import org.societies.api.context.model.CtxAttributeValueType;
 import org.societies.api.context.model.CtxIdentifier;
 
 /**
@@ -61,36 +63,39 @@ import org.societies.api.context.model.CtxIdentifier;
 @NamedQueries({
 	@NamedQuery(
 	name = "getCtxAttributeIdsByType",
-	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.ctxIdentifier.type = :type"
+	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.type = :type"
 	),
 	@NamedQuery(
 		name = "retrieveCtxAttribute",
-		query = "from UserCtxAttributeDAO as attribute where attribute.ctxIdentifier.scope = :id"
+		query = "from UserCtxAttributeDAO as attribute where attribute.scope = :id"
 	)
 })
 @Entity
 @Table(name = "attributes")
-@AssociationOverrides({
+/*@AssociationOverrides({
 @AssociationOverride(name = "ctxIdentifier.type", joinColumns = @JoinColumn(name = "type")),
 @AssociationOverride(name = "ctxIdentifier.objectNumber", joinColumns = @JoinColumn(name = "object_number"))
-        })
+        })*/
 public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private static CtxIdentifier attributeId;
+	private CtxIdentifier attributeId;
 	private Date lastModified;
-	private UserCtxAttributeIdentifierDAO ctxIdentifier;
+//	private UserCtxAttributeIdentifierDAO ctxIdentifier;
 	private String valueStr;
 	private Integer valueInt;
 	private Double valueDbl;
 	private byte[] valueBlob;
 	private boolean history;
 	private String sourceId;
-	private String valueType;
+	private CtxAttributeValueType valueType = CtxAttributeValueType.EMPTY;
 	private String valueMetric;
-
 	private UserCtxQualityDAO quality;
+	private String type;
+	private long objectNumber;
+	private UserCtxEntityDAO scope;
+
 	
 	/**
 	 * @param attributeId 
@@ -103,14 +108,17 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	 * @param sourceId 
 	 * @param valueType 
 	 * @param valueMetric 
+	 * @param type
+	 * @param objectNumber
+	 * @param scope
 	 */
-	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date lastModified, UserCtxAttributeIdentifierDAO ctxIdentifier, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, String valueType, String valueMetric) {		
+	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date lastModified, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, CtxAttributeValueType valueType, String valueMetric, String type, long objectNumber, UserCtxEntityDAO scope) {		
 
 		super((CtxAttributeIdentifier) attributeId);
 
 		this.attributeId = attributeId;
 		this.lastModified = lastModified;
-		this.ctxIdentifier = ctxIdentifier;
+//		this.ctxIdentifier = ctxIdentifier;
 		this.valueStr = valueStr;
 		this.valueInt = valueInt;
 		this.valueDbl = valueDbl;
@@ -119,24 +127,17 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 		this.sourceId = sourceId;
 		this.valueType = valueType;
 		this.valueMetric = valueMetric;
+		this.type = type;
+		this.objectNumber = objectNumber;
+		this.scope = scope;
 	}
 
 	/**
 	 * 
 	 */
 	public UserCtxAttributeDAO() {
-		super((CtxAttributeIdentifier) attributeId);
+		super(null);
 		// TODO Auto-generated constructor stub
-	}
-
-	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.LAZY)
-	@PrimaryKeyJoinColumn
-	public UserCtxQualityDAO getCtxQuality() {
-		return this.quality;
-	}
-
-	public void setCtxQuality(UserCtxQualityDAO quality) {
-		this.quality = quality;
 	}
 
 	@Id
@@ -150,10 +151,7 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 		this.attributeId = attributeId;
 	}
 
-	/*GenerationTime can be either INSERT or ALWAYS*/
 	@Column(name = "lastModified")
-//	@Temporal(value=TemporalType.TIMESTAMP)
-//	@org.hibernate.annotations.Generated(value=GenerationTime.ALWAYS)
 	@Version
 	public Date getLastModified() {
 		return lastModified;
@@ -211,10 +209,10 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	}
 
 	@Column(name = "value_type")
-	public String getValType() {
+	public CtxAttributeValueType getValueType() {
 		return valueType;
 	}
-	public void setValType(String valueType) {
+	public void setValueType(CtxAttributeValueType valueType) {
 		this.valueType = valueType;
 	}
 
@@ -226,6 +224,42 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 		this.valueMetric = valueMetric;
 	}	
 	
+	@Column(name = "type")
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
+
+	@Column(name = "object_number")
+	public Long getObjectNumber() {
+		return objectNumber;
+	}
+	public void setObjectNumber(Long objectNumber) {
+		this.objectNumber = objectNumber;
+	}
+
+	@ManyToOne(fetch = FetchType.EAGER)
+	@JoinColumn(name = "scope", nullable = false)
+	public UserCtxEntityDAO getscope() {
+		return this.scope;
+	}
+	public void setscope(UserCtxEntityDAO scope) {
+		this.scope = scope;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch=FetchType.EAGER)
+	@PrimaryKeyJoinColumn
+	public UserCtxQualityDAO getCtxQuality() {
+		return this.quality;
+	}
+
+	public void setCtxQuality(UserCtxQualityDAO quality) {
+		this.quality = quality;
+	}
+
+	/*
 	@Embedded
 	public UserCtxAttributeIdentifierDAO getCtxIdentifier() {
 		return ctxIdentifier;
@@ -233,5 +267,5 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	public void setCtxIdentifier (UserCtxAttributeIdentifierDAO ctxIdentifier) {
 		this.ctxIdentifier = ctxIdentifier;
 	}
-			
+		*/	
 }

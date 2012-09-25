@@ -265,17 +265,20 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			attributeDB.setHistory(attribute.isHistoryRecorded());
 			attributeDB.setSourceId(attribute.getSourceId());
 			//TODO doesn't get value Type!!!
-			attributeDB.setValType(attribute.getValueType().toString());
+			attributeDB.setValueType(attribute.getValueType());
 			attributeDB.setValueMetric(attribute.getValueMetric());
 				
 			//setting identifier
-			UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
-			attrIdentDB.setType(attribute.getType());
-			attrIdentDB.setObjectNumber(attribute.getObjectNumber());
-			attrIdentDB.setScope(entityDB);
-			attributeDB.setCtxIdentifier(attrIdentDB);
+//			UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+//			attrIdentDB.setType(attribute.getType());
+			attributeDB.setType(attribute.getType());
+//			attrIdentDB.setObjectNumber(attribute.getObjectNumber());
+			attributeDB.setObjectNumber(attribute.getObjectNumber());
+//			attrIdentDB.setScope(entityDB);
+			attributeDB.setscope(entityDB);
+//			attributeDB.setCtxIdentifier(attrIdentDB);
 			entityDB.getAttrScope().add(attributeDB);
-			LOG.info("AttributeCtxIdentifier created with hibernate - " + attrIdentDB);
+			LOG.info("AttributeCtxIdentifier created with hibernate - " + attribute.getId());
 				
 			session.save(attributeDB);
 			t.commit();				
@@ -818,15 +821,18 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 				attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
 				attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
 				attributeDB.setSourceId(ctxAttrCopy.getSourceId());
-				attributeDB.setValType(ctxAttrCopy.getValueType().toString());
+				attributeDB.setValueType(ctxAttrCopy.getValueType());
 				attributeDB.setValueMetric(ctxAttrCopy.getValueMetric());
 		
 				//setting identifier
-				UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
-				attrIdentDB.setType(ctxAttrCopy.getType());
-				attrIdentDB.setObjectNumber(ctxAttrCopy.getObjectNumber());
-				attrIdentDB.setScope(entityDB);
-				attributeDB.setCtxIdentifier(attrIdentDB);
+//				UserCtxAttributeIdentifierDAO attrIdentDB = new UserCtxAttributeIdentifierDAO();
+				attributeDB.setType(ctxAttrCopy.getType());
+//				attrIdentDB.setType(ctxAttrCopy.getType());
+				attributeDB.setObjectNumber(ctxAttrCopy.getObjectNumber());
+//				attrIdentDB.setObjectNumber(ctxAttrCopy.getObjectNumber());
+				attributeDB.setscope(entityDB);
+//				attrIdentDB.setScope(entityDB);
+//				attributeDB.setCtxIdentifier(attrIdentDB);
 				entityDB.getAttrScope().add(attributeDB);
 
 				session.update(attributeDB);

@@ -84,7 +84,7 @@ public class UserCtxQualityDAO implements Serializable {
 		// TODO Auto-generated constructor stub
 	}
 
-	@OneToOne(optional=false, fetch=FetchType.LAZY)
+	@OneToOne(optional=false, fetch=FetchType.EAGER)
 	   public UserCtxAttributeDAO getAttribute() {
 		return this.attribute;
 	}
