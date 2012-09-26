@@ -614,11 +614,16 @@ public class InternalCtxBroker implements ICtxBroker {
 		for (final CtxIdentifier attrId : attrIds) {
 
 			final CtxAttribute cssIdAttr = (CtxAttribute) this.userCtxDBMgr.retrieve(attrId);
+			LOG.info("edo meta tin retrieve! id= "+ cssIdAttr.getId() + " ,scope= " + cssIdAttr.getId().getScope() + " ,attrId.scope= " + cssIdAttr.getScope() + "  toString " + cssId.toString() + " getType " + cssIdAttr.getScope().getType() + " ,cssIdAttr.getStringValue() = " + cssIdAttr.getStringValue());
 			if (!CtxEntityTypes.CSS_NODE.equals(cssIdAttr.getScope().getType())
 					&& cssId.toString().equals(cssIdAttr.getStringValue())) {
+				LOG.info("mesa stin if prin tin 2i retrieve..");
 				final CtxModelObject object = this.userCtxDBMgr.retrieve(cssIdAttr.getScope());
+				LOG.info("prin to instanceof ...");
 				if (object instanceof IndividualCtxEntity) {
+					LOG.info("mesa sto instanceof !");
 					cssOwner = (IndividualCtxEntity) object; 
+					LOG.info("meta to cast ..");
 					break;
 				}
 			}

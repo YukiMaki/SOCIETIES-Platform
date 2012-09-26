@@ -93,10 +93,10 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private CtxIdentifier attributeId;
+	private CtxAttributeIdentifier attributeId;
 	private Date lastModified;
 //	private UserCtxAttributeIdentifierDAO ctxIdentifier;
-	private String valueStr;
+	private String stringValue;
 	private Integer valueInt;
 	private Double valueDbl;
 	private byte[] valueBlob;
@@ -113,7 +113,7 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	/**
 	 * @param attributeId 
 	 * @param timestamp 
-	 * @param valueStr 
+	 * @param stringValue 
 	 * @param valueInt 
 	 * @param valueDbl
 	 * @param valueBlob 
@@ -125,14 +125,14 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	 * @param objectNumber
 	 * @param scope
 	 */
-	public UserCtxAttributeDAO(CtxIdentifier attributeId, Date lastModified, String valueStr, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, CtxAttributeValueType valueType, String valueMetric, String type, long objectNumber, UserCtxEntityDAO scope) {		
+	public UserCtxAttributeDAO(CtxAttributeIdentifier attributeId, Date lastModified, String stringValue, Integer valueInt, Double valueDbl, byte[] valueBlob, boolean history, String sourceId, CtxAttributeValueType valueType, String valueMetric, String type, long objectNumber, UserCtxEntityDAO scope) {		
 
-		super((CtxAttributeIdentifier) attributeId);
+		super(attributeId);
 
 		this.attributeId = attributeId;
 		this.lastModified = lastModified;
 //		this.ctxIdentifier = ctxIdentifier;
-		this.valueStr = valueStr;
+		this.stringValue = stringValue;
 		this.valueInt = valueInt;
 		this.valueDbl = valueDbl;
 		this.valueBlob = valueBlob;
@@ -160,7 +160,7 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 		return (CtxAttributeIdentifier) this.attributeId;
 	}
 
-	public void setId(CtxIdentifier attributeId) {
+	public void setId(CtxAttributeIdentifier attributeId) {
 		this.attributeId = attributeId;
 	}
 
@@ -174,11 +174,11 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	}
 
 	@Column(name = "value_str")
-	public String getValueStr() {
-		return valueStr;
+	public String getStringValue() {
+		return stringValue;
 	}
-	public void setValueStr(String valueStr) {
-		this.valueStr = valueStr;
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
 	}
 
 	@Column(name = "value_int")

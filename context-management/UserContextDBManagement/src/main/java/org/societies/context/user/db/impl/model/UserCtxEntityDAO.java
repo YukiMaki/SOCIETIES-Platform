@@ -96,7 +96,7 @@ import org.societies.api.context.model.CtxIdentifier;
 	query = "select distinct entity.id from UserCtxEntityDAO as entity inner join entity.attrScope as attribute " +
 			"where entity.ctxIdentifier.type = :entType " +
 			"and attribute.type = :attrType " +
-			"and attribute.valueStr between :minAttribValue and :maxAttribValue"
+			"and attribute.stringValue between :minAttribValue and :maxAttribValue"
 	),
 	@NamedQuery(
 	name = "getCtxEntityIdsByAttrIntegerValue",

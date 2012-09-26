@@ -258,7 +258,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + attribute.getObjectNumber());
 			UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
 			attributeDB.setId(attribute.getId());
-			attributeDB.setValueStr(attribute.getStringValue());
+			attributeDB.setStringValue(attribute.getStringValue());
 			attributeDB.setValueInt(attribute.getIntegerValue());
 			attributeDB.setValueDbl(attribute.getDoubleValue());
 			attributeDB.setValueBlob(attribute.getBinaryValue());
@@ -699,17 +699,22 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
         	if (CtxModelType.ENTITY.equals(id.getModelType())) {
 //            if (id.getModelType().equals(CtxModelType.ENTITY)) {            	
 
+        		LOG.info("retrieving Entity!");
             	Query query = session.getNamedQuery("getCtxEntityById");
             	query.setParameter("id", id);
             	//retrieved2 = (CtxEntity) query.uniqueResult();
             	UserCtxEntityDAO entityDao = (UserCtxEntityDAO) query.uniqueResult();
-            	
+            	LOG.info("after query");
             	CtxEntity result = (CtxEntity) query.uniqueResult();
             	if (result instanceof UserIndividualCtxEntityDAO) {
             		retrieved2 = new IndividualCtxEntity(result.getId());
+            		LOG.info("it is IndividualCtxEntity");
+            		LOG.info("PASTITSIO: " + result.getClass().getName());
             	// TODO communities
             	} else if (result instanceof UserCtxEntityDAO) {
             		retrieved2 = new CtxEntity(result.getId());
+            		LOG.info("id is simple CtxEntity");
+            		LOG.info("PASTITSIO: " + result.getClass().getName());
             	} else {
             		throw new UserCtxDBMgrException("SKATA...");
             	}
@@ -723,12 +728,15 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
             	Query query = session.getNamedQuery("getCtxAttributeById");
             	query.setParameter("id", id);
-            	retrieved2 = (CtxAttribute) query.uniqueResult();
+            	CtxAttribute retrAttr = (CtxAttribute) query.uniqueResult();
+//            	retrieved2 = (CtxAttribute) query.uniqueResult();
 //            	CtxIdentifier retrieved3 = (CtxIdentifier) query.uniqueResult();
 //           		retrieved2 = (CtxModelObject) session.get(UserCtxAttributeDAO.class, id);
+            	retrieved2 = retrAttr;
             	
             	System.out.println("test - " + retrieved);
             	LOG.info("test retrieve (attribute)" + retrieved.getId() + " and from db - " + retrieved2.getId());
+            	LOG.info("test retrieve (attribute SCOPE) " + retrAttr.getId().getScope());
             } else if (id.getModelType().equals(CtxModelType.ASSOCIATION)) {
 
             	Query query = session.getNamedQuery("getCtxAssociationById");
@@ -826,7 +834,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	
 //				attributeDB.setAttributeId(ctxAttrCopy.getId());
 
-				attributeDB.setValueStr(ctxAttrCopy.getStringValue());
+				attributeDB.setStringValue(ctxAttrCopy.getStringValue());
 				attributeDB.setValueInt(ctxAttrCopy.getIntegerValue());
 				attributeDB.setValueDbl(ctxAttrCopy.getDoubleValue());
 				if (ctxAttrCopy.getBinaryValue()!=null)
