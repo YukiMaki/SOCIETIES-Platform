@@ -696,20 +696,27 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
         try {
             // Start a unit of work
-            if (id.getModelType().equals(CtxModelType.ENTITY)) {            	
+        	if (CtxModelType.ENTITY.equals(id.getModelType())) {
+//            if (id.getModelType().equals(CtxModelType.ENTITY)) {            	
 
             	Query query = session.getNamedQuery("getCtxEntityById");
             	query.setParameter("id", id);
-            	retrieved2 = (CtxEntity) query.uniqueResult();
+            	//retrieved2 = (CtxEntity) query.uniqueResult();
             	UserCtxEntityDAO entityDao = (UserCtxEntityDAO) query.uniqueResult();
-            	CtxEntity retrEntity = (CtxEntity) query.uniqueResult();
-            	for (UserCtxAttributeDAO attribute : entityDao.getAttrScope()) {
-            		retrEntity.addAttribute(attribute);
+            	
+            	CtxEntity result = (CtxEntity) query.uniqueResult();
+            	if (result instanceof UserIndividualCtxEntityDAO) {
+            		retrieved2 = new IndividualCtxEntity(result.getId());
+            	// TODO communities
+            	} else if (result instanceof UserCtxEntityDAO) {
+            		retrieved2 = new CtxEntity(result.getId());
+            	} else {
+            		throw new UserCtxDBMgrException("SKATA...");
             	}
-//           		retrieved2 = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
-            	
-            	retrieved2 = retrEntity;
-            	
+            	for (UserCtxAttributeDAO attribute : entityDao.getAttrScope()) {
+            	  ((CtxEntity)retrieved2).addAttribute(attribute);
+            	}
+         	           	
             	System.out.println("test - " + retrieved);
             	LOG.info("test retrieve (entity) - " + retrieved.getId() + " and from db - " + retrieved2.getId());
             } else if (id.getModelType().equals(CtxModelType.ATTRIBUTE)) {
