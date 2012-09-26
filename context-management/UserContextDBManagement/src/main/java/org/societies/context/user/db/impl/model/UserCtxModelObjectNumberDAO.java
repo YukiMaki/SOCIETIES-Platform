@@ -31,6 +31,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.Table;
 
 /**
@@ -39,6 +41,12 @@ import javax.persistence.Table;
  * @author Pavlos Kosmides
  *
  */
+/*@NamedNativeQueries({
+	@NamedNativeQuery(
+	name = "getLastModelObjectNumber",
+	query = "select * from object_numbers obNumber where obNumber.next_value = (select max(obNumber.next_value) from object_numbers)"
+	)
+})*/
 @Entity
 @Table(name = "object_numbers")
 public class UserCtxModelObjectNumberDAO implements Serializable {

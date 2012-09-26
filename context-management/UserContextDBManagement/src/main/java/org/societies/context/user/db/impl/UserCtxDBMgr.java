@@ -525,8 +525,8 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 		}
 
         LOG.info("returned lookup from maps - " + foundList + " and from db - " + foundList2);
-//		return (List<CtxIdentifier>) foundList;
-		return foundList;
+		return (List<CtxIdentifier>) foundList2;
+//		return foundList;
 		
 	}
 
@@ -698,35 +698,32 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
             // Start a unit of work
             if (id.getModelType().equals(CtxModelType.ENTITY)) {            	
 
-            	if (session.get(UserCtxEntityDAO.class, id) != null) {
-            		LOG.info("trying from CtxEntity!");
-            		retrieved2 = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
-            	}
-            	else {
-            		LOG.info("trying from IndividualCtxEntity!");
-            		retrieved2 = (CtxModelObject) session.get(UserIndividualCtxEntityDAO.class, id);       		
-            	}
+            	Query query = session.getNamedQuery("getCtxEntityById");
+            	query.setParameter("id", id);
+            	retrieved2 = (CtxModelObject) query.uniqueResult();
+//           		retrieved2 = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
             	
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (entity) - " + retrieved + " and from db - " + retrieved2);
+            	LOG.info("test retrieve (entity) - " + retrieved.getId() + " and from db - " + retrieved2.getId());
             } else if (id.getModelType().equals(CtxModelType.ATTRIBUTE)) {
 
-           		LOG.info("trying from CtxAttribute!");
-           		retrieved2 = (CtxModelObject) session.get(UserCtxAttributeDAO.class, id);
-//            	if (retrieved2 == null) {
-//            		LOG.info("trying from IndividualCtxAttribute!");
-//            		retrieved2 = (CtxModelObject) session.get(UserIndCtxAttributeDAO.class, id);
-//            	}
+            	Query query = session.getNamedQuery("getCtxAttributeById");
+            	query.setParameter("id", id);
+            	retrieved2 = (CtxModelObject) query.uniqueResult();
+//            	CtxIdentifier retrieved3 = (CtxIdentifier) query.uniqueResult();
+//           		retrieved2 = (CtxModelObject) session.get(UserCtxAttributeDAO.class, id);
             	
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (attribute)" + retrieved + " and from db - " + retrieved2);
+            	LOG.info("test retrieve (attribute)" + retrieved.getId() + " and from db - " + retrieved2.getId());
             } else if (id.getModelType().equals(CtxModelType.ASSOCIATION)) {
 
-            	retrieved2 = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
-            	retrieved = this.modelObjects.get(id);
+            	Query query = session.getNamedQuery("getCtxAssociationById");
+            	query.setParameter("id", id);
+            	retrieved2 = (CtxModelObject) query.uniqueResult();
+//            	retrieved2 = (CtxModelObject) session.get(UserCtxAssociationDAO.class,id);
 
             	System.out.println("test - " + retrieved);
-            	LOG.info("test retrieve (association)" + retrieved + " and from db - " + retrieved2);
+            	LOG.info("test retrieve (association)" + retrieved.getId() + " and from db - " + retrieved2.getId());
             }             // End the unit of work
             t.commit();
         } catch (Exception e) {
@@ -763,7 +760,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			LOG.info("directly I get - " + query.list());
 
 	        retrievedEntity = (CtxModelObject) query.uniqueResult();
-	        LOG.info("from retrieveIndividualEntity I get - " + retrievedEntity);
+	        LOG.info("from retrieveIndividualEntity I get - " + retrievedEntity.getId());
         }catch (Exception e) {
 				LOG.error("Could not retrieve: " + e.getLocalizedMessage(),e);
 		} finally {
@@ -813,11 +810,13 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 				UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
 				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, ctxAttrCopy.getScope());
 	
-				attributeDB.setAttributeId(ctxAttrCopy.getId());
+//				attributeDB.setAttributeId(ctxAttrCopy.getId());
 
 				attributeDB.setValueStr(ctxAttrCopy.getStringValue());
 				attributeDB.setValueInt(ctxAttrCopy.getIntegerValue());
 				attributeDB.setValueDbl(ctxAttrCopy.getDoubleValue());
+				if (ctxAttrCopy.getBinaryValue()!=null)
+					LOG.info("blob value is - " + ctxAttrCopy.getBinaryValue() + " from " + ctxAttrCopy.getId());
 				attributeDB.setValueBlob(ctxAttrCopy.getBinaryValue());
 				attributeDB.setHistory(ctxAttrCopy.isHistoryRecorded());
 				attributeDB.setSourceId(ctxAttrCopy.getSourceId());

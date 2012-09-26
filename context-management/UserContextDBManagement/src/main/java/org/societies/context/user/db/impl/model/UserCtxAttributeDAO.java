@@ -37,6 +37,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToOne;
@@ -62,6 +64,10 @@ import org.societies.api.context.model.CtxIdentifier;
  */
 @NamedQueries({
 	@NamedQuery(
+	name = "getCtxAttributeById",
+	query = "select attribute from UserCtxAttributeDAO as attribute where attribute.id = :id"
+	),
+	@NamedQuery(
 	name = "getCtxAttributeIdsByType",
 	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.type = :type"
 	),
@@ -70,6 +76,13 @@ import org.societies.api.context.model.CtxIdentifier;
 		query = "from UserCtxAttributeDAO as attribute where attribute.scope = :id"
 	)
 })
+/*@NamedNativeQueries({
+	@NamedNativeQuery(
+	name = "getCtxAttributeById",
+	query = "select * from attributes attribute where attribute.attribute_id = :attributeId",
+	resultClass = UserCtxAttributeDAO.class
+	)
+})*/
 @Entity
 @Table(name = "attributes")
 /*@AssociationOverrides({
@@ -185,6 +198,7 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	}
 
 	@Column(name = "value_blob", columnDefinition = "LONGBLOB")
+//	@Column(name = "value_blob")
 	public byte[] getValueBlob() {
 		return valueBlob;
 	}

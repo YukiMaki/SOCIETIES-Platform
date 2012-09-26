@@ -78,6 +78,10 @@ import org.societies.api.context.model.CtxIdentifier;
  */
 @NamedQueries({
 	@NamedQuery(
+	name = "getCtxEntityById",
+	query = "from UserCtxEntityDAO as entity where entity.id = :id"
+	),
+	@NamedQuery(
 	name = "getCtxEntityIdsByType",
 	query = "select entity.id from UserCtxEntityDAO as entity where entity.ctxIdentifier.type = :type"
 	),
@@ -121,7 +125,12 @@ import org.societies.api.context.model.CtxIdentifier;
 	name = "getIndividualCtxEntityByCssId",
 	query = "select * from entities entity where entity.operator_id = :id and entity.dtype = :dtype",
 	resultClass = UserCtxEntityDAO.class
-	)
+	)/*,
+	@NamedNativeQuery(
+	name = "getCtxEntityById",
+	query = "select * from entities entity where entity.entity_id = :entityId",
+	resultClass = UserCtxEntityDAO.class
+	)*/
 })
 @Entity
 @Table(name = "entities")

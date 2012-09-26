@@ -35,6 +35,8 @@ import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.JoinColumn;
+import javax.persistence.NamedNativeQueries;
+import javax.persistence.NamedNativeQuery;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
@@ -58,11 +60,21 @@ import org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierTyp
  */
 @NamedQueries({
 	@NamedQuery(
+	name = "getCtxAssociationById",
+	query = "from UserCtxAssociationDAO as association where association.id = :id"
+	),
+	@NamedQuery(
 	name = "getCtxAssociationIdsByType",
 	query = "select association.associationId from UserCtxAssociationDAO as association where association.ctxIdentifier.type = :type"
 	)
 })
-
+/*@NamedNativeQueries({
+	@NamedNativeQuery(
+	name = "getCtxAssociationById",
+	query = "select * from associations association where association.association_id = :associationId",
+	resultClass = UserCtxAssociationDAO.class
+	)
+})*/
 @Entity
 @Table(name = "associations")
 public class UserCtxAssociationDAO extends CtxAssociation implements Serializable {
@@ -72,7 +84,6 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 	private CtxIdentifier associationId;
 	private Date lastModified;
 	private CtxIdentifier parentEntityId;
-	private boolean dynamic;
 	private UserCtxAssociationIdentifierDAO ctxIdentifier;
 	private Set<CtxEntityIdentifier> map;
 	
@@ -80,18 +91,16 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 	 * @param associationId
 	 * @param timestamp 
 	 * @param parentEntityId 
-	 * @param dynamic 
 	 * @param ctxIdentifier
 	 *
 	 */
-	public UserCtxAssociationDAO(CtxIdentifier associationId, Date lastModified, CtxIdentifier parentEntityId, boolean dynamic, UserCtxAssociationIdentifierDAO ctxIdentifier) {
+	public UserCtxAssociationDAO(CtxIdentifier associationId, Date lastModified, CtxIdentifier parentEntityId, UserCtxAssociationIdentifierDAO ctxIdentifier) {
 
 		super((CtxAssociationIdentifier) associationId);
 
 		this.associationId = associationId;
 		this.lastModified = lastModified;
 		this.parentEntityId = parentEntityId;
-		this.dynamic = dynamic;
 		this.ctxIdentifier = ctxIdentifier;
 
 	}
@@ -120,14 +129,6 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 	}
 	public void setParentEntityId(CtxIdentifier parentEntityId) {
 		this.parentEntityId = parentEntityId;
-	}
-
-	@Column(name = "dynamic")
-	public boolean getDynamic() {
-		return dynamic;
-	}
-	public void setDynamic(boolean dynamic) {
-		this.dynamic = dynamic;
 	}
 
 	@Id
