@@ -69,7 +69,7 @@ import org.societies.api.context.model.CtxIdentifier;
 	),
 	@NamedQuery(
 	name = "getCtxAttributeIdsByType",
-	query = "select attribute.attributeId from UserCtxAttributeDAO as attribute where attribute.type = :type"
+	query = "select attribute.id from UserCtxAttributeDAO as attribute where attribute.type = :type"
 	),
 	@NamedQuery(
 		name = "retrieveCtxAttribute",
@@ -156,11 +156,11 @@ public class UserCtxAttributeDAO extends CtxAttribute implements Serializable {
 	@Id
 	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAttributeIdentifierType")
 	@Column(name="attribute_id")
-	public CtxIdentifier getAttributeId() {
-		return attributeId;
+	public CtxAttributeIdentifier getId() {
+		return (CtxAttributeIdentifier) this.attributeId;
 	}
 
-	public void setAttributeId(CtxIdentifier attributeId) {
+	public void setId(CtxIdentifier attributeId) {
 		this.attributeId = attributeId;
 	}
 

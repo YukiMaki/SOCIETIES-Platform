@@ -623,11 +623,11 @@ public class InternalCtxBroker implements ICtxBroker {
 				}
 			}
 		}
-		CtxModelObject cssOwner2 = null;
+//		CtxModelObject cssOwner2 = null;
 
-		cssOwner2 = this.userCtxDBMgr.retrieveIndividualEntity(cssId);
+//		cssOwner2 = this.userCtxDBMgr.retrieveIndividualEntity(cssId);
 
-		LOG.info("RetrieveIndividual from Broker. CssOwner from maps is - " + cssOwner + " and from db - " + cssOwner2);
+//		LOG.info("RetrieveIndividual from Broker. CssOwner from maps is - " + cssOwner + " and from db - " + cssOwner2);
 		return new AsyncResult<IndividualCtxEntity>((IndividualCtxEntity) cssOwner);
 	}
 

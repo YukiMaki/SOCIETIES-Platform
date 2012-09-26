@@ -170,7 +170,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 			UserCtxAssociationDAO associationDB = new UserCtxAssociationDAO();
 
-			associationDB.setAssociationId(association.getId());
+			associationDB.setId(association.getId());
 //			associationDB.setLastModified(association.getLastModified());
 
 			if (association.getParentEntity() != null) {
@@ -257,7 +257,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			LOG.info("Attribute to BE created - " + attribute.getId());
 			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + attribute.getObjectNumber());
 			UserCtxAttributeDAO attributeDB = new UserCtxAttributeDAO();
-			attributeDB.setAttributeId(attribute.getId());
+			attributeDB.setId(attribute.getId());
 			attributeDB.setValueStr(attribute.getStringValue());
 			attributeDB.setValueInt(attribute.getIntegerValue());
 			attributeDB.setValueDbl(attribute.getDoubleValue());
@@ -341,7 +341,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 	
 			//Prepare CtxEntityDAO
 			UserCtxEntityDAO entityDB = new UserCtxEntityDAO();
-			entityDB.setEntityId(entity.getId());
+			entityDB.setId(entity.getId());
 			
 			LOG.info("Entity to BE created - " + entity.getId() + " and ownerId " + entity.getOwnerId());
 			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + entity.getObjectNumber());
@@ -411,7 +411,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 			session.save(objectNumber);
 			
 			UserIndividualCtxEntityDAO indEntityDB = new UserIndividualCtxEntityDAO();
-			indEntityDB.setEntityId(entity.getId());
+			indEntityDB.setId(entity.getId());
 			
 			LOG.info("Entity to BE created - " + entity.getId() + " and ownerId " + entity.getOwnerId());
 			LOG.info("ModelObjectNumber " + modelObjectNumber + " and " + entity.getObjectNumber());
@@ -700,8 +700,15 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
             	Query query = session.getNamedQuery("getCtxEntityById");
             	query.setParameter("id", id);
-            	retrieved2 = (CtxModelObject) query.uniqueResult();
+            	retrieved2 = (CtxEntity) query.uniqueResult();
+            	UserCtxEntityDAO entityDao = (UserCtxEntityDAO) query.uniqueResult();
+            	CtxEntity retrEntity = (CtxEntity) query.uniqueResult();
+            	for (UserCtxAttributeDAO attribute : entityDao.getAttrScope()) {
+            		retrEntity.addAttribute(attribute);
+            	}
 //           		retrieved2 = (CtxModelObject) session.get(UserCtxEntityDAO.class, id);
+            	
+            	retrieved2 = retrEntity;
             	
             	System.out.println("test - " + retrieved);
             	LOG.info("test retrieve (entity) - " + retrieved.getId() + " and from db - " + retrieved2.getId());
@@ -709,7 +716,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
             	Query query = session.getNamedQuery("getCtxAttributeById");
             	query.setParameter("id", id);
-            	retrieved2 = (CtxModelObject) query.uniqueResult();
+            	retrieved2 = (CtxAttribute) query.uniqueResult();
 //            	CtxIdentifier retrieved3 = (CtxIdentifier) query.uniqueResult();
 //           		retrieved2 = (CtxModelObject) session.get(UserCtxAttributeDAO.class, id);
             	
@@ -736,7 +743,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 
 //		return this.modelObjects.get(id);
 //		this.modelObjects.put(id, retrModObj);
-		return retrieved;
+		return retrieved2;
 	}
 	
 	@Override
@@ -788,7 +795,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 				CtxEntity ctxEntCopy = (CtxEntity) this.retrieve(modelObject.getId());
 				entityDB = (UserCtxEntityDAO) session.get(UserCtxEntityDAO.class, modelObject.getId());				
 					
-				entityDB.setEntityId(ctxEntCopy.getId());
+//				entityDB.setEntityId(ctxEntCopy.getId());
 					
 				//setting identifier
 				UserCtxEntityIdentifierDAO entIdentDB = new UserCtxEntityIdentifierDAO();
@@ -843,7 +850,7 @@ public class UserCtxDBMgr implements IUserCtxDBMgr {
 				associationDB = (UserCtxAssociationDAO) session.get(UserCtxAssociationDAO.class, modelObject.getId());
 //				CtxAssociationIdentifier identifier = (CtxAssociationIdentifier) session.get(UserCtxAssociationIdentifierDAO.class, modelObject.getId());
 				
-				associationDB.setAssociationId(ctxAssocCopy.getId());
+//				associationDB.setAssociationId(ctxAssocCopy.getId());
 //				associationDB.setLastModified(ctxAssocCopy.getLastModified());
 
 				if (ctxAssocCopy.getParentEntity() != null) {

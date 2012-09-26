@@ -65,7 +65,7 @@ import org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierTyp
 	),
 	@NamedQuery(
 	name = "getCtxAssociationIdsByType",
-	query = "select association.associationId from UserCtxAssociationDAO as association where association.ctxIdentifier.type = :type"
+	query = "select association.id from UserCtxAssociationDAO as association where association.ctxIdentifier.type = :type"
 	)
 })
 /*@NamedNativeQueries({
@@ -134,11 +134,11 @@ public class UserCtxAssociationDAO extends CtxAssociation implements Serializabl
 	@Id
 	@Column(name="association_id")
 	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxAssociationIdentifierType")
-	public CtxIdentifier getAssociationId() {
-		return associationId;
+	public CtxAssociationIdentifier getId() {
+		return (CtxAssociationIdentifier) this.associationId;
 	}
 
-	public void setAssociationId(CtxIdentifier associationId) {
+	public void setId(CtxIdentifier associationId) {
 		this.associationId = associationId;
 	}
 

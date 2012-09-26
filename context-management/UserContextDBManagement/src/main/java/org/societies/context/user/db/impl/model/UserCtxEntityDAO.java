@@ -179,11 +179,11 @@ public class UserCtxEntityDAO extends CtxEntity implements Serializable {
 	@Id
 	@Column(name="entity_id", unique = true, nullable = false)
 	@Type(type="org.societies.context.user.db.impl.model.hibernate.CtxEntityIdentifierType")
-	public CtxIdentifier getEntityId() {
-		return entityId;
+	public CtxEntityIdentifier getId() {
+		return (CtxEntityIdentifier) this.entityId;
 	}
 
-	public void setEntityId(CtxIdentifier entityId) {
+	public void setId(CtxIdentifier entityId) {
 		this.entityId = entityId;
 	}
 
